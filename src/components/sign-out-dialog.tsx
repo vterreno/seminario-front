@@ -27,9 +27,9 @@ export function SignOutDialog({ open, onOpenChange }: SignOutDialogProps) {
     <ConfirmDialog
       open={open}
       onOpenChange={onOpenChange}
-      title='Cerrar Sesion'
+      title='Cerrar sesion'
       desc='¿Seguro que quieres cerrar sesión? Tendrás que volver a iniciar sesión para acceder a tu cuenta.'
-      confirmText='Cerrar Sesion'
+      confirmText='Cerrar sesion'
       handleConfirm={handleSignOut}
       className='sm:max-w-sm'
     />
