@@ -36,26 +36,26 @@ export const usersColumns: ColumnDef<User>[] = [
     enableSorting: false,
     enableHiding: false,
   },
+  // {
+  //   accessorKey: 'usuario',
+  //   header: ({ column }) => (
+  //     <DataTableColumnHeader column={column} title='Usuario' />
+  //   ),
+  //   cell: ({ row }) => (
+  //     <LongText className='max-w-36 ps-3'>{row.getValue('username')}</LongText>
+  //   ),
+  //   meta: {
+  //     className: cn(
+  //       'drop-shadow-[0_1px_2px_rgb(0_0_0_/_0.1)] dark:drop-shadow-[0_1px_2px_rgb(255_255_255_/_0.1)]',
+  //       'sticky start-6 @4xl/content:table-cell @4xl/content:drop-shadow-none'
+  //     ),
+  //   },
+  //   enableHiding: false,
+  // },
   {
-    accessorKey: 'username',
+    id: 'nombre',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Username' />
-    ),
-    cell: ({ row }) => (
-      <LongText className='max-w-36 ps-3'>{row.getValue('username')}</LongText>
-    ),
-    meta: {
-      className: cn(
-        'drop-shadow-[0_1px_2px_rgb(0_0_0_/_0.1)] dark:drop-shadow-[0_1px_2px_rgb(255_255_255_/_0.1)]',
-        'sticky start-6 @4xl/content:table-cell @4xl/content:drop-shadow-none'
-      ),
-    },
-    enableHiding: false,
-  },
-  {
-    id: 'fullName',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Name' />
+      <DataTableColumnHeader column={column} title='Nombre' />
     ),
     cell: ({ row }) => {
       const { firstName, lastName } = row.original
@@ -73,18 +73,18 @@ export const usersColumns: ColumnDef<User>[] = [
       <div className='w-fit text-nowrap'>{row.getValue('email')}</div>
     ),
   },
+  // {
+  //   accessorKey: 'telefono',
+  //   header: ({ column }) => (
+  //     <DataTableColumnHeader column={column} title='Telefono' />
+  //   ),
+  //   cell: ({ row }) => <div>{row.getValue('phoneNumber')}</div>,
+  //   enableSorting: false,
+  // },
   {
-    accessorKey: 'phoneNumber',
+    accessorKey: 'estado',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Phone Number' />
-    ),
-    cell: ({ row }) => <div>{row.getValue('phoneNumber')}</div>,
-    enableSorting: false,
-  },
-  {
-    accessorKey: 'status',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Status' />
+      <DataTableColumnHeader column={column} title='Estado' />
     ),
     cell: ({ row }) => {
       const { status } = row.original
