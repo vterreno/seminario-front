@@ -31,7 +31,7 @@ export function Users() {
       <Main>
         <div className='mb-2 flex flex-wrap items-center justify-between space-y-2'>
           <div>
-            <h2 className='text-2xl font-bold tracking-tight'>Lista de Usuarios</h2>
+            <h2 className='text-2xl font-bold tracking-tight'>Lista de usuarios</h2>
             <p className='text-muted-foreground'>
               Administre aquí sus usuarios y sus roles.
             </p>
