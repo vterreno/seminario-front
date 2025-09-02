@@ -29,15 +29,12 @@ import { type User } from '../data/schema'
 
 const formSchema = z
   .object({
-    firstName: z.string().min(1, 'First Name is required.'),
-    lastName: z.string().min(1, 'Last Name is required.'),
-    username: z.string().min(1, 'Username is required.'),
-    phoneNumber: z.string().min(1, 'Phone number is required.'),
+    firstName: z.string().min(1, 'Nombre es obligatorio.'),
+    lastName: z.string().min(1, 'Apellido es obligatorio.'),
     email: z.email({
-      error: (iss) => (iss.input === '' ? 'Email is required.' : undefined),
+      error: (iss) => (iss.input === '' ? 'Correo electrónico es obligatorio.' : undefined),
     }),
     password: z.string().transform((pwd) => pwd.trim()),
-    role: z.string().min(1, 'Role is required.'),
     confirmPassword: z.string().transform((pwd) => pwd.trim()),
     isEdit: z.boolean(),
   })
@@ -47,7 +44,7 @@ const formSchema = z
       return data.password.length > 0
     },
     {
-      message: 'Password is required.',
+      message: 'Contraseña es obligatoria.',
       path: ['password'],
     }
   )
@@ -57,7 +54,7 @@ const formSchema = z
       return password.length >= 8
     },
     {
-      message: 'Password must be at least 8 characters long.',
+      message: 'Contraseña debe ser de al menos 8 caracteres.',
       path: ['password'],
     }
   )
@@ -67,7 +64,7 @@ const formSchema = z
       return /[a-z]/.test(password)
     },
     {
-      message: 'Password must contain at least one lowercase letter.',
+      message: 'Contraseña debe contener al menos una letra en minuscula',
       path: ['password'],
     }
   )
@@ -77,7 +74,7 @@ const formSchema = z
       return /\d/.test(password)
     },
     {
-      message: 'Password must contain at least one number.',
+      message: 'Contraseña debe contener al menos un número.',
       path: ['password'],
     }
   )
@@ -87,7 +84,7 @@ const formSchema = z
       return password === confirmPassword
     },
     {
-      message: "Passwords don't match.",
+      message: "Las contraseñas no coinciden.",
       path: ['confirmPassword'],
     }
   )
@@ -145,10 +142,10 @@ export function UsersActionDialog({
     >
       <DialogContent className='sm:max-w-lg'>
         <DialogHeader className='text-start'>
-          <DialogTitle>{isEdit ? 'Edit User' : 'Add New User'}</DialogTitle>
+          <DialogTitle>{isEdit ? 'Editar usuario' : 'Agregar nuevo usuario'}</DialogTitle>
           <DialogDescription>
-            {isEdit ? 'Update the user here. ' : 'Create new user here. '}
-            Click save when you&apos;re done.
+            {isEdit ? 'Actualice el usuario aquí ' : 'Crear nuevo usuario aquí. '}
+            Haga clic en guardar cuando haya terminado.
           </DialogDescription>
         </DialogHeader>
         <div className='h-[26.25rem] w-[calc(100%+0.75rem)] overflow-y-auto py-1 pe-3'>
@@ -164,7 +161,7 @@ export function UsersActionDialog({
                 render={({ field }) => (
                   <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
                     <FormLabel className='col-span-2 text-end'>
-                      First Name
+                      Nombre
                     </FormLabel>
                     <FormControl>
                       <Input
@@ -184,7 +181,7 @@ export function UsersActionDialog({
                 render={({ field }) => (
                   <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
                     <FormLabel className='col-span-2 text-end'>
-                      Last Name
+                      Apellido
                     </FormLabel>
                     <FormControl>
                       <Input
@@ -198,13 +195,13 @@ export function UsersActionDialog({
                   </FormItem>
                 )}
               />
-              <FormField
+              {/* <FormField
                 control={form.control}
                 name='username'
                 render={({ field }) => (
                   <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
                     <FormLabel className='col-span-2 text-end'>
-                      Username
+                      Usuario
                     </FormLabel>
                     <FormControl>
                       <Input
@@ -216,7 +213,7 @@ export function UsersActionDialog({
                     <FormMessage className='col-span-4 col-start-3' />
                   </FormItem>
                 )}
-              />
+              /> */}
               <FormField
                 control={form.control}
                 name='email'
@@ -234,13 +231,13 @@ export function UsersActionDialog({
                   </FormItem>
                 )}
               />
-              <FormField
+              {/* <FormField
                 control={form.control}
                 name='phoneNumber'
                 render={({ field }) => (
                   <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
                     <FormLabel className='col-span-2 text-end'>
-                      Phone Number
+                      Telefono
                     </FormLabel>
                     <FormControl>
                       <Input
@@ -252,17 +249,17 @@ export function UsersActionDialog({
                     <FormMessage className='col-span-4 col-start-3' />
                   </FormItem>
                 )}
-              />
+              /> */}
               <FormField
                 control={form.control}
                 name='role'
                 render={({ field }) => (
                   <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
-                    <FormLabel className='col-span-2 text-end'>Role</FormLabel>
+                    <FormLabel className='col-span-2 text-end'>Rol</FormLabel>
                     <SelectDropdown
                       defaultValue={field.value}
                       onValueChange={field.onChange}
-                      placeholder='Select a role'
+                      placeholder='Selecciona un rol'
                       className='col-span-4'
                       items={roles.map(({ label, value }) => ({
                         label,
@@ -279,7 +276,7 @@ export function UsersActionDialog({
                 render={({ field }) => (
                   <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
                     <FormLabel className='col-span-2 text-end'>
-                      Password
+                      Contraseña
                     </FormLabel>
                     <FormControl>
                       <PasswordInput
@@ -298,7 +295,7 @@ export function UsersActionDialog({
                 render={({ field }) => (
                   <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
                     <FormLabel className='col-span-2 text-end'>
-                      Confirm Password
+                      Confirmar contraseña
                     </FormLabel>
                     <FormControl>
                       <PasswordInput
@@ -308,7 +305,7 @@ export function UsersActionDialog({
                         {...field}
                       />
                     </FormControl>
-                    <FormMessage className='col-span-4 col-start-3' />
+                    <FormMessage className='col-span-2 col-start-3' />
                   </FormItem>
                 )}
               />
@@ -317,7 +314,7 @@ export function UsersActionDialog({
         </div>
         <DialogFooter>
           <Button type='submit' form='user-form'>
-            Save changes
+            Guardar
           </Button>
         </DialogFooter>
       </DialogContent>
