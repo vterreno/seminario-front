@@ -54,14 +54,8 @@ export function UserAuthForm({
 
     toast.promise(login(data.email, data.password), {
       loading: 'Iniciando Sesion...',
-      success: (response) => {
+      success: () => {
         setIsLoading(false)
-        
-        // podés guardar el token o datos del usuario acá
-        localStorage.setItem("access_token", response.accessToken)
-        // Set user and access token
-        // auth.setUser(mockUser)
-        // auth.setAccessToken('mock-access-token')
 
         // Redirect to the stored location or default to dashboard
         const targetPath = redirectTo || '/'
