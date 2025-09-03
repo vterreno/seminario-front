@@ -102,7 +102,7 @@ export function UsersTable({ data, search, navigate }: DataTableProps) {
     <div className='space-y-4 max-sm:has-[div[role="toolbar"]]:mb-16'>
       <DataTableToolbar
         table={table}
-        searchPlaceholder='Filter users...'
+        searchPlaceholder='Filtrar Usuarios...'
         searchKey='username'
         filters={[
           {
