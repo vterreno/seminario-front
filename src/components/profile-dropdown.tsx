@@ -42,19 +42,7 @@ export function ProfileDropdown() {
             <DropdownMenuItem asChild>
               <Link to='/settings'>
                 Perfil
-                <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link to='/settings'>
-                Facturación
-                <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link to='/settings'>
-                Ajustes
-                <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
+                {/* <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut> */}
               </Link>
             </DropdownMenuItem>
             {/* <DropdownMenuItem>New Team</DropdownMenuItem> */}
@@ -66,7 +54,7 @@ export function ProfileDropdown() {
             }}
           >
             Cerrar sesion
-            <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
+           {/*  <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut> */}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
