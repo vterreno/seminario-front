@@ -1,6 +1,8 @@
 import { useNavigate, useLocation } from '@tanstack/react-router'
 import { useAuthStore } from '@/stores/auth-store'
+import { useSessionStore } from '@/stores/session-store'
 import { ConfirmDialog } from '@/components/confirm-dialog'
+import apiUserService from '@/service/apiUser.service'
 
 interface SignOutDialogProps {
   open: boolean
@@ -11,11 +13,16 @@ export function SignOutDialog({ open, onOpenChange }: SignOutDialogProps) {
   const navigate = useNavigate()
   const location = useLocation()
   const { auth } = useAuthStore()
+  const { resetSession } = useSessionStore()
 
   const handleSignOut = () => {
-    auth.reset()
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("refresh_token");
+    // Limpiar tokens del localStorage
+    apiUserService.logout();
+    // Resetear store de auth
+    auth.reset();
+    // Resetear sesión para forzar nueva validación
+    resetSession();
+    
     // Preserve current location for redirect after sign-in
     const currentPath = location.href
     navigate({

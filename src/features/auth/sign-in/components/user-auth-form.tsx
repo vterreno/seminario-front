@@ -49,25 +49,21 @@ export function UserAuthForm({
     },
   })
 
-  function onSubmit(data: z.infer<typeof formSchema>) {
+  async function onSubmit(data: z.infer<typeof formSchema>) {
     setIsLoading(true)
 
-    toast.promise(login(data.email, data.password), {
-      loading: 'Iniciando Sesion...',
-      success: () => {
-        setIsLoading(false)
-
-        // Redirect to the stored location or default to dashboard
-        const targetPath = redirectTo || '/'
-        navigate({ to: targetPath, replace: true })
-
-        return `Bienvenido de nuevo, ${data.email}!`
-      },
-        error: () => {
-        setIsLoading(false);
-        return 'Error al iniciar sesión'; 
-      },
-    })
+    try {
+      await login(data.email, data.password);
+      setIsLoading(false)
+      
+      // Siempre redirigir a la raíz después del login exitoso
+      navigate({ to: '/', replace: true })
+      
+      toast.success(`Bienvenido de nuevo, ${data.email}!`)
+    } catch (error) {
+      setIsLoading(false);
+      toast.error('Error al iniciar sesión');
+    }
   }
 
   return (

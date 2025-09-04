@@ -1,25 +1,24 @@
-import { ReactNode, useEffect } from 'react';
-import { useRouter } from '@tanstack/react-router';
+import { ReactNode } from 'react';
+import { useAuth } from '@/hooks/use-auth';
 
 interface ProtectedRouteProps {
   children: ReactNode;
 }
 
-// Puedes cambiar la lógica de verificación de token según tu implementación
-const isAuthenticated = () => {
-  // Ejemplo: verifica si existe un token en localStorage
-  return Boolean(localStorage.getItem('token'));
-};
-
 export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
-  const router = useRouter();
-  useEffect(() => {
-    if (!isAuthenticated()) {
-      router.navigate({ to: '/sign-in' });
-    }
-  }, [router]);
-  if (!isAuthenticated()) {
-    return null;
+  const { isAuthenticated, isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
+      </div>
+    );
   }
+
+  if (!isAuthenticated) {
+    return null; // useAuth ya maneja la redirección
+  }
+
   return <>{children}</>;
 };

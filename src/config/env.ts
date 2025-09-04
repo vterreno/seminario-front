@@ -10,6 +10,7 @@ export const rutasBack = {
         login: `${baseUrl}/users/login`,
         register: `${baseUrl}/users/register`,
         cambiarContrasena: `${baseUrl}/users/cambiar-contrasena`,
+        validateToken: `${baseUrl}/users/validate-token`,
     },
     correo: {
         sendMail: `${baseUrl}/mail-service/send`,
