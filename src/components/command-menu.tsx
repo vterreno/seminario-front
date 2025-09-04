@@ -30,7 +30,7 @@ export function CommandMenu() {
 
   return (
     <CommandDialog modal open={open} onOpenChange={setOpen}>
-      <CommandInput placeholder='Escribir un comando o buscar...' />
+      <CommandInput placeholder='Escriba un comando o busque...' />
       <CommandList>
         <ScrollArea type='hover' className='h-72 pe-1'>
           <CommandEmpty>No se encontraron resultados.</CommandEmpty>
