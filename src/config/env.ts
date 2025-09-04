@@ -11,5 +11,7 @@ export const rutasBack = {
         register: `${baseUrl}/users/register`,
         cambiarContrasena: `${baseUrl}/users/cambiar-contrasena`,
     },
-
+    correo: {
+        sendMail: `${baseUrl}/mail-service/send`,
+    }
 };
