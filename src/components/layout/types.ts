@@ -16,6 +16,8 @@ type BaseNavItem = {
   title: string
   badge?: string
   icon?: React.ElementType
+  backgroundColor?: string
+  textColor?: string
 }
 
 type NavLink = BaseNavItem & {

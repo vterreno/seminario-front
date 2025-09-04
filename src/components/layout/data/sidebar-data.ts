@@ -60,6 +60,8 @@ export const sidebarData: SidebarData = {
           title: 'Dashboard',
           url: '/',
           icon: LayoutDashboard,
+          backgroundColor: '#f7c33b', // yellow
+          textColor: '#ffffff', // white
         },
         // {
         //   title: 'Tasks',
@@ -81,37 +83,51 @@ export const sidebarData: SidebarData = {
           title: 'Usuarios',
           url: '/users',
           icon: Users,
+          backgroundColor: '#f7c33b', // emerald-500 (color personalizado)
+          textColor: '#ffffff',
         },
         {
           title: 'Roles',
           url: '/roles',
           icon: UserCheck,
+          backgroundColor: '#f7c33b',
+          textColor: '#ffffff',
         },
-                {
+        {
           title: 'Ventas',
           url: '/ventas',
           icon: ShoppingCart,
+          backgroundColor: '#f7c33b',
+          textColor: '#ffffff',
         },
         {
           title: 'Compras',
           url: '/compras',
           icon: CreditCard,
+          backgroundColor: '#f7c33b',
+          textColor: '#ffffff',
         },
-                {
+        {
           title: 'Productos',
           url: '/productos',
           icon: Package,
+          backgroundColor: '#f7c33b', // violet-500 (color personalizado)
+          textColor: '#ffffff',
         },
         {
           title: 'Empresa',
           url: '/empresa',
           icon: Briefcase,
+          backgroundColor: '#f7c33b',
+          textColor: '#ffffff',
         },
 
         {
           title: 'Contactos',
           url: '/contactos',
           icon: Users,
+          backgroundColor: '#f7c33b',
+          textColor: '#ffffff',
         },
 
         
@@ -136,7 +152,7 @@ export const sidebarData: SidebarData = {
         // },
       ],
     },
-    {
+    /* {
       title: 'Paginas',
       items: [
         {
@@ -197,28 +213,36 @@ export const sidebarData: SidebarData = {
           ],
         },
       ],
-    },
+    }, */
     {
       title: 'Otros',
       items: [
         {
           title: 'Ajustes',
           icon: Settings,
+          backgroundColor: '#f7c33b', // blue-500
+          textColor: '#ffffff',
           items: [
             {
               title: 'Pefil',
               url: '/settings',
               icon: UserCog,
+              backgroundColor: '#f7c33b', // blue-500 (para configuración)
+              textColor: '#ffffff',
             },
             {
               title: 'Cuenta',
               url: '/settings/account',
               icon: Wrench,
+              backgroundColor: '#f7c33b', // blue-600
+              textColor: '#ffffff',
             },
             {
               title: 'Apariencia',
               url: '/settings/appearance',
               icon: Palette,
+              backgroundColor: '#f7c33b', // blue-700
+              textColor: '#ffffff',
             },
             // {
             //   title: 'Notifications',
