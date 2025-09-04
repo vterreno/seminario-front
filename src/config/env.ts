@@ -7,6 +7,7 @@ export const rutasBack = {
         putUsuario: `${baseUrl}/users/`,
         deleteUsuario: `${baseUrl}/users/`,
         getUsuarioPorId: `${baseUrl}/users/`,
+        me: `${baseUrl}/users/me`,
         login: `${baseUrl}/users/login`,
         register: `${baseUrl}/users/register`,
         cambiarContrasena: `${baseUrl}/users/cambiar-contrasena`,

@@ -1,7 +1,10 @@
 import { DatosUsuariosContextType } from "@/interface/DatosUsuariosContextType.interface";
 import apiUserService from "@/service/apiUser.service";
 import { useSessionStore } from "@/stores/session-store";
+import { useAuthStore } from "@/stores/auth-store";
 import { createContext, ReactNode } from "react";
+import axiosService from "@/api/apiClient";
+import { rutasBack } from "@/config/env";
 
 export const AuthContext = createContext<DatosUsuariosContextType>({
     usuarios: [],
@@ -19,10 +22,23 @@ interface DatosUsuariosProviderProps {
 
 export const DatosUsuariosProvider = ({ children }: DatosUsuariosProviderProps) => {
     const { setAuthenticated, resetSession } = useSessionStore();
+    const { auth } = useAuthStore();
     
     const login = async (email: string, password: string) => {
         try {
             const response = await apiUserService.login(email, password);
+            
+            // Obtener datos completos del usuario después del login
+            const userDataResponse = await axiosService.get(rutasBack.usuarios.me);
+            const userData = userDataResponse.data;
+            
+            // Guardar usuario en el auth store
+            auth.setUser({
+                name: userData.name,
+                email: userData.email,
+                roles: userData.roles
+            });
+            
             // Establecer la sesión como autenticada después del login exitoso
             setAuthenticated(true);
             return response;
@@ -34,6 +50,8 @@ export const DatosUsuariosProvider = ({ children }: DatosUsuariosProviderProps) 
 
     const logout = () => {
         apiUserService.logout();
+        // Limpiar datos del usuario del auth store
+        auth.reset();
         // Resetear la sesión para forzar nueva validación en el próximo acceso
         resetSession();
     }
