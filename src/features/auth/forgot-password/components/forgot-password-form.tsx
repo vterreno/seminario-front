@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate } from '@tanstack/react-router'
 import { ArrowRight, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
-import { sleep, cn } from '@/lib/utils'
+import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -16,6 +16,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import apiCorreoService from '@/service/apiCorreo.service'
 
 const formSchema = z.object({
   email: z.email({
@@ -40,7 +41,7 @@ export function ForgotPasswordForm({
     // eslint-disable-next-line no-console
     console.log(data)
 
-    toast.promise(sleep(2000), {
+    toast.promise(apiCorreoService.send(data.email), {
       loading: 'Enviando email...',
       success: () => {
         setIsLoading(false)
@@ -48,7 +49,10 @@ export function ForgotPasswordForm({
         navigate({ to: '/otp' })
         return `Correo electrónico enviado a ${data.email}`
       },
-      error: 'Error',
+      error: () => {
+        setIsLoading(false);
+        return 'Error al iniciar sesión'; 
+      },
     })
   }
 
