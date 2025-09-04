@@ -79,13 +79,12 @@ export function ProfileForm() {
           name='username'
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Username</FormLabel>
+              <FormLabel>Nombre</FormLabel>
               <FormControl>
                 <Input placeholder='shadcn' {...field} />
               </FormControl>
               <FormDescription>
-                This is your public display name. It can be your real name or a
-                pseudonym. You can only change this once every 30 days.
+                Este es tu nombre público. Puede ser tu nombre real o un seudónimo. Solo puedes cambiarlo cada 30 días.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -100,7 +99,7 @@ export function ProfileForm() {
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder='Select a verified email to display' />
+                    <SelectValue placeholder='Seleccione un correo electrónico verificado para mostrar' />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -110,8 +109,8 @@ export function ProfileForm() {
                 </SelectContent>
               </Select>
               <FormDescription>
-                You can manage verified email addresses in your{' '}
-                <Link to='/'>email settings</Link>.
+                Puede administrar direcciones de correo electrónico verificadas en su configuración de correo electrónico.{' '}
+                <Link to='/'>Configuracion de email</Link>.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -122,17 +121,16 @@ export function ProfileForm() {
           name='bio'
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Bio</FormLabel>
+              <FormLabel>Biografia</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder='Tell us a little bit about yourself'
+                  placeholder='Cuéntanos un poco sobre ti'
                   className='resize-none'
                   {...field}
                 />
               </FormControl>
               <FormDescription>
-                You can <span>@mention</span> other users and organizations to
-                link to them.
+                Puedes <span>@mencionar</span> a otros usuarios y organizaciones para vincularlos.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -150,7 +148,7 @@ export function ProfileForm() {
                     URLs
                   </FormLabel>
                   <FormDescription className={cn(index !== 0 && 'sr-only')}>
-                    Add links to your website, blog, or social media profiles.
+                    Añade enlaces a tu sitio web, blog o perfiles de redes sociales.
                   </FormDescription>
                   <FormControl>
                     <Input {...field} />
@@ -170,7 +168,7 @@ export function ProfileForm() {
             Add URL
           </Button>
         </div>
-        <Button type='submit'>Update profile</Button>
+        <Button type='submit'>Actualizar perfil</Button>
       </form>
     </Form>
   )

@@ -11,7 +11,7 @@ type SearchProps = {
 
 export function Search({
   className = '',
-  placeholder = 'Search',
+  placeholder = 'Buscar',
 }: SearchProps) {
   const { setOpen } = useSearch()
   return (

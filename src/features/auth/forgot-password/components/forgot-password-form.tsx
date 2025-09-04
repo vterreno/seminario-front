@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate } from '@tanstack/react-router'
 import { ArrowRight, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
-import { sleep, cn } from '@/lib/utils'
+import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -16,10 +16,11 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import apiCorreoService from '@/service/apiCorreo.service'
 
 const formSchema = z.object({
   email: z.email({
-    error: (iss) => (iss.input === '' ? 'Please enter your email' : undefined),
+    error: (iss) => (iss.input === '' ? 'Por favor ingrese su correo electrónico' : undefined),
   }),
 })
 
@@ -40,15 +41,18 @@ export function ForgotPasswordForm({
     // eslint-disable-next-line no-console
     console.log(data)
 
-    toast.promise(sleep(2000), {
-      loading: 'Sending email...',
+    toast.promise(apiCorreoService.send(data.email), {
+      loading: 'Enviando email...',
       success: () => {
         setIsLoading(false)
         form.reset()
         navigate({ to: '/otp' })
-        return `Email sent to ${data.email}`
+        return `Correo electrónico enviado a ${data.email}`
       },
-      error: 'Error',
+      error: () => {
+        setIsLoading(false);
+        return 'Error al iniciar sesión'; 
+      },
     })
   }
 
@@ -64,16 +68,16 @@ export function ForgotPasswordForm({
           name='email'
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel>Correo</FormLabel>
               <FormControl>
-                <Input placeholder='name@example.com' {...field} />
+                <Input placeholder='nombre@ejemplo.com' {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
         <Button className='mt-2' disabled={isLoading}>
-          Continue
+          Continuar
           {isLoading ? <Loader2 className='animate-spin' /> : <ArrowRight />}
         </Button>
       </form>

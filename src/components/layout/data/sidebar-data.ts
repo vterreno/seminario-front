@@ -21,8 +21,12 @@ import {
   AudioWaveform,
   Command,
   GalleryVerticalEnd,
+  ShoppingCart,
+  CreditCard,
+  Briefcase,
+  UserCheck,
+  Key
 } from 'lucide-react'
-import { ClerkLogo } from '@/assets/clerk-logo'
 import { type SidebarData } from '../types'
 
 export const sidebarData: SidebarData = {
@@ -57,49 +61,83 @@ export const sidebarData: SidebarData = {
           url: '/',
           icon: LayoutDashboard,
         },
+        // {
+        //   title: 'Tasks',
+        //   url: '/tasks',
+        //   icon: ListTodo,
+        // },
+        // {
+        //   title: 'Apps',
+        //   url: '/apps',
+        //   icon: Package,
+        // },
+        // {
+        //   title: 'Chats',
+        //   url: '/chats',
+        //   badge: '3',
+        //   icon: MessagesSquare,
+        // },
         {
-          title: 'Tasks',
-          url: '/tasks',
-          icon: ListTodo,
-        },
-        {
-          title: 'Apps',
-          url: '/apps',
-          icon: Package,
-        },
-        {
-          title: 'Chats',
-          url: '/chats',
-          badge: '3',
-          icon: MessagesSquare,
-        },
-        {
-          title: 'Users',
+          title: 'Usuarios',
           url: '/users',
           icon: Users,
         },
         {
-          title: 'Secured by Clerk',
-          icon: ClerkLogo,
-          items: [
-            {
-              title: 'Sign In',
-              url: '/clerk/sign-in',
-            },
-            {
-              title: 'Sign Up',
-              url: '/clerk/sign-up',
-            },
-            {
-              title: 'User Management',
-              url: '/clerk/user-management',
-            },
-          ],
+          title: 'Roles',
+          url: '/roles',
+          icon: UserCheck,
         },
+                {
+          title: 'Ventas',
+          url: '/ventas',
+          icon: ShoppingCart,
+        },
+        {
+          title: 'Compras',
+          url: '/compras',
+          icon: CreditCard,
+        },
+                {
+          title: 'Productos',
+          url: '/productos',
+          icon: Package,
+        },
+        {
+          title: 'Empresa',
+          url: '/empresa',
+          icon: Briefcase,
+        },
+
+        {
+          title: 'Contactos',
+          url: '/contactos',
+          icon: Users,
+        },
+
+        
+
+        // {
+        //   title: 'Secured by Clerk',
+        //   icon: ClerkLogo,
+        //   items: [
+        //     {
+        //       title: 'Sign In',
+        //       url: '/clerk/sign-in',
+        //     },
+        //     {
+        //       title: 'Sign Up',
+        //       url: '/clerk/sign-up',
+        //     },
+        //     {
+        //       title: 'User Management',
+        //       url: '/clerk/user-management',
+        //     },
+        //   ],
+        // },
       ],
     },
     {
-      title: 'Pages',
+      title: 'Paginas',
       items: [
         {
           title: 'Auth',
@@ -161,44 +199,44 @@ export const sidebarData: SidebarData = {
       ],
     },
     {
-      title: 'Other',
+      title: 'Otros',
       items: [
         {
-          title: 'Settings',
+          title: 'Ajustes',
           icon: Settings,
           items: [
             {
-              title: 'Profile',
+              title: 'Pefil',
               url: '/settings',
               icon: UserCog,
             },
             {
-              title: 'Account',
+              title: 'Cuenta',
               url: '/settings/account',
               icon: Wrench,
             },
             {
-              title: 'Appearance',
+              title: 'Apariencia',
               url: '/settings/appearance',
               icon: Palette,
             },
-            {
-              title: 'Notifications',
-              url: '/settings/notifications',
-              icon: Bell,
-            },
-            {
-              title: 'Display',
-              url: '/settings/display',
-              icon: Monitor,
-            },
+            // {
+            //   title: 'Notifications',
+            //   url: '/settings/notifications',
+            //   icon: Bell,
+            // },
+            // {
+            //   title: 'Display',
+            //   url: '/settings/display',
+            //   icon: Monitor,
+            // },
           ],
         },
-        {
-          title: 'Help Center',
-          url: '/help-center',
-          icon: HelpCircle,
-        },
+        // {
+        //   title: 'Help Center',
+        //   url: '/help-center',
+        //   icon: HelpCircle,
+        // },
       ],
     },
   ],
