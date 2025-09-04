@@ -38,9 +38,9 @@ export function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
                 <NavGroup key={props.title} {...props} />
               ))}
             </SidebarContent>
-            <SidebarFooter>
+            {/* <SidebarFooter>
               <NavUser user={sidebarData.user} />
-            </SidebarFooter>
+            </SidebarFooter> */}
             <SidebarRail />
           </AppSidebar>
           <SidebarInset
