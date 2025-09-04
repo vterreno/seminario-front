@@ -72,7 +72,7 @@ export function ConfigDrawer() {
             onClick={handleReset}
             aria-label='Reset all settings to default values'
           >
-            Reset
+            Borrar
           </Button>
         </SheetFooter>
       </SheetContent>

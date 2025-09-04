@@ -54,6 +54,18 @@ export const sidebarData: SidebarData = {
   ],
   navGroups: [
     {
+      title: 'Superadmin',
+      items: [
+        {
+          title: 'Empresas',
+          url: '/empresa',
+          icon: Briefcase,
+          backgroundColor: '#f7c33b',
+          textColor: '#ffffff',
+        },
+      ],
+    },
+    {
       title: 'General',
       items: [
         {
@@ -114,14 +126,6 @@ export const sidebarData: SidebarData = {
           backgroundColor: '#f7c33b', // violet-500 (color personalizado)
           textColor: '#ffffff',
         },
-        {
-          title: 'Empresa',
-          url: '/empresa',
-          icon: Briefcase,
-          backgroundColor: '#f7c33b',
-          textColor: '#ffffff',
-        },
-
         {
           title: 'Contactos',
           url: '/contactos',

@@ -14,6 +14,7 @@ import {
 type DataTableBulkActionsProps<TData> = {
   table: Table<TData>
   entityName: string
+  isFeminine?: boolean
   children: React.ReactNode
 }
 
@@ -24,12 +25,14 @@ type DataTableBulkActionsProps<TData> = {
  * @param {object} props The component props.
  * @param {Table<TData>} props.table The react-table instance.
  * @param {string} props.entityName The name of the entity being acted upon (e.g., "task", "user").
+ * @param {boolean} props.isFeminine Whether the entity name is feminine (affects "seleccionadas" vs "seleccionados").
  * @param {React.ReactNode} props.children The action buttons to be rendered inside the toolbar.
  * @returns {React.ReactNode | null} The rendered component or null if no rows are selected.
  */
 export function DataTableBulkActions<TData>({
   table,
   entityName,
+  isFeminine = false,
   children,
 }: DataTableBulkActionsProps<TData>): React.ReactNode | null {
   const selectedRows = table.getFilteredSelectedRowModel().rows
@@ -159,15 +162,15 @@ export function DataTableBulkActions<TData>({
                 size='icon'
                 onClick={handleClearSelection}
                 className='size-6 rounded-full'
-                aria-label='Clear selection'
-                title='Clear selection (Escape)'
+                aria-label='Borrar selección'
+                title='Borrar selección'
               >
                 <X />
-                <span className='sr-only'>Clear selection</span>
+                <span className='sr-only'>Borrar selección</span>
               </Button>
             </TooltipTrigger>
             <TooltipContent>
-              <p>Clear selection (Escape)</p>
+              <p>Borrar selección</p>
             </TooltipContent>
           </Tooltip>
 
@@ -192,7 +195,7 @@ export function DataTableBulkActions<TData>({
               {entityName}
               {selectedCount > 1 ? 's' : ''}
             </span>{' '}
-            selected
+            {isFeminine ? 'seleccionadas' : 'seleccionados'}
           </div>
 
           <Separator

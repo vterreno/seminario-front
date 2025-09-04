@@ -13,6 +13,15 @@ export const rutasBack = {
         cambiarContrasena: `${baseUrl}/users/cambiar-contrasena`,
         validateToken: `${baseUrl}/users/validate-token`,
     },
+    empresas: {
+        getEmpresas: `${baseUrl}/empresa/all`,
+        getEmpresasPaginated: `${baseUrl}/empresa`,
+        postEmpresa: `${baseUrl}/empresa`,
+        putEmpresa: `${baseUrl}/empresa`,
+        patchEmpresa: `${baseUrl}/empresa`,
+        deleteEmpresa: `${baseUrl}/empresa`,
+        getEmpresaPorId: `${baseUrl}/empresa`,
+    },
     correo: {
         sendMail: `${baseUrl}/mail-service/send`,
     }
