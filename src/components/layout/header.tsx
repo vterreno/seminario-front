@@ -42,7 +42,7 @@ export function Header({ className, fixed, children, ...props }: HeaderProps) {
         )}
       >
         <SidebarTrigger variant='outline' className='max-md:scale-125' />
-        <Separator orientation='vertical' className='h-6' />
+        {/* <Separator orientation='vertical' className='h-6' /> */}
         {children}
       </div>
     </header>
