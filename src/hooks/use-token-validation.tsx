@@ -1,9 +1,11 @@
 import { useNavigate } from '@tanstack/react-router';
 import { useSessionStore } from '@/stores/session-store';
 import apiUserService from '@/service/apiUser.service';
+import { useTokenManagement } from './use-token-management';
 
 export const useAuthSession = () => {
   const navigate = useNavigate();
+  const { getAccessToken } = useTokenManagement();
   const { 
     isAuthenticated, 
     isValidating, 
@@ -21,7 +23,7 @@ export const useAuthSession = () => {
     setValidating(true);
 
     try {
-      const token = localStorage.getItem('access_token');
+      const token = getAccessToken();
       
       if (!token) {
         setAuthenticated(false);

@@ -1,5 +1,6 @@
 import { Link } from '@tanstack/react-router'
 import useDialogState from '@/hooks/use-dialog-state'
+import { useAuthStore } from '@/stores/auth-store'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import {
@@ -15,9 +16,8 @@ import { SignOutDialog } from '@/components/sign-out-dialog'
 
 export function ProfileDropdown() {
   const [open, setOpen] = useDialogState()
-  const USER_DATA = 'user_data'
-  const user = localStorage.getItem(USER_DATA)
-  const userData = user ? JSON.parse(user) : null
+  const { auth } = useAuthStore()
+  const userData = auth.user
   return (
     <>
       <DropdownMenu modal={false}>
