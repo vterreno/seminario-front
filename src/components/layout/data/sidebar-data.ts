@@ -60,7 +60,7 @@ export const sidebarData: SidebarData = {
           title: 'Empresas',
           url: '/empresa',
           icon: Briefcase,
-          backgroundColor: '#f7c33b',
+          backgroundColor: '#40ba22',
           textColor: '#ffffff',
         },
       ],
