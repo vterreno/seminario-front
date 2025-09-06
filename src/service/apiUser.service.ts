@@ -41,6 +41,7 @@ class ApiUsers {
     logout(): void {
         localStorage.removeItem("access_token");
         localStorage.removeItem("refresh_token");
+        localStorage.removeItem("user_data");
     }
 
     async cambiarContraseña(email: string, contrasena: string){

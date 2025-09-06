@@ -12,13 +12,12 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { SignOutDialog } from '@/components/sign-out-dialog'
-import { useAuthStore } from '@/stores/auth-store'
 
 export function ProfileDropdown() {
   const [open, setOpen] = useDialogState()
-
-  const user = useAuthStore().auth.user
-
+  const USER_DATA = 'user_data'
+  const user = localStorage.getItem(USER_DATA)
+  const userData = user ? JSON.parse(user) : null
   return (
     <>
       <DropdownMenu modal={false}>
@@ -33,9 +32,9 @@ export function ProfileDropdown() {
         <DropdownMenuContent className='w-56' align='end' forceMount>
           <DropdownMenuLabel className='font-normal'>
             <div className='flex flex-col gap-1.5'>
-              <p className='text-sm leading-none font-medium'>{user?.name || 'Usuario'}</p>
+              <p className='text-sm leading-none font-medium'>{userData?.name || 'Usuario'}</p>
               <p className='text-muted-foreground text-xs leading-none'>
-                {user?.email || 'email@ejemplo.com'}
+                {userData?.email || 'email@ejemplo.com'}
               </p>
             </div>
           </DropdownMenuLabel>

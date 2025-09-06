@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { getCookie, setCookie, removeCookie } from '@/lib/cookies'
 
 const ACCESS_TOKEN = 'thisisjustarandomstring'
+const USER_DATA = 'user_data'
 
 interface AuthRole {
   id: number
@@ -37,7 +38,14 @@ export const useAuthStore = create<AuthState>()((set) => {
     auth: {
       user: null,
       setUser: (user) =>
-        set((state) => ({ ...state, auth: { ...state.auth, user } })),
+        set((state) => {
+          if (user) {
+            localStorage.setItem(USER_DATA, JSON.stringify(user))
+          } else {
+            localStorage.removeItem(USER_DATA)
+          }
+          return { ...state, auth: { ...state.auth, user } }
+        }),
       accessToken: initToken,
       setAccessToken: (accessToken) =>
         set((state) => {
