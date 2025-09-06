@@ -1,11 +1,13 @@
 import axiosService from '../api/apiClient';
 import { rutasBack } from '../config/env';
+import { STORAGE_KEYS } from '@/lib/constants';
+import { setStorageItem, removeStorageItem, getStorageItem } from '@/hooks/use-local-storage';
 class ApiUsers {
     async login(email: string, password: string): Promise<any> {
         try {
         const response = await axiosService.post(rutasBack.usuarios.login, { email, password });
-        localStorage.setItem("access_token", response.data.accessToken);
-        localStorage.setItem("refresh_token", response.data.refreshToken);
+        setStorageItem(STORAGE_KEYS.ACCESS_TOKEN, response.data.accessToken);
+        setStorageItem(STORAGE_KEYS.REFRESH_TOKEN, response.data.refreshToken);
 
         return response.data;
         } catch (error: any) {
@@ -17,7 +19,7 @@ class ApiUsers {
     }
     async validateToken(): Promise<boolean> {
         try {
-            const token = localStorage.getItem("access_token");
+            const token = getStorageItem(STORAGE_KEYS.ACCESS_TOKEN, null);
             if (!token) {
                 return false;
             }
@@ -32,22 +34,23 @@ class ApiUsers {
         } catch (error) {
             console.error("Token validation failed:", error);
             // Si el token no es válido, lo removemos del localStorage
-            localStorage.removeItem("access_token");
-            localStorage.removeItem("refresh_token");
+            removeStorageItem(STORAGE_KEYS.ACCESS_TOKEN);
+            removeStorageItem(STORAGE_KEYS.REFRESH_TOKEN);
             return false;
         }
     }
 
     logout(): void {
-        localStorage.removeItem("access_token");
-        localStorage.removeItem("refresh_token");
+        removeStorageItem(STORAGE_KEYS.ACCESS_TOKEN);
+        removeStorageItem(STORAGE_KEYS.REFRESH_TOKEN);
+        removeStorageItem(STORAGE_KEYS.USER_DATA);
     }
 
     async cambiarContraseña(email: string, contrasena: string){
         try {
             const response = await axiosService.patch(rutasBack.usuarios.cambiarContrasena, { contrasena, email });
-            localStorage.setItem("access_token", response.data.accessToken)
-            localStorage.setItem("refresh_token", response.data.refreshToken)
+            setStorageItem(STORAGE_KEYS.ACCESS_TOKEN, response.data.accessToken);
+            setStorageItem(STORAGE_KEYS.REFRESH_TOKEN, response.data.refreshToken);
             return response.data;
         } catch (error) {
             console.error("Error during change:", error);

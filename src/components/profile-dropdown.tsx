@@ -1,5 +1,6 @@
 import { Link } from '@tanstack/react-router'
 import useDialogState from '@/hooks/use-dialog-state'
+import { useAuthStore } from '@/stores/auth-store'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import {
@@ -12,13 +13,11 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { SignOutDialog } from '@/components/sign-out-dialog'
-import { useAuthStore } from '@/stores/auth-store'
 
 export function ProfileDropdown() {
   const [open, setOpen] = useDialogState()
-
-  const user = useAuthStore().auth.user
-
+  const { auth } = useAuthStore()
+  const userData = auth.user
   return (
     <>
       <DropdownMenu modal={false}>
@@ -33,9 +32,9 @@ export function ProfileDropdown() {
         <DropdownMenuContent className='w-56' align='end' forceMount>
           <DropdownMenuLabel className='font-normal'>
             <div className='flex flex-col gap-1.5'>
-              <p className='text-sm leading-none font-medium'>{user?.name || 'Usuario'}</p>
+              <p className='text-sm leading-none font-medium'>{userData?.name || 'Usuario'}</p>
               <p className='text-muted-foreground text-xs leading-none'>
-                {user?.email || 'email@ejemplo.com'}
+                {userData?.email || 'email@ejemplo.com'}
               </p>
             </div>
           </DropdownMenuLabel>

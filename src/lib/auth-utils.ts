@@ -1,10 +1,12 @@
 import apiUserService from '@/service/apiUser.service';
+import { STORAGE_KEYS } from '@/lib/constants';
+import { getStorageItem, removeStorageItem } from '@/hooks/use-local-storage';
 
 /**
  * Verifica si hay un token en localStorage
  */
 export const hasToken = (): boolean => {
-  return Boolean(localStorage.getItem('access_token'));
+  return Boolean(getStorageItem(STORAGE_KEYS.ACCESS_TOKEN, null));
 };
 
 /**
@@ -27,15 +29,15 @@ export const validateAuthToken = async (): Promise<boolean> => {
  * Limpia todos los datos de autenticación
  */
 export const clearAuthData = (): void => {
-  localStorage.removeItem('access_token');
-  localStorage.removeItem('refresh_token');
+  removeStorageItem(STORAGE_KEYS.ACCESS_TOKEN);
+  removeStorageItem(STORAGE_KEYS.REFRESH_TOKEN);
 };
 
 /**
  * Obtiene el token de acceso del localStorage
  */
 export const getAccessToken = (): string | null => {
-  return localStorage.getItem('access_token');
+  return getStorageItem(STORAGE_KEYS.ACCESS_TOKEN, null);
 };
 
 /**

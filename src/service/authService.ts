@@ -1,4 +1,6 @@
 import { rutasBack } from '../config/env';
+import { STORAGE_KEYS } from '@/lib/constants';
+import { removeStorageItem } from '@/hooks/use-local-storage';
 
 export async function login(email: string, password: string) {
     const response = await fetch(rutasBack.usuarios.login, {
@@ -18,7 +20,7 @@ export async function login(email: string, password: string) {
 
 export async function logout() {
   // Limpiar localStorage - no necesitamos endpoint específico para logout
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("refresh_token");
+    removeStorageItem(STORAGE_KEYS.ACCESS_TOKEN);
+    removeStorageItem(STORAGE_KEYS.REFRESH_TOKEN);
     return Promise.resolve();
 }

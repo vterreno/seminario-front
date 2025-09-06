@@ -2,6 +2,8 @@ import { createFileRoute, redirect } from '@tanstack/react-router'
 import { AuthenticatedLayout } from '@/components/layout/authenticated-layout'
 import { useSessionStore } from '@/stores/session-store'
 import apiUserService from '@/service/apiUser.service'
+import { STORAGE_KEYS } from '@/lib/constants'
+import { getStorageItem } from '@/hooks/use-local-storage'
 
 export const Route = createFileRoute('/_authenticated')({
   beforeLoad: async ({ location }) => {
@@ -22,7 +24,7 @@ export const Route = createFileRoute('/_authenticated')({
 
     // Primera validación en esta sesión
     try {
-      const token = localStorage.getItem('access_token');
+      const token = getStorageItem(STORAGE_KEYS.ACCESS_TOKEN, null);
       
       if (!token) {
         sessionState.setAuthenticated(false);
