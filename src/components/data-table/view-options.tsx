@@ -45,13 +45,16 @@ export function DataTableViewOptions<TData>({
               typeof column.accessorFn !== 'undefined' && column.getCanHide()
           )
           .map((column) => {
+            // Usar el título personalizado si está disponible en meta, sino usar el column.id
+            const displayName = (column.columnDef.meta as any)?.displayName || capitalizeFirst(column.id)
+            
             return (
               <DropdownMenuCheckboxItem
                 key={column.id}
                 checked={column.getIsVisible()}
                 onCheckedChange={(value) => column.toggleVisibility(!!value)}
               >
-                {capitalizeFirst(column.id)}
+                {displayName}
               </DropdownMenuCheckboxItem>
             )
           })}

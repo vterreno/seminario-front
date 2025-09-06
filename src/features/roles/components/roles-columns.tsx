@@ -2,12 +2,12 @@ import { ColumnDef } from '@tanstack/react-table'
 import { Checkbox } from '@/components/ui/checkbox'
 import { DataTableColumnHeader } from '@/components/data-table'
 import { DataTableRowActions } from './data-table-row-actions'
-import { Empresa } from '../data/schema'
+import { Role } from '../data/schema'
 import { Badge } from '@/components/ui/badge'
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
 
-export const empresaColumns: ColumnDef<Empresa>[] = [
+export const rolesColumns: ColumnDef<Role>[] = [
   {
     id: 'select',
     header: ({ table }) => (
@@ -42,15 +42,15 @@ export const empresaColumns: ColumnDef<Empresa>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: 'name',
+    accessorKey: 'nombre',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Nombre' />
+      <DataTableColumnHeader column={column} title='Nombre del rol' />
     ),
     cell: ({ row }) => {
       return (
         <div className='flex space-x-2'>
           <span className='max-w-[200px] truncate font-medium'>
-            {row.getValue('name')}
+            {row.getValue('nombre')}
           </span>
         </div>
       )
@@ -66,21 +66,40 @@ export const empresaColumns: ColumnDef<Empresa>[] = [
     },
   },
   {
+    accessorKey: 'empresa_id',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='Empresa' />
+    ),
+    cell: ({ row }) => {
+      // Aquí podrías mostrar el nombre de la empresa en lugar del ID
+      // si tienes una relación con la tabla de empresas
+      return (
+        <div className='w-[100px]'>
+          Empresa {row.getValue('empresa_id')}
+        </div>
+      )
+    },
+    meta: {
+      displayName: 'Empresa',
+    },
+    enableSorting: true,
+  },
+  {
     accessorKey: 'estado',
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='Estado' />
     ),
-    meta: {
-      displayName: 'Estado',
-    },
     cell: ({ row }) => {
       const estado = row.getValue('estado') as boolean
 
       return (
         <Badge variant={estado ? 'green' : 'secondary'}>
-          {estado ? 'Activa' : 'Inactiva'}
+          {estado ? 'Activo' : 'Inactivo'}
         </Badge>
       )
+    },
+    meta: {
+      displayName: 'Estado',
     },
     filterFn: (row, id, value) => {
       const estado = row.getValue(id) as boolean
@@ -90,9 +109,6 @@ export const empresaColumns: ColumnDef<Empresa>[] = [
   },
   {
     accessorKey: 'created_at',
-    meta: {
-      displayName: 'Fecha de creación',
-    },
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='Fecha de creación' />
     ),
@@ -104,13 +120,13 @@ export const empresaColumns: ColumnDef<Empresa>[] = [
         </div>
       )
     },
+    meta: {
+      displayName: 'Fecha de creación',
+    },
     enableSorting: true,
   },
   {
     accessorKey: 'updated_at',
-    meta: {
-      displayName: 'Última actualización',
-    },
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='Última actualización' />
     ),
@@ -121,6 +137,9 @@ export const empresaColumns: ColumnDef<Empresa>[] = [
           {updated_at ? format(new Date(updated_at), 'dd/MM/yyyy', { locale: es }) : '-'}
         </div>
       )
+    },
+    meta: {
+      displayName: 'Última actualización',
     },
     enableSorting: true,
   },
