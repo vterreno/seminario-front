@@ -10,6 +10,12 @@ import {
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu'
 
+// Función para capitalizar solo la primera letra (como una oración)
+function capitalizeFirst(str: string): string {
+  if (!str) return str
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
+}
+
 type DataTableViewOptionsProps<TData> = {
   table: Table<TData>
 }
@@ -42,11 +48,10 @@ export function DataTableViewOptions<TData>({
             return (
               <DropdownMenuCheckboxItem
                 key={column.id}
-                className='capitalize'
                 checked={column.getIsVisible()}
                 onCheckedChange={(value) => column.toggleVisibility(!!value)}
               >
-                {column.id}
+                {capitalizeFirst(column.id)}
               </DropdownMenuCheckboxItem>
             )
           })}
