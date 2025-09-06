@@ -42,7 +42,7 @@ export const empresaColumns: ColumnDef<Empresa>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: 'name',
+    accessorKey: 'nombre',
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='Nombre' />
     ),
@@ -83,7 +83,7 @@ export const empresaColumns: ColumnDef<Empresa>[] = [
     enableSorting: true,
   },
   {
-    accessorKey: 'created_at',
+    accessorKey: 'fecha de creación',
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='Fecha de creación' />
     ),
@@ -98,7 +98,7 @@ export const empresaColumns: ColumnDef<Empresa>[] = [
     enableSorting: true,
   },
   {
-    accessorKey: 'updated_at',
+    accessorKey: 'última actualización',
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='Última actualización' />
     ),
