@@ -50,19 +50,17 @@ export function UserAuthForm({
   })
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
-    setIsLoading(true)
+    setIsLoading(true);
 
     try {
       await login(data.email, data.password);
-      setIsLoading(false)
-      
-      // Siempre redirigir a la raíz después del login exitoso
-      navigate({ to: '/', replace: true })
-      
-      toast.success(`Bienvenido de nuevo, ${data.email}!`)
-    } catch (error) {
       setIsLoading(false);
-      toast.error('Error al iniciar sesión');
+
+      navigate({ to: '/', replace: true });
+      toast.success(`Bienvenido de nuevo, ${data.email}!`);
+    } catch (error: any) {
+      setIsLoading(false);
+      toast.error("Usuario o contraseña incorrectos");
     }
   }
 
@@ -105,7 +103,7 @@ export function UserAuthForm({
             </FormItem>
           )}
         />
-        <Button className='mt-2' disabled={isLoading}>
+        <Button type="submit" className='mt-2' disabled={isLoading}>
           {isLoading ? <Loader2 className='animate-spin' /> : <LogIn />}
           Iniciar sesion
         </Button>

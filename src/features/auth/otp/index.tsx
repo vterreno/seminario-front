@@ -1,4 +1,3 @@
-import { Link } from '@tanstack/react-router'
 import {
   Card,
   CardContent,
@@ -9,8 +8,28 @@ import {
 } from '@/components/ui/card'
 import { AuthLayout } from '../auth-layout'
 import { OtpForm } from './components/otp-form'
-
+import { useSearch } from "@tanstack/react-router";
+import { Route } from '@/routes/(auth)/otp'
+import { useState } from 'react';
+import apiCorreoService from '@/service/apiCorreo.service';
+import { toast } from 'sonner';
 export function Otp() {
+  const [isResending, setIsResending] = useState(false)
+  const search = useSearch({ from: Route.id })
+  const email = search.email
+
+  const handleResend = async () => {
+    setIsResending(true)
+    toast.promise(
+      apiCorreoService.send(email),
+      {
+        loading: 'Enviando nuevo código...',
+        success: 'Código reenviado correctamente',
+        error: 'Error al reenviar el código',
+      }
+    )
+    setIsResending(false)
+  }
   return (
     <AuthLayout>
       <Card className='gap-4'>
@@ -28,12 +47,14 @@ export function Otp() {
         <CardFooter>
           <p className='text-muted-foreground px-8 text-center text-sm'>
             ¿No lo has recibido?{' '}
-            <Link
-              to='/sign-in'
-              className='hover:text-primary underline underline-offset-4'
+            <button
+              type="button"
+              onClick={handleResend}
+              className="hover:text-primary underline underline-offset-4 bg-transparent border-0 p-0 m-0 text-inherit"
+              disabled={isResending}
             >
-              Reenviar un nuevo código.
-            </Link>
+              {isResending ? 'Reenviando...' : 'Reenviar un nuevo código.'}
+            </button>
             .
           </p>
         </CardFooter>

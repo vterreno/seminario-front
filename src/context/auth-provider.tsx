@@ -26,28 +26,28 @@ export const DatosUsuariosProvider = ({ children }: DatosUsuariosProviderProps) 
     
     const login = async (email: string, password: string) => {
         try {
-            const response = await apiUserService.login(email, password);
-            
-            // Obtener datos completos del usuario después del login
-            const userDataResponse = await axiosService.get(rutasBack.usuarios.me);
-            const userData = userDataResponse.data;
-            
-            // Guardar usuario en el auth store
-            auth.setUser({
-                name: userData.name,
-                email: userData.email,
-                roles: userData.roles
-            });
-            
-            // Establecer la sesión como autenticada después del login exitoso
-            setAuthenticated(true);
-            return response;
-        } catch (error) {
-            console.error("Error during login:", error);
-            throw new Error("Login failed");
-        }
-    }
+        const response = await apiUserService.login(email, password);
 
+        // Obtener datos completos del usuario después del login
+        const userDataResponse = await axiosService.get(rutasBack.usuarios.me);
+        const userData = userDataResponse.data;
+
+        auth.setUser({
+            name: userData.name,
+            email: userData.email,
+            roles: userData.roles,
+        });
+
+        setAuthenticated(true);
+        return response;
+        } catch (error: any) {
+        if (error.response.status === 401) {
+            throw new Error("Usuario o contraseña incorrectos");
+        }
+
+        throw new Error("Error en el servidor. Intente más tarde.");
+        }
+    };    
     const logout = () => {
         apiUserService.logout();
         // Limpiar datos del usuario del auth store
