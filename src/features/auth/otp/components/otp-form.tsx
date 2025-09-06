@@ -3,9 +3,10 @@ import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate } from '@tanstack/react-router'
-import { showSubmittedData } from '@/lib/show-submitted-data'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
+import { toast } from 'sonner'
+
 import {
   Form,
   FormControl,
@@ -20,7 +21,9 @@ import {
   InputOTPSlot,
   InputOTPSeparator,
 } from '@/components/ui/input-otp'
-
+import apiCorreoService from '@/service/apiCorreo.service'
+import { useSearch } from "@tanstack/react-router";
+import { Route } from '@/routes/(auth)/otp'
 const formSchema = z.object({
   otp: z
     .string()
@@ -33,7 +36,8 @@ type OtpFormProps = React.HTMLAttributes<HTMLFormElement>
 export function OtpForm({ className, ...props }: OtpFormProps) {
   const navigate = useNavigate()
   const [isLoading, setIsLoading] = useState(false)
-
+  const search = useSearch({from: Route.id});
+  const email = search.email;
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: { otp: '' },
@@ -41,14 +45,31 @@ export function OtpForm({ className, ...props }: OtpFormProps) {
 
   const otp = form.watch('otp')
 
-  function onSubmit(data: z.infer<typeof formSchema>) {
-    setIsLoading(true)
-    showSubmittedData(data)
+  async function onSubmit(data: z.infer<typeof formSchema>) {
+    setIsLoading(true);
 
-    setTimeout(() => {
-      setIsLoading(false)
-      navigate({ to: '/' })
-    }, 1000)
+    try {
+      toast.promise(
+        (async () => {
+          const res = await apiCorreoService.verify(email, data.otp);
+          if (!res.data.valid) throw new Error('Código incorrecto o expirado');
+          return res;
+        })(),
+        {
+          loading: 'Verificando código...',
+          success: () => {
+            navigate({ to: '/change-password', search: { email } });
+            return 'Código verificado correctamente';
+          },
+          error: (err) => {
+          form.reset({ otp: '' });
+          return err?.message || 'Ocurrió un error al verificar el código';
+        },
+        }
+      );
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (

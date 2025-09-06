@@ -24,5 +24,6 @@ export const rutasBack = {
     },
     correo: {
         sendMail: `${baseUrl}/mail-service/send`,
+        verifyCode: `${baseUrl}/mail-service/verify`,
     }
 };

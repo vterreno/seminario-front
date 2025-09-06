@@ -39,14 +39,12 @@ export function ForgotPasswordForm({
   function onSubmit(data: z.infer<typeof formSchema>) {
     setIsLoading(true)
     // eslint-disable-next-line no-console
-    console.log(data)
-
     toast.promise(apiCorreoService.send(data.email), {
       loading: 'Enviando email...',
       success: () => {
         setIsLoading(false)
         form.reset()
-        navigate({ to: '/otp' })
+        navigate({ to: '/otp', search: {email: data.email} })
         return `Correo electrónico enviado a ${data.email}`
       },
       error: () => {
