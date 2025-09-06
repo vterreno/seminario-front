@@ -34,7 +34,9 @@ axiosService.interceptors.response.use(
             // Resetear sesión para forzar nueva validación
             useSessionStore.getState().resetSession();
             // Redirigir al login
-            window.location.href = '/sign-in';
+            if (window.location.pathname !== '/sign-in') {
+                window.location.href = '/sign-in';
+            }
         }
         return Promise.reject(error);
     }
