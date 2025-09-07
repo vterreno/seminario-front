@@ -14,6 +14,7 @@ import {
 type DataTableBulkActionsProps<TData> = {
   table: Table<TData>
   entityName: string
+  entityNamePlural?: string
   isFeminine?: boolean
   children: React.ReactNode
 }
@@ -24,7 +25,8 @@ type DataTableBulkActionsProps<TData> = {
  * @template TData The type of data in the table.
  * @param {object} props The component props.
  * @param {Table<TData>} props.table The react-table instance.
- * @param {string} props.entityName The name of the entity being acted upon (e.g., "task", "user").
+ * @param {string} props.entityName The name of the entity being acted upon (e.g., "empresa", "sucursal").
+ * @param {string} props.entityNamePlural The plural form of the entity name (e.g., "empresas", "sucursales"). If not provided, defaults to entityName + "s".
  * @param {boolean} props.isFeminine Whether the entity name is feminine (affects "seleccionadas" vs "seleccionados").
  * @param {React.ReactNode} props.children The action buttons to be rendered inside the toolbar.
  * @returns {React.ReactNode | null} The rendered component or null if no rows are selected.
@@ -32,6 +34,7 @@ type DataTableBulkActionsProps<TData> = {
 export function DataTableBulkActions<TData>({
   table,
   entityName,
+  entityNamePlural,
   isFeminine = false,
   children,
 }: DataTableBulkActionsProps<TData>): React.ReactNode | null {
@@ -40,17 +43,28 @@ export function DataTableBulkActions<TData>({
   const toolbarRef = useRef<HTMLDivElement>(null)
   const [announcement, setAnnouncement] = useState('')
 
+  // Get the correct plural form
+  const getPluralEntityName = () => {
+    if (entityNamePlural) {
+      return entityNamePlural
+    }
+    // Default fallback: just add "s"
+    return `${entityName}s`
+  }
+
+  const displayEntityName = selectedCount > 1 ? getPluralEntityName() : entityName
+
   // Announce selection changes to screen readers
   useEffect(() => {
     if (selectedCount > 0) {
-      const message = `${selectedCount} ${entityName}${selectedCount > 1 ? 's' : ''} selected. Bulk actions toolbar is available.`
+      const message = `${selectedCount} ${displayEntityName} selected. Bulk actions toolbar is available.`
       setAnnouncement(message)
 
       // Clear announcement after a delay
       const timer = setTimeout(() => setAnnouncement(''), 3000)
       return () => clearTimeout(timer)
     }
-  }, [selectedCount, entityName])
+  }, [selectedCount, displayEntityName])
 
   const handleClearSelection = () => {
     table.resetRowSelection()
@@ -137,7 +151,7 @@ export function DataTableBulkActions<TData>({
       <div
         ref={toolbarRef}
         role='toolbar'
-        aria-label={`Bulk actions for ${selectedCount} selected ${entityName}${selectedCount > 1 ? 's' : ''}`}
+        aria-label={`Bulk actions for ${selectedCount} selected ${displayEntityName}`}
         aria-describedby='bulk-actions-description'
         tabIndex={-1}
         onKeyDown={handleKeyDown}
@@ -192,8 +206,7 @@ export function DataTableBulkActions<TData>({
               {selectedCount}
             </Badge>{' '}
             <span className='hidden sm:inline'>
-              {entityName}
-              {selectedCount > 1 ? 's' : ''}
+              {displayEntityName}
             </span>{' '}
             {isFeminine ? 'seleccionadas' : 'seleccionados'}
           </div>

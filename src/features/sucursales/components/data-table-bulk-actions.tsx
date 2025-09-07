@@ -43,7 +43,7 @@ export function DataTableBulkActions<TData>({
 
   return (
     <>
-      <BulkActionsToolbar table={table} entityName='sucursal' isFeminine={true}>
+      <BulkActionsToolbar table={table} entityName='sucursal' entityNamePlural='sucursales' isFeminine={true}>
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
