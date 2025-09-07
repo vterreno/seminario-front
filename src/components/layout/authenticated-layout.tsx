@@ -5,21 +5,35 @@ import { LayoutProvider } from '@/context/layout-provider'
 import { SearchProvider } from '@/context/search-provider'
 import {
   SidebarContent,
-  SidebarFooter,
   SidebarHeader,
   SidebarInset,
   SidebarProvider,
   SidebarRail,
+  useSidebar,
 } from '@/components/ui/sidebar'
 import { AppSidebar } from '@/components/layout/app-sidebar'
 import { SkipToMain } from '@/components/skip-to-main'
 import { sidebarData } from './data/sidebar-data'
 import { NavGroup } from './nav-group'
-import { NavUser } from './nav-user'
-import { TeamSwitcher } from './team-switcher'
+import { Logo } from '@/assets/logo'
 
 type AuthenticatedLayoutProps = {
   children?: React.ReactNode
+}
+
+function SidebarLogo() {
+  const { state } = useSidebar()
+  const isCollapsed = state === 'collapsed'
+  
+  return (
+    <div className="flex items-center justify-center p-2 pt-4 pb-0">
+      <Logo 
+        width={isCollapsed ? 80 : 160} 
+        height={isCollapsed ? 30 : 45} 
+        showText={!isCollapsed}
+      />
+    </div>
+  )
 }
 
 export function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
@@ -31,7 +45,7 @@ export function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
           <SkipToMain />
           <AppSidebar>
             <SidebarHeader>
-              <TeamSwitcher teams={sidebarData.teams} />
+              <SidebarLogo />
             </SidebarHeader>
             <SidebarContent>
               {sidebarData.navGroups.map((props) => (
