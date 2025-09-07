@@ -32,6 +32,26 @@ import { useEffect, useState } from 'react'
 import { Empresa } from '@/features/empresa/data/schema'
 import apiSucursalesService from '@/service/apiSucursales.service'
 import apiEmpresaService from '@/service/apiEmpresa.service'
+import { getStorageItem } from '@/hooks/use-local-storage'
+import { STORAGE_KEYS } from '@/lib/constants'
+
+interface UserData {
+  name: string
+  email: string
+  empresa: {
+    id: number | null
+    nombre: string | null
+  }
+  roles: Array<{
+    id: number
+    nombre: string
+    permissions: Array<{
+      id: number
+      nombre: string
+      codigo: string
+    }>
+  }>
+}
 
 type SucursalesActionDialogProps = {
   currentRow?: Sucursal
@@ -51,10 +71,10 @@ export function SucursalesActionDialog({
   const [loading, setLoading] = useState(false)
 
   // Obtener datos del usuario desde localStorage
-  const userData = JSON.parse(localStorage.getItem('user_data') || '{}')
-  const userEmpresaId = userData.empresa_id
-  // Verificar si el usuario es superadmin basándose en los roles
-  const isSuperAdmin = userData.empresa && userData.empresa.id == null
+  const userData = getStorageItem(STORAGE_KEYS.USER_DATA, null) as UserData | null
+  const userEmpresaId = userData?.empresa?.id
+  // Verificar si el usuario es superadmin (no tiene empresa asignada)
+  const isSuperAdmin = !userEmpresaId
 
   const form = useForm<SucursalForm>({
     resolver: zodResolver(sucursalFormSchema),
@@ -71,7 +91,7 @@ export function SucursalesActionDialog({
           nombre: '',
           codigo: '',
           direccion: '',
-          empresa_id: isSuperAdmin ? undefined : userEmpresaId || undefined,
+          empresa_id: isSuperAdmin ? undefined : userEmpresaId,
           estado: true,
           isEdit,
         },
@@ -105,7 +125,8 @@ export function SucursalesActionDialog({
       }
 
       if (isEdit && currentRow?.id) {
-        await apiSucursalesService.updateSucursal(currentRow.id, values)
+        const updateData = { ...values, id: currentRow.id }
+        await apiSucursalesService.updateSucursal(currentRow.id, updateData)
         toast.success('Sucursal actualizada exitosamente')
       } else {
         await apiSucursalesService.createSucursal(values)

@@ -25,9 +25,9 @@ export const sucursalFormSchema = z.object({
   nombre: z.string().min(2, 'El nombre debe tener al menos 2 caracteres').max(100, 'El nombre no puede exceder 100 caracteres'),
   codigo: z.string().min(2, 'El código debe tener al menos 2 caracteres').max(20, 'El código no puede exceder 20 caracteres'),
   direccion: z.string().min(5, 'La dirección debe tener al menos 5 caracteres').max(200, 'La dirección no puede exceder 200 caracteres'),
-  estado: z.boolean().optional().default(true),
+  estado: z.boolean(),
   empresa_id: z.number().optional(),
-  isEdit: z.boolean().optional().default(false),
+  isEdit: z.boolean(),
 })
 
 export type SucursalForm = z.infer<typeof sucursalFormSchema>

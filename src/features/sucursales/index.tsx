@@ -8,6 +8,26 @@ import { SucursalesTable } from './components/sucursales-table'
 import { Sucursal } from './data/schema'
 import { toast } from 'sonner'
 import apiSucursalesService from '@/service/apiSucursales.service'
+import { getStorageItem } from '@/hooks/use-local-storage'
+import { STORAGE_KEYS } from '@/lib/constants'
+
+interface UserData {
+  name: string
+  email: string
+  empresa: {
+    id: number | null
+    nombre: string | null
+  }
+  roles: Array<{
+    id: number
+    nombre: string
+    permissions: Array<{
+      id: number
+      nombre: string
+      codigo: string
+    }>
+  }>
+}
 
 const route = getRouteApi('/_authenticated/settings/sucursales')
 
@@ -20,7 +40,21 @@ export function Sucursales() {
   const fetchSucursales = async () => {
     try {
       setLoading(true)
-      const data = await apiSucursalesService.getAllSucursales()
+      
+      // Obtener datos del usuario desde localStorage
+      const userData = getStorageItem(STORAGE_KEYS.USER_DATA, null) as UserData | null
+      const userEmpresaId = userData?.empresa?.id
+      
+      let data: Sucursal[]
+      
+      // Si el usuario tiene empresa asignada, filtrar por esa empresa
+      if (userEmpresaId) {
+        data = await apiSucursalesService.getSucursalesByEmpresa(userEmpresaId)
+      } else {
+        // Si no tiene empresa (superadmin), mostrar todas las sucursales
+        data = await apiSucursalesService.getAllSucursales()
+      }
+      
       setSucursales(data)
     } catch (error) {
       console.error('Error fetching sucursales:', error)

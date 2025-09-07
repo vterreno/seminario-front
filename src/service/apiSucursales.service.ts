@@ -47,6 +47,16 @@ class ApiSucursales {
         }
     }
 
+    async getSucursalesByEmpresa(empresaId: number): Promise<Sucursal[]> {
+        try {
+            const response = await axiosService.get(`${rutasBack.sucursales.getSucursalesByEmpresa}/${empresaId}`);
+            return response.data;
+        } catch (error) {
+            console.error(`Error fetching sucursales for empresa ${empresaId}:`, error);
+            throw new Error(`Failed to fetch sucursales for empresa ${empresaId}`);
+        }
+    }
+
     async getSucursalesPaginated(page: number = 1, limit: number = 10): Promise<PaginatedResponse<Sucursal>> {
         try {
             const response = await axiosService.get(rutasBack.sucursales.getSucursales, {

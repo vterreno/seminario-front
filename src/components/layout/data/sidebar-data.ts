@@ -13,43 +13,35 @@ import {
   MapPin
 } from 'lucide-react'
 import { type SidebarData } from '../types'
+import { getStorageItem } from '@/hooks/use-local-storage'
+import { STORAGE_KEYS } from '@/lib/constants'
 
-export const sidebarData: SidebarData = {
-  user: {
-    name: 'satnaing',
-    email: 'satnaingdev@gmail.com',
-    avatar: '/avatars/shadcn.jpg',
-  },
-  teams: [
-    {
-      name: 'Shadcn Admin',
-      logo: Command,
-      plan: 'Vite + ShadcnUI',
-    },
-    {
-      name: 'Acme Inc',
-      logo: GalleryVerticalEnd,
-      plan: 'Enterprise',
-    },
-    {
-      name: 'Acme Corp.',
-      logo: AudioWaveform,
-      plan: 'Startup',
-    },
-  ],
-  navGroups: [
-    {
-      title: 'Superadmin',
-      items: [
-        {
-          title: 'Empresas',
-          url: '/empresa',
-          icon: Briefcase,
-          backgroundColor: '#40ba22',
-          textColor: '#ffffff',
-        },
-      ],
-    },
+interface UserData {
+  name: string
+  email: string
+  empresa: {
+    id: number | null
+    nombre: string | null
+  }
+  roles: Array<{
+    id: number
+    nombre: string
+    permissions: Array<{
+      id: number
+      nombre: string
+      codigo: string
+    }>
+  }>
+}
+
+export const getSidebarData = (): SidebarData => {
+  // Get user data from localStorage
+  const userData = getStorageItem(STORAGE_KEYS.USER_DATA, null) as UserData | null
+  
+  // Check if user has a company assigned (if empresa.id exists and is not null)
+  const hasCompany = userData?.empresa?.id !== null && userData?.empresa?.id !== undefined
+  
+  const baseNavGroups = [
     {
       title: 'Inicio',
       items: [
@@ -216,7 +208,7 @@ export const sidebarData: SidebarData = {
         {
           title: 'Ajustes',
           icon: Settings,
-          backgroundColor: '#f7c33b', // blue-500
+          backgroundColor: '#40ba22', // blue-500
           textColor: '#ffffff',
           items: [
            /*  {
@@ -244,7 +236,7 @@ export const sidebarData: SidebarData = {
               title: 'Sucursales',
               url: '/settings/sucursales',
               icon: MapPin,
-              backgroundColor: '#f7c33b', // blue-800
+              backgroundColor: '#40ba22', // blue-800
               textColor: '#ffffff',
             }
             // {
@@ -266,5 +258,51 @@ export const sidebarData: SidebarData = {
         // },
       ],
     },
-  ],
+  ]
+
+  // Only add Superadmin section if user doesn't have a company (empresa.id is null)
+  const navGroups = !hasCompany ? [
+    {
+      title: 'Superadmin',
+      items: [
+        {
+          title: 'Empresas',
+          url: '/empresa',
+          icon: Briefcase,
+          backgroundColor: '#40ba22',
+          textColor: '#ffffff',
+        },
+      ],
+    },
+    ...baseNavGroups
+  ] : baseNavGroups
+
+  return {
+    user: {
+      name: 'satnaing',
+      email: 'satnaingdev@gmail.com',
+      avatar: '/avatars/shadcn.jpg',
+    },
+    teams: [
+      {
+        name: 'Shadcn Admin',
+        logo: Command,
+        plan: 'Vite + ShadcnUI',
+      },
+      {
+        name: 'Acme Inc',
+        logo: GalleryVerticalEnd,
+        plan: 'Enterprise',
+      },
+      {
+        name: 'Acme Corp.',
+        logo: AudioWaveform,
+        plan: 'Startup',
+      },
+    ],
+    navGroups,
+  }
 }
+
+// Keep the old export for backwards compatibility (deprecated)
+export const sidebarData: SidebarData = getSidebarData()

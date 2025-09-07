@@ -3,6 +3,7 @@ let baseUrl = 'http://localhost:3001';
 export const rutasBack = {
     sucursales: {
         getSucursales: `${baseUrl}/sucursales/all`,
+        getSucursalesByEmpresa: `${baseUrl}/sucursales/empresa`,
         postSucursal: `${baseUrl}/sucursales`,
         putSucursal: `${baseUrl}/sucursales`,
         patchSucursal: `${baseUrl}/sucursales`,

@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/sidebar'
 import { AppSidebar } from '@/components/layout/app-sidebar'
 import { SkipToMain } from '@/components/skip-to-main'
-import { sidebarData } from './data/sidebar-data'
+import { getSidebarData } from './data/sidebar-data'
 import { NavGroup } from './nav-group'
 import { Logo } from '@/assets/logo'
 
@@ -48,7 +48,7 @@ export function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
               <SidebarLogo />
             </SidebarHeader>
             <SidebarContent>
-              {sidebarData.navGroups.map((props) => (
+              {getSidebarData().navGroups.map((props) => (
                 <NavGroup key={props.title} {...props} />
               ))}
             </SidebarContent>
