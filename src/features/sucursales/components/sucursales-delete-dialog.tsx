@@ -7,42 +7,38 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { Empresa } from '../data/schema'
+import { Sucursal } from '../data/schema'
 import { toast } from 'sonner'
-import apiEmpresaService from '@/service/apiEmpresa.service'
+import apiSucursalesService from '@/service/apiSucursales.service'
 
-type EmpresaDeleteDialogProps = {
+type SucursalesDeleteDialogProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
-  currentRow: Empresa
+  currentRow: Sucursal
   onSuccess?: () => void
 }
 
-export function EmpresaDeleteDialog({
+export function SucursalesDeleteDialog({
   open,
   onOpenChange,
   currentRow,
   onSuccess,
-}: EmpresaDeleteDialogProps) {
+}: SucursalesDeleteDialogProps) {
   const handleDelete = async () => {
     try {
       if (currentRow.id) {
-        const response = await apiEmpresaService.deleteEmpresa(currentRow.id)
-        if (response.message === "Empresa con sucursales, no se puede eliminar") {
-          toast.error('Empresa con sucursales, no se puede eliminar')
+        const response = await apiSucursalesService.deleteSucursal(currentRow.id)
+        if (response.message === "La sucursal no se puede eliminar porque está activa") {
+          toast.error('La sucursal no se puede eliminar porque está activa')
           return
         }
-        if (response.message === "Empresa con usuarios, no se puede eliminar") {
-          toast.error('Empresa con usuarios, no se puede eliminar')
-          return
-        }
-        toast.success(`Empresa "${currentRow.name}" eliminada exitosamente`)
+        toast.success(`Sucursal "${currentRow.nombre}" eliminada exitosamente`)
         onOpenChange(false)
         onSuccess?.()
       }
     } catch (error) {
-      console.error('Error deleting empresa:', error)
-      toast.error('Error al eliminar la empresa')
+      console.error('Error deleting sucursal:', error)
+      toast.error('Error al eliminar la sucursal')
     }
   }
 
@@ -52,8 +48,8 @@ export function EmpresaDeleteDialog({
         <DialogHeader>
           <DialogTitle>¿Estás seguro?</DialogTitle>
           <DialogDescription>
-            Esta acción no se puede deshacer. La empresa{' '}
-            <span className='font-medium'>{currentRow.name}</span> será eliminada
+            Esta acción no se puede deshacer. La sucursal{' '}
+            <span className='font-medium'>{currentRow.nombre}</span> será eliminada
             permanentemente del sistema.
           </DialogDescription>
         </DialogHeader>
@@ -62,7 +58,7 @@ export function EmpresaDeleteDialog({
             Cancelar
           </Button>
           <Button variant='destructive' onClick={handleDelete}>
-            Eliminar empresa
+            Eliminar sucursal
           </Button>
         </DialogFooter>
       </DialogContent>

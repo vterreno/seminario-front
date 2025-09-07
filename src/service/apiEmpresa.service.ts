@@ -109,6 +109,19 @@ class ApiEmpresa {
             throw new Error(`Failed to delete empresa with id ${id}`);
         }
     }
+
+    async deleteEmpresas(ids: number[]): Promise<{ message: string }> {
+        try {
+            const response = await axiosService.post(rutasBack.empresas.deleteEmpresas, {
+                ids: ids
+            });
+            return response.data;
+        }
+        catch (error) {
+            console.error("Error deleting empresas:", error);
+            throw new Error("Failed to delete empresas");
+        }
+    }
 }
 
 export default new ApiEmpresa();

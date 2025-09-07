@@ -30,10 +30,17 @@ export function EmpresaMultiDeleteDialog<TData>({
 
   const handleDelete = async () => {
     try {
-      const deletePromises = selectedEmpresas.map((empresa) => 
-        empresa.id ? apiEmpresaService.deleteEmpresa(empresa.id) : Promise.resolve()
-      )
-      await Promise.all(deletePromises)
+      const ids = selectedEmpresas.map((empresa) => empresa.id!).filter(Boolean)
+      const response = await apiEmpresaService.deleteEmpresas(ids)
+      console.log(response.message)
+      if (response.message === "Algunas empresas con sucursales, no se pueden eliminar") {
+        toast.error('Algunas empresas con sucursales, no se pueden eliminar')
+        return
+      }
+      if (response.message === "Algunas empresas con usuarios, no se pueden eliminar") {
+        toast.error('Algunas empresas con usuarios, no se pueden eliminar')
+        return
+      }
       table.resetRowSelection()
       onOpenChange(false)
       toast.success(`${selectedEmpresas.length} empresa${selectedEmpresas.length > 1 ? 's' : ''} eliminada${selectedEmpresas.length > 1 ? 's' : ''} exitosamente`)

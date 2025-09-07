@@ -1,6 +1,16 @@
 let baseUrl = 'http://localhost:3001';
 
 export const rutasBack = {
+    sucursales: {
+        getSucursales: `${baseUrl}/sucursales/all`,
+        postSucursal: `${baseUrl}/sucursales`,
+        putSucursal: `${baseUrl}/sucursales`,
+        patchSucursal: `${baseUrl}/sucursales`,
+        deleteSucursal: `${baseUrl}/sucursales`,
+        getSucursalPorId: `${baseUrl}/sucursales`,
+        patchSucursalesStatus: `${baseUrl}/sucursales/bulk/status`,
+        deleteSucursales: `${baseUrl}/sucursales/bulk/delete`,
+    },
     usuarios: {
         getUsuarios: `${baseUrl}/users/all`,
         postUsuario: `${baseUrl}/users/`,
@@ -21,6 +31,7 @@ export const rutasBack = {
         patchEmpresa: `${baseUrl}/empresa`,
         deleteEmpresa: `${baseUrl}/empresa`,
         getEmpresaPorId: `${baseUrl}/empresa`,
+        deleteEmpresas: `${baseUrl}/empresa/bulk/delete`,
     },
     correo: {
         sendMail: `${baseUrl}/mail-service/send`,
