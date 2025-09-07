@@ -13,6 +13,10 @@ export function Toaster({ ...props }: ToasterProps) {
           '--normal-bg': 'var(--popover)',
           '--normal-text': 'var(--popover-foreground)',
           '--normal-border': 'var(--border)',
+          '--success-bg': 'hsl(var(--success))',
+          '--success-text': 'hsl(var(--success-foreground))',
+          '--error-bg': 'hsl(var(--destructive))',
+          '--error-text': 'hsl(var(--destructive-foreground))',
         } as React.CSSProperties
       }
       {...props}
