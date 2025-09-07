@@ -31,10 +31,11 @@ export const DatosUsuariosProvider = ({ children }: DatosUsuariosProviderProps) 
         // Obtener datos completos del usuario después del login
         const userDataResponse = await axiosService.get(rutasBack.usuarios.me);
         const userData = userDataResponse.data;
-
+        
         auth.setUser({
             name: userData.name,
             email: userData.email,
+            empresa: userData.empresa,
             roles: userData.roles,
         });
 

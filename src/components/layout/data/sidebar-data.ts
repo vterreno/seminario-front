@@ -1,23 +1,8 @@
 import {
-  Construction,
   LayoutDashboard,
-  Monitor,
-  Bug,
-  ListTodo,
-  FileX,
-  HelpCircle,
-  Lock,
-  Bell,
   Package,
-  Palette,
-  ServerOff,
   Settings,
-  Wrench,
-  UserCog,
-  UserX,
   Users,
-  MessagesSquare,
-  ShieldCheck,
   AudioWaveform,
   Command,
   GalleryVerticalEnd,
@@ -25,7 +10,7 @@ import {
   CreditCard,
   Briefcase,
   UserCheck,
-  Key
+  MapPin
 } from 'lucide-react'
 import { type SidebarData } from '../types'
 
@@ -66,7 +51,7 @@ export const sidebarData: SidebarData = {
       ],
     },
     {
-      title: 'General',
+      title: 'Inicio',
       items: [
         {
           title: 'Dashboard',
@@ -75,6 +60,30 @@ export const sidebarData: SidebarData = {
           backgroundColor: '#f7c33b', // yellow
           textColor: '#ffffff', // white
         },
+      ],
+    },
+    {
+      title: 'Usuarios',
+      items: [
+        {
+          title: 'Usuarios',
+          url: '/users',
+          icon: Users,
+          backgroundColor: '#f7c33b', // emerald-500 (color personalizado)
+          textColor: '#ffffff',
+        },
+        {
+          title: 'Roles',
+          url: '/roles',
+          icon: UserCheck,
+          backgroundColor: '#f7c33b',
+          textColor: '#ffffff',
+        },
+      ],
+    },
+    {
+      title: 'General',
+      items: [
         // {
         //   title: 'Tasks',
         //   url: '/tasks',
@@ -92,17 +101,17 @@ export const sidebarData: SidebarData = {
         //   icon: MessagesSquare,
         // },
         {
-          title: 'Usuarios',
-          url: '/users',
+          title: 'Contactos',
+          url: '/contactos',
           icon: Users,
-          backgroundColor: '#f7c33b', // emerald-500 (color personalizado)
+          backgroundColor: '#f7c33b',
           textColor: '#ffffff',
         },
         {
-          title: 'Roles',
-          url: '/roles',
-          icon: UserCheck,
-          backgroundColor: '#f7c33b',
+          title: 'Productos',
+          url: '/productos',
+          icon: Package,
+          backgroundColor: '#f7c33b', // violet-500 (color personalizado)
           textColor: '#ffffff',
         },
         {
@@ -119,23 +128,6 @@ export const sidebarData: SidebarData = {
           backgroundColor: '#f7c33b',
           textColor: '#ffffff',
         },
-        {
-          title: 'Productos',
-          url: '/productos',
-          icon: Package,
-          backgroundColor: '#f7c33b', // violet-500 (color personalizado)
-          textColor: '#ffffff',
-        },
-        {
-          title: 'Contactos',
-          url: '/contactos',
-          icon: Users,
-          backgroundColor: '#f7c33b',
-          textColor: '#ffffff',
-        },
-
-        
-
         // {
         //   title: 'Secured by Clerk',
         //   icon: ClerkLogo,
@@ -227,7 +219,7 @@ export const sidebarData: SidebarData = {
           backgroundColor: '#f7c33b', // blue-500
           textColor: '#ffffff',
           items: [
-            {
+           /*  {
               title: 'Pefil',
               url: '/settings',
               icon: UserCog,
@@ -247,7 +239,14 @@ export const sidebarData: SidebarData = {
               icon: Palette,
               backgroundColor: '#f7c33b', // blue-700
               textColor: '#ffffff',
-            },
+            }, */
+            {
+              title: 'Sucursales',
+              url: '/settings/sucursales',
+              icon: MapPin,
+              backgroundColor: '#f7c33b', // blue-800
+              textColor: '#ffffff',
+            }
             // {
             //   title: 'Notifications',
             //   url: '/settings/notifications',

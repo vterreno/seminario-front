@@ -12,9 +12,15 @@ interface AuthRole {
   }>
 }
 
+interface Empresa {
+  id: number
+  nombre: string
+}
+
 interface AuthUser {
   name: string
   email: string
+  empresa: Empresa
   roles: AuthRole[]
 }
 
