@@ -7,6 +7,12 @@ import { Badge } from '@/components/ui/badge'
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
 
+declare module '@tanstack/react-table' {
+  interface ColumnMeta<TData, TValue> {
+    displayName?: string
+  }
+}
+
 export const rolesColumns: ColumnDef<Role>[] = [
   {
     id: 'select',
