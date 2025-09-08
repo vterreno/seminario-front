@@ -2,31 +2,50 @@
 
 import { useState } from 'react'
 import { AlertTriangle } from 'lucide-react'
-import { showSubmittedData } from '@/lib/show-submitted-data'
+import { toast } from 'sonner'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { type User } from '../data/schema'
+import apiUsersService from '@/service/apiUser.service'
 
 type UserDeleteDialogProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
   currentRow: User
+  onSuccess?: () => void
 }
+
+const CONFIRM_WORD = 'BORRAR'
 
 export function UsersDeleteDialog({
   open,
   onOpenChange,
   currentRow,
+  onSuccess,
 }: UserDeleteDialogProps) {
   const [value, setValue] = useState('')
+  const [loading, setLoading] = useState(false)
 
-  const handleDelete = () => {
-    if (value.trim() !== currentRow.username) return
+  const handleDelete = async () => {
+    if (value.trim() !== CONFIRM_WORD) {
+      toast.error(`Escriba "${CONFIRM_WORD}" para confirmar.`)
+      return
+    }
 
-    onOpenChange(false)
-    showSubmittedData(currentRow, 'The following user has been deleted:')
+    try {
+      setLoading(true)
+      await apiUsersService.deleteUser(currentRow.id)
+      toast.success('Usuario eliminado correctamente')
+      onOpenChange(false)
+      onSuccess?.()
+    } catch (error: any) {
+      console.error('Error deleting user:', error)
+      toast.error(error.message || 'Error al eliminar usuario')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -34,47 +53,47 @@ export function UsersDeleteDialog({
       open={open}
       onOpenChange={onOpenChange}
       handleConfirm={handleDelete}
-      disabled={value.trim() !== currentRow.username}
+      disabled={value.trim() !== CONFIRM_WORD || loading}
       title={
         <span className='text-destructive'>
           <AlertTriangle
             className='stroke-destructive me-1 inline-block'
             size={18}
           />{' '}
-          Delete User
+          Eliminar Usuario
         </span>
       }
       desc={
         <div className='space-y-4'>
           <p className='mb-2'>
-            Are you sure you want to delete{' '}
-            <span className='font-bold'>{currentRow.username}</span>?
+            ¿Está seguro de que desea eliminar a{' '}
+            <span className='font-bold'>{currentRow.nombre} {currentRow.apellido}</span>?
             <br />
-            This action will permanently remove the user with the role of{' '}
+            Esta acción eliminará permanentemente al usuario con el rol de{' '}
             <span className='font-bold'>
-              {currentRow.role.toUpperCase()}
+              {currentRow.role?.nombre || 'Sin rol'}
             </span>{' '}
-            from the system. This cannot be undone.
+            del sistema. Esta acción no se puede deshacer.
           </p>
 
-          <Label className='my-2'>
-            Username:
+          <Label className='my-4 flex flex-col items-start gap-1.5'>
+            <span className=''>Escriba "{CONFIRM_WORD}" para confirmar:</span>
             <Input
               value={value}
               onChange={(e) => setValue(e.target.value)}
-              placeholder='Enter username to confirm deletion.'
+              placeholder={`Escriba "${CONFIRM_WORD}" para confirmar.`}
             />
           </Label>
 
           <Alert variant='destructive'>
-            <AlertTitle>Warning!</AlertTitle>
+            <AlertTitle>¡Advertencia!</AlertTitle>
             <AlertDescription>
-              Please be careful, this operation can not be rolled back.
+              Por favor tenga cuidado, esta operación no se puede deshacer.
             </AlertDescription>
           </Alert>
         </div>
       }
-      confirmText='Delete'
+      confirmText={loading ? 'Eliminando...' : 'Eliminar'}
       destructive
     />
   )

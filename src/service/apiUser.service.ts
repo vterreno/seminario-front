@@ -2,6 +2,8 @@ import axiosService from '../api/apiClient';
 import { rutasBack } from '../config/env';
 import { STORAGE_KEYS } from '@/lib/constants';
 import { setStorageItem, removeStorageItem, getStorageItem } from '@/hooks/use-local-storage';
+import { User, UserForm } from '@/features/users/data/schema';
+
 class ApiUsers {
     async login(email: string, password: string): Promise<any> {
         try {
@@ -17,6 +19,7 @@ class ApiUsers {
         throw new Error("Error en el servidor. Intente más tarde.");
         }
     }
+
     async validateToken(): Promise<boolean> {
         try {
             const token = getStorageItem(STORAGE_KEYS.ACCESS_TOKEN, null);
@@ -57,6 +60,130 @@ class ApiUsers {
             throw new Error("Change failed");
         }
     }
+
+    // CRUD operations for users
+    async getAllUsers(): Promise<User[]> {
+        try {
+            const response = await axiosService.get(rutasBack.usuarios.getUsuarios);
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching users:', error);
+            throw new Error('Failed to fetch users');
+        }
+    }
+
+    async getUserById(id: number): Promise<User> {
+        try {
+            const response = await axiosService.get(`${rutasBack.usuarios.getUsuarioPorId}${id}`);
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching user by id:', error);
+            throw new Error('Failed to fetch user');
+        }
+    }
+
+    async createUser(userData: UserForm): Promise<User> {
+        try {
+            console.log('Enviando datos al servidor para crear usuario:', userData);
+            
+            // Convertir role_id y empresa_id a número si son string
+            if (userData.role_id && typeof userData.role_id === 'string') {
+                userData.role_id = parseInt(userData.role_id);
+            }
+            
+            if (userData.empresa_id && typeof userData.empresa_id === 'string') {
+                userData.empresa_id = parseInt(userData.empresa_id);
+            }
+            
+            const response = await axiosService.post(rutasBack.usuarios.postUsuario, userData);
+            console.log('Respuesta del servidor:', response.data);
+            return response.data;
+        } catch (error: any) {
+            console.error('Error creating user:', error);
+            if (error.response) {
+                console.error('Error response:', error.response.data);
+                throw new Error(error.response.data.message || 'Error al crear usuario');
+            }
+            throw new Error('Error al crear usuario');
+        }
+    }
+
+    async updateUser(id: number, userData: Partial<UserForm>): Promise<User> {
+        try {
+            const response = await axiosService.put(`${rutasBack.usuarios.putUsuario}${id}`, userData);
+            return response.data;
+        } catch (error) {
+            console.error('Error updating user:', error);
+            throw new Error('Error al actualizar usuario');
+        }
+    }
+
+    async deleteUser(id: number): Promise<void> {
+        try {
+            await axiosService.delete(`${rutasBack.usuarios.deleteUsuario}${id}`);
+        } catch (error) {
+            console.error('Error deleting user:', error);
+            throw new Error('Error al eliminar usuario');
+        }
+    }
+
+    async getMe(): Promise<any> {
+        try {
+            const response = await axiosService.get(rutasBack.usuarios.me);
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching current user:', error);
+            throw new Error('Error al obtener el usuario actual');
+        }
+    }
+
+    // Bulk actions methods
+    async updateUserStatus(id: number, status: boolean): Promise<any> {
+        try {
+            const response = await axiosService.patch(`${rutasBack.usuarios.updateUserStatus}${id}/status`, { status });
+            return response.data;
+        } catch (error) {
+            console.error('Error updating user status:', error);
+            throw new Error('Error al actualizar estado del usuario');
+        }
+    }
+
+    async updateUsersStatus(userIds: number[], status: boolean): Promise<any> {
+        try {
+            console.log('Actualizando estado de usuarios:', { userIds, status });
+            
+            // Asegurar que todos los IDs sean números
+            const numericUserIds = userIds.map(id => typeof id === 'string' ? parseInt(id) : id);
+            
+            const response = await axiosService.patch(rutasBack.usuarios.bulkUpdateUserStatus, {
+                userIds: numericUserIds,
+                status
+            });
+            
+            console.log('Respuesta de actualización masiva:', response.data);
+            return response.data;
+        } catch (error: any) {
+            console.error('Error updating users status:', error);
+            if (error.response) {
+                console.error('Error response:', error.response.data);
+                throw new Error(error.response.data.message || 'Error al actualizar estado de los usuarios');
+            }
+            throw new Error('Error al actualizar estado de los usuarios');
+        }
+    }
+
+    async deleteUsers(userIds: number[]): Promise<any> {
+        try {
+            const response = await axiosService.delete(rutasBack.usuarios.bulkDeleteUsers, {
+                data: { userIds }
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Error deleting users:', error);
+            throw new Error('Error al eliminar usuarios');
+        }
+    }
+
 }
 
 export default new ApiUsers();

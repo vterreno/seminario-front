@@ -14,7 +14,7 @@ export const rutasBack = {
     },
     usuarios: {
         getUsuarios: `${baseUrl}/users/all`,
-        postUsuario: `${baseUrl}/users/`,
+        postUsuario: `${baseUrl}/users/create-user`,
         putUsuario: `${baseUrl}/users/`,
         deleteUsuario: `${baseUrl}/users/`,
         getUsuarioPorId: `${baseUrl}/users/`,
@@ -23,6 +23,9 @@ export const rutasBack = {
         register: `${baseUrl}/users/register`,
         cambiarContrasena: `${baseUrl}/users/cambiar-contrasena`,
         validateToken: `${baseUrl}/users/validate-token`,
+        updateUserStatus: `${baseUrl}/users/`,
+        bulkUpdateUserStatus: `${baseUrl}/users/bulk/status`,
+        bulkDeleteUsers: `${baseUrl}/users/bulk/delete`,
     },
     empresas: {
         getEmpresas: `${baseUrl}/empresa/all`,
