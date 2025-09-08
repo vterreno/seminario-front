@@ -83,9 +83,7 @@ class ApiUsers {
     }
 
     async createUser(userData: UserForm): Promise<User> {
-        try {
-            console.log('Enviando datos al servidor para crear usuario:', userData);
-            
+        try { 
             // Convertir role_id y empresa_id a número si son string
             if (userData.role_id && typeof userData.role_id === 'string') {
                 userData.role_id = parseInt(userData.role_id);
@@ -96,7 +94,7 @@ class ApiUsers {
             }
             
             const response = await axiosService.post(rutasBack.usuarios.postUsuario, userData);
-            console.log('Respuesta del servidor:', response.data);
+
             return response.data;
         } catch (error: any) {
             console.error('Error creating user:', error);
@@ -149,9 +147,7 @@ class ApiUsers {
     }
 
     async updateUsersStatus(userIds: number[], status: boolean): Promise<any> {
-        try {
-            console.log('Actualizando estado de usuarios:', { userIds, status });
-            
+        try { 
             // Asegurar que todos los IDs sean números
             const numericUserIds = userIds.map(id => typeof id === 'string' ? parseInt(id) : id);
             
@@ -159,8 +155,7 @@ class ApiUsers {
                 userIds: numericUserIds,
                 status
             });
-            
-            console.log('Respuesta de actualización masiva:', response.data);
+        
             return response.data;
         } catch (error: any) {
             console.error('Error updating users status:', error);
