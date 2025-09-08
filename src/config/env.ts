@@ -37,5 +37,18 @@ export const rutasBack = {
     correo: {
         sendMail: `${baseUrl}/mail-service/send`,
         verifyCode: `${baseUrl}/mail-service/verify`,
+    },
+    roles: {
+        getRoles: `${baseUrl}/roles`,
+        postRole: `${baseUrl}/roles`,
+        putRole: `${baseUrl}/roles`,
+        deleteRole: `${baseUrl}/roles`,
+        getRolePorId: `${baseUrl}/roles`,
+        getRolesByEmpresa: `${baseUrl}/roles/empresa`,
+        bulkDeleteRoles: `${baseUrl}/roles/bulk/delete`,
+        bulkUpdateStatus: `${baseUrl}/roles/bulk/status`,
+    },
+    permisos: {
+        getPermisos: `${baseUrl}/permisos/all`,
     }
 };

@@ -24,7 +24,9 @@ import {
 import { DataTablePagination, DataTableToolbar } from '@/components/data-table'
 import { Role } from '../data/schema'
 import { DataTableBulkActions } from './data-table-bulk-actions'
-import { rolesColumns as columns } from './roles-columns'
+import { rolesColumns, getRolesColumns } from './roles-columns'
+import { getStorageItem } from '@/hooks/use-local-storage'
+import { STORAGE_KEYS } from '@/lib/constants'
 
 
 type DataTableProps = {
@@ -35,6 +37,13 @@ type DataTableProps = {
 }
 
 export function RolesTable({ data, search, navigate, onSuccess }: DataTableProps) {
+  // Check if user is superadmin (no empresa.id)
+  const userData = getStorageItem(STORAGE_KEYS.USER_DATA, null) as any
+  const isSuperAdmin = !userData?.empresa?.id
+  
+  // Get columns based on user type
+  const columns = getRolesColumns(isSuperAdmin)
+  
   // Local UI-only states
   const [rowSelection, setRowSelection] = useState({})
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})

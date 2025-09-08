@@ -13,7 +13,7 @@ declare module '@tanstack/react-table' {
   }
 }
 
-export const rolesColumns: ColumnDef<Role>[] = [
+const baseColumns: ColumnDef<Role>[] = [
   {
     id: 'select',
     header: ({ table }) => (
@@ -63,6 +63,7 @@ export const rolesColumns: ColumnDef<Role>[] = [
     },
     meta: {
       displayName: 'Nombre',
+      className: '',
     },
     enableSorting: true,
     filterFn: (row, id, value) => {
@@ -77,18 +78,26 @@ export const rolesColumns: ColumnDef<Role>[] = [
       <DataTableColumnHeader column={column} title='Empresa' />
     ),
     cell: ({ row }) => {
-      // Aquí podrías mostrar el nombre de la empresa en lugar del ID
-      // si tienes una relación con la tabla de empresas
+      const role = row.original as Role
+      const empresaNombre = role.empresa?.nombre || `Empresa ${role.empresa_id}`
+      
       return (
-        <div className='w-[100px]'>
-          Empresa {row.getValue('empresa_id')}
+        <div className='w-[140px] truncate'>
+          {empresaNombre}
         </div>
       )
     },
     meta: {
       displayName: 'Empresa',
+      className: '',
     },
     enableSorting: true,
+    filterFn: (row, _, value) => {
+      const role = row.original as Role
+      const empresaNombre = role.empresa?.nombre || ''
+      const searchValue = String(value).toLowerCase()
+      return empresaNombre.toLowerCase().includes(searchValue)
+    },
   },
   {
     accessorKey: 'estado',
@@ -106,6 +115,7 @@ export const rolesColumns: ColumnDef<Role>[] = [
     },
     meta: {
       displayName: 'Estado',
+      className: '',
     },
     filterFn: (row, id, value) => {
       const estado = row.getValue(id) as boolean
@@ -128,6 +138,7 @@ export const rolesColumns: ColumnDef<Role>[] = [
     },
     meta: {
       displayName: 'Fecha de creación',
+      className: '',
     },
     enableSorting: true,
   },
@@ -146,6 +157,7 @@ export const rolesColumns: ColumnDef<Role>[] = [
     },
     meta: {
       displayName: 'Última actualización',
+      className: '',
     },
     enableSorting: true,
   },
@@ -154,3 +166,19 @@ export const rolesColumns: ColumnDef<Role>[] = [
     cell: ({ row }) => <DataTableRowActions row={row} />,
   },
 ]
+
+// Function to get columns based on user type
+export function getRolesColumns(isSuperAdmin: boolean): ColumnDef<Role>[] {
+  if (isSuperAdmin) {
+    // Superadmin sees all columns including empresa
+    return baseColumns
+  } else {
+    // Regular users don't see empresa column
+    return baseColumns.filter(column => 
+      !('accessorKey' in column) || column.accessorKey !== 'empresa_id'
+    )
+  }
+}
+
+// Export the base columns for backward compatibility
+export const rolesColumns = baseColumns

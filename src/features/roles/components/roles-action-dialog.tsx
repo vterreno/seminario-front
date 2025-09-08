@@ -32,6 +32,9 @@ import { toast } from 'sonner'
 import { useEffect, useState } from 'react'
 import { Empresa } from '@/features/empresa/data/schema'
 import apiEmpresaService from '@/service/apiEmpresa.service'
+import apiRolesService from '@/service/apiRoles.service'
+import { getStorageItem } from '@/hooks/use-local-storage'
+import { STORAGE_KEYS } from '@/lib/constants'
 
 type RolesActionDialogProps = {
   currentRow?: Role
@@ -51,14 +54,14 @@ export function RolesActionDialog({
   const [loading, setLoading] = useState(false)
 
   // Obtener datos del usuario desde localStorage
-  const userData = JSON.parse(localStorage.getItem('user_data') || '{}')
-  const userEmpresaId = userData.empresa_id
-  const isSuperAdmin = userData.role === 'superadmin' || userData.is_superadmin
+  const userData = getStorageItem(STORAGE_KEYS.USER_DATA, null) as any
+  const userEmpresaId = userData?.empresa?.id
+  const isSuperAdmin = !userEmpresaId // If user doesn't have empresa_id, they are superadmin
 
   const defaultPermissions = permissionsSchema.parse({})
 
   const form = useForm<RoleForm>({
-    resolver: zodResolver(roleFormSchema),
+    resolver: zodResolver(roleFormSchema) as any,
     defaultValues: isEdit && currentRow
       ? {
           nombre: currentRow.nombre,
@@ -98,14 +101,11 @@ export function RolesActionDialog({
 
   const onSubmit = async (values: RoleForm) => {
     try {
-      // Aquí iría la llamada al servicio de roles
-      console.log('Datos del rol:', values)
-      
       if (isEdit && currentRow?.id) {
-        // await apiRoleService.updateRole(currentRow.id, values)
+        await apiRolesService.updateRole(currentRow.id, values)
         toast.success('Rol actualizado exitosamente')
       } else {
-        // await apiRoleService.createRole(values)
+        await apiRolesService.createRole(values)
         toast.success('Rol creado exitosamente')
       }
       
@@ -128,16 +128,7 @@ export function RolesActionDialog({
         onOpenChange(state)
       }}
     >
-      <DialogContent 
-        resizable={true}
-        minWidth={400}
-        minHeight={300}
-        maxWidth={window.innerWidth * 0.95}
-        maxHeight={window.innerHeight * 0.95}
-        defaultWidth={900}
-        defaultHeight={700}
-        className='sm:max-w-4xl overflow-y-auto'
-      >
+      <DialogContent className='sm:max-w-4xl max-h-[90vh] overflow-hidden flex flex-col'>
         <DialogHeader>
           <DialogTitle>
             {isEdit ? 'Editar rol' : 'Crear nuevo rol'}
@@ -149,9 +140,10 @@ export function RolesActionDialog({
           </DialogDescription>
         </DialogHeader>
         
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6 my-4'>
-            <div className="grid gap-4 md:grid-cols-2">
+        <div className="flex-1 overflow-y-auto">
+          <Form {...form}>
+            <form id='role-form' onSubmit={form.handleSubmit(onSubmit as any)} className='space-y-6 my-4'>
+              <div className="grid gap-4 md:grid-cols-2">
               <FormField
                 control={form.control}
                 name='nombre'
@@ -183,8 +175,8 @@ export function RolesActionDialog({
                         disabled={loading}
                       >
                         <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Seleccione una empresa" />
+                          <SelectTrigger className='w-full'>
+                            <SelectValue className='w-full' placeholder="Seleccione una empresa" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -200,16 +192,7 @@ export function RolesActionDialog({
                   )}
                 />
               ) : (
-                <FormItem>
-                  <FormLabel>Empresa</FormLabel>
-                  <FormControl>
-                    <Input 
-                      value={userData.empresa_name || 'Empresa actual'}
-                      disabled 
-                      className="bg-muted"
-                    />
-                  </FormControl>
-                </FormItem>
+                <div></div>
               )}
             </div>
 
@@ -234,24 +217,29 @@ export function RolesActionDialog({
               )}
             />
 
-            <div className="border-t pt-4">
-              <PermissionsSelector />
-            </div>
+              <div className="border-t pt-4">
+                <PermissionsSelector />
+              </div>
+            </form>
+          </Form>
+        </div>
 
-            <DialogFooter className="gap-2">
-              <Button
-                type='button'
-                variant='outline'
-                onClick={() => onOpenChange(false)}
-              >
-                Cancelar
-              </Button>
-              <Button type='submit'>
-                {isEdit ? 'Actualizar' : 'Crear'} rol
-              </Button>
-            </DialogFooter>
-          </form>
-        </Form>
+        <DialogFooter className="gap-2 mt-4">
+          <Button
+            type='button'
+            variant='outline'
+            onClick={() => onOpenChange(false)}
+          >
+            Cancelar
+          </Button>
+          <Button 
+            type='submit'
+            form='role-form'
+            onClick={form.handleSubmit(onSubmit as any)}
+          >
+            {isEdit ? 'Actualizar' : 'Crear'} rol
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   )

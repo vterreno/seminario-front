@@ -11,6 +11,7 @@ import {
 import { DataTableBulkActions as BulkActionsToolbar } from '@/components/data-table'
 import { type Role } from '../data/schema'
 import { RolesMultiDeleteDialog } from './roles-multi-delete-dialog'
+import apiRolesService from '@/service/apiRoles.service'
 
 type DataTableBulkActionsProps<TData> = {
   table: Table<TData>
@@ -26,9 +27,10 @@ export function DataTableBulkActions<TData>({
 
   const handleBulkStatusChange = async (status: 'active' | 'inactive') => {
     const selectedRoles = selectedRows.map((row) => row.original as Role)
+    const roleIds = selectedRoles.map(role => role.id!).filter(id => id !== undefined)
+    
     try {
-      // Aquí iría la llamada al servicio de roles
-      console.log(`${status === 'active' ? 'Activando' : 'Desactivando'} roles:`, selectedRoles)
+      await apiRolesService.bulkUpdateRoleStatus(roleIds, status === 'active')
       
       table.resetRowSelection()
       toast.success(`${status === 'active' ? 'Activados' : 'Desactivados'} ${selectedRoles.length} rol${selectedRoles.length > 1 ? 'es' : ''}`)

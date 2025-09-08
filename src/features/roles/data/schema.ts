@@ -8,6 +8,12 @@ export const permissionsSchema = z.object({
   usuario_modificar: z.boolean().default(false),
   usuario_borrar: z.boolean().default(false),
   
+  // Roles
+  roles_ver: z.boolean().default(false),
+  roles_agregar: z.boolean().default(false),
+  roles_modificar: z.boolean().default(false),
+  roles_eliminar: z.boolean().default(false),
+  
   // Proveedor
   proveedor_ver: z.boolean().default(false),
   proveedor_agregar: z.boolean().default(false),
@@ -73,11 +79,18 @@ export const permissionsSchema = z.object({
 
 export type Permissions = z.infer<typeof permissionsSchema>
 
+// Schema para la empresa asociada al rol
+export const empresaRoleSchema = z.object({
+  id: z.number(),
+  nombre: z.string(),
+}).optional()
+
 // Schema principal del rol
 export const roleSchema = z.object({
   id: z.number().optional(),
   nombre: z.string(),
   empresa_id: z.number(),
+  empresa: empresaRoleSchema,
   permisos: permissionsSchema,
   estado: z.boolean(),
   created_at: z.string().optional(),
@@ -108,6 +121,16 @@ export const permissionGroups = [
       { key: 'usuario_agregar', label: 'Agregar usuario' },
       { key: 'usuario_modificar', label: 'Modificar usuario' },
       { key: 'usuario_borrar', label: 'Borrar usuario' },
+    ]
+  },
+  {
+    id: 'roles',
+    name: 'Roles',
+    permissions: [
+      { key: 'roles_ver', label: 'Ver roles' },
+      { key: 'roles_agregar', label: 'Agregar roles' },
+      { key: 'roles_modificar', label: 'Modificar roles' },
+      { key: 'roles_eliminar', label: 'Eliminar roles' },
     ]
   },
   {

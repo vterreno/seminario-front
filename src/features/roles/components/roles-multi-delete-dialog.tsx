@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/dialog'
 import { toast } from 'sonner'
 import { type Role } from '../data/schema'
+import apiRolesService from '@/service/apiRoles.service'
 
 type RolesMultiDeleteDialogProps<TData> = {
   open: boolean
@@ -29,8 +30,8 @@ export function RolesMultiDeleteDialog<TData>({
 
   const handleDelete = async () => {
     try {
-      // Aquí iría la llamada al servicio de roles para eliminar múltiples
-      console.log('Eliminando roles:', selectedRoles)
+      const roleIds = selectedRoles.map(role => role.id!).filter(id => id !== undefined)
+      await apiRolesService.bulkDeleteRoles(roleIds)
       
       table.resetRowSelection()
       onOpenChange(false)

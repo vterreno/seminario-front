@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/dialog'
 import { Role } from '../data/schema'
 import { toast } from 'sonner'
+import apiRolesService from '@/service/apiRoles.service'
 
 type RolesDeleteDialogProps = {
   open: boolean
@@ -26,8 +27,7 @@ export function RolesDeleteDialog({
   const handleDelete = async () => {
     try {
       if (currentRow.id) {
-        // await apiRoleService.deleteRole(currentRow.id)
-        console.log('Eliminando rol:', currentRow.id)
+        await apiRolesService.deleteRole(currentRow.id)
         toast.success(`Rol "${currentRow.nombre}" eliminado exitosamente`)
         onOpenChange(false)
         onSuccess?.()
