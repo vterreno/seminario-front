@@ -18,14 +18,20 @@ export function ProfileDropdown() {
   const [open, setOpen] = useDialogState()
   const { auth } = useAuthStore()
   const userData = auth.user
+  const initials = userData?.name ? userData.name
+                      .split(' ')
+                      .map((n) => n[0])
+                      .join('')
+                      .toUpperCase() : 'U'
   return (
     <>
       <DropdownMenu modal={false}>
         <DropdownMenuTrigger asChild>
           <Button variant='ghost' className='relative h-8 w-8 rounded-full'>
             <Avatar className='h-8 w-8'>
-              <AvatarImage src='/avatars/01.png' alt='@shadcn' />
-              <AvatarFallback>SN</AvatarFallback>
+              <AvatarFallback>
+                {initials}
+              </AvatarFallback>
             </Avatar>
           </Button>
         </DropdownMenuTrigger>
