@@ -190,8 +190,13 @@ class ApiRolesService {
       categoria_modificar: false,
       categoria_eliminar: false,
       configuracion_empresa: false,
-      sucursal_todas: false,
+      sucursal_ver: false,
+      sucursal_agregar: false,
+      sucursal_modificar: false,
+      sucursal_eliminar: false,
       lista_precios_predeterminada: false,
+      lista_precios_1: false,
+      lista_precios_2: false,
     }
 
     // If the role has permissions, map them

@@ -10,6 +10,7 @@ import { toast } from 'sonner'
 import apiSucursalesService from '@/service/apiSucursales.service'
 import { getStorageItem } from '@/hooks/use-local-storage'
 import { STORAGE_KEYS } from '@/lib/constants'
+import { usePermissions } from '@/hooks/use-permissions'
 
 interface UserData {
   name: string
@@ -36,6 +37,23 @@ export function Sucursales() {
   const navigate = route.useNavigate()
   const [sucursales, setSucursales] = useState<Sucursal[]>([])
   const [loading, setLoading] = useState(true)
+  const { hasPermission } = usePermissions()
+
+  // Verificar si el usuario tiene permiso para ver sucursales
+  if (!hasPermission('sucursal_ver')) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <h3 className="text-lg font-semibold text-muted-foreground">
+            Sin permisos
+          </h3>
+          <p className="text-sm text-muted-foreground">
+            No tienes permisos para ver las sucursales.
+          </p>
+        </div>
+      </div>
+    )
+  }
 
   const fetchSucursales = async () => {
     try {
