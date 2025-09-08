@@ -17,7 +17,7 @@ type UserDeleteDialogProps = {
   onSuccess?: () => void
 }
 
-const CONFIRM_WORD = 'BORRAR'
+const CONFIRM_WORD = 'ELIMINAR'
 
 export function UsersDeleteDialog({
   open,
