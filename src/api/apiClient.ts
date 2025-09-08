@@ -3,6 +3,7 @@ import { getAccessToken, clearAuthData } from '@/lib/auth-utils';
 import { useSessionStore } from '@/stores/session-store';
 
 const axiosService = axios.create({
+    baseURL: 'http://localhost:3001',
     headers: {
     'Content-Type': 'application/json',
 },

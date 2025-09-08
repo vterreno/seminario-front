@@ -4,47 +4,50 @@ import { useState } from 'react'
 import { type Table } from '@tanstack/react-table'
 import { AlertTriangle } from 'lucide-react'
 import { toast } from 'sonner'
-import { sleep } from '@/lib/utils'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { ConfirmDialog } from '@/components/confirm-dialog'
+import apiUsersService from '@/service/apiUser.service'
 
 type UserMultiDeleteDialogProps<TData> = {
   open: boolean
   onOpenChange: (open: boolean) => void
   table: Table<TData>
+  onSuccess?: () => void
 }
 
-const CONFIRM_WORD = 'DELETE'
+const CONFIRM_WORD = 'ELIMINAR'
 
 export function UsersMultiDeleteDialog<TData>({
   open,
   onOpenChange,
   table,
+  onSuccess,
 }: UserMultiDeleteDialogProps<TData>) {
   const [value, setValue] = useState('')
 
   const selectedRows = table.getFilteredSelectedRowModel().rows
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (value.trim() !== CONFIRM_WORD) {
-      toast.error(`Please type "${CONFIRM_WORD}" to confirm.`)
+      toast.error(`Escriba "${CONFIRM_WORD}" para confirmar.`)
       return
     }
 
-    onOpenChange(false)
+    const selectedUsers = selectedRows.map((row) => row.original as any)
+    const userIds = selectedUsers.map((user: any) => user.id)
 
-    toast.promise(sleep(2000), {
-      loading: 'Deleting users...',
-      success: () => {
-        table.resetRowSelection()
-        return `Deleted ${selectedRows.length} ${
-          selectedRows.length > 1 ? 'users' : 'user'
-        }`
-      },
-      error: 'Error',
-    })
+    try {
+      await apiUsersService.deleteUsers(userIds)
+      toast.success(`${selectedUsers.length} usuario${selectedUsers.length > 1 ? 's' : ''} eliminado${selectedUsers.length > 1 ? 's' : ''} correctamente`)
+      table.resetRowSelection()
+      onOpenChange(false)
+      onSuccess?.()
+    } catch (error: any) {
+      console.error('Error deleting users:', error)
+      toast.error(error.message || 'Error al eliminar usuarios')
+    }
   }
 
   return (
@@ -59,35 +62,35 @@ export function UsersMultiDeleteDialog<TData>({
             className='stroke-destructive me-1 inline-block'
             size={18}
           />{' '}
-          Delete {selectedRows.length}{' '}
-          {selectedRows.length > 1 ? 'users' : 'user'}
+          Eliminar {selectedRows.length}{' '}
+          {selectedRows.length > 1 ? 'usuarios' : 'usuario'}
         </span>
       }
       desc={
         <div className='space-y-4'>
           <p className='mb-2'>
-            Are you sure you want to delete the selected users? <br />
-            This action cannot be undone.
+            ¿Está seguro de que desea eliminar los usuarios seleccionados? <br />
+            Esta acción no se puede deshacer.
           </p>
 
           <Label className='my-4 flex flex-col items-start gap-1.5'>
-            <span className=''>Confirm by typing "{CONFIRM_WORD}":</span>
+            <span className=''>Confirme escribiendo "{CONFIRM_WORD}":</span>
             <Input
               value={value}
               onChange={(e) => setValue(e.target.value)}
-              placeholder={`Type "${CONFIRM_WORD}" to confirm.`}
+              placeholder={`Escriba "${CONFIRM_WORD}" para confirmar.`}
             />
           </Label>
 
           <Alert variant='destructive'>
-            <AlertTitle>Warning!</AlertTitle>
+            <AlertTitle>¡Advertencia!</AlertTitle>
             <AlertDescription>
-              Please be careful, this operation can not be rolled back.
+              Por favor tenga cuidado, esta operación no se puede deshacer.
             </AlertDescription>
           </Alert>
         </div>
       }
-      confirmText='Delete'
+      confirmText='Eliminar'
       destructive
     />
   )

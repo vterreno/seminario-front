@@ -22,10 +22,11 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { DataTablePagination, DataTableToolbar } from '@/components/data-table'
-import { roles } from '../data/data'
 import { type User } from '../data/schema'
 import { DataTableBulkActions } from './data-table-bulk-actions'
-import { usersColumns as columns } from './users-columns'
+import { usersColumns } from './users-columns'
+import { getStorageItem } from '@/hooks/use-local-storage'
+import { STORAGE_KEYS } from '@/lib/constants'
 
 declare module '@tanstack/react-table' {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -38,10 +39,16 @@ type DataTableProps = {
   data: User[]
   search: Record<string, unknown>
   navigate: NavigateFn
+  onSuccess?: () => void
 }
 
-export function UsersTable({ data, search, navigate }: DataTableProps) {
-  // Local UI-only states
+export function UsersTable({ data, search, navigate, onSuccess }: DataTableProps) {
+  // Check if user is superadmin (no empresa.id)
+  const userData = getStorageItem(STORAGE_KEYS.USER_DATA, null) as any
+  const isSuperAdmin = !userData?.empresa?.id
+  
+  // Get columns based on user type
+  const columns = usersColumns(isSuperAdmin)
   const [rowSelection, setRowSelection] = useState({})
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [sorting, setSorting] = useState<SortingState>([])
@@ -102,25 +109,9 @@ export function UsersTable({ data, search, navigate }: DataTableProps) {
     <div className='space-y-4 max-sm:has-[div[role="toolbar"]]:mb-16'>
       <DataTableToolbar
         table={table}
-        searchPlaceholder='Filtrar Usuarios...'
-        searchKey='username'
-        filters={[
-          {
-            columnId: 'status',
-            title: 'Status',
-            options: [
-              { label: 'Active', value: 'active' },
-              { label: 'Inactive', value: 'inactive' },
-              { label: 'Invited', value: 'invited' },
-              { label: 'Suspended', value: 'suspended' },
-            ],
-          },
-          {
-            columnId: 'role',
-            title: 'Role',
-            options: roles.map((role) => ({ ...role })),
-          },
-        ]}
+        searchPlaceholder='Buscar usuarios...'
+        searchKey='email'
+        filters={[]}
       />
       <div className='overflow-hidden rounded-md border'>
         <Table>
@@ -187,7 +178,7 @@ export function UsersTable({ data, search, navigate }: DataTableProps) {
         </Table>
       </div>
       <DataTablePagination table={table} />
-      <DataTableBulkActions table={table} />
+      <DataTableBulkActions table={table} onSuccess={onSuccess} />
     </div>
   )
 }

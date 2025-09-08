@@ -104,5 +104,6 @@ export function usePermissions() {
     hasAnyPermission,
     hasAllPermissions,
     isSuperAdmin,
+    userEmpresaId: userData?.empresa?.id || null,
   }
 }

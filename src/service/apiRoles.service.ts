@@ -211,7 +211,7 @@ class ApiRolesService {
     // Map empresa information if it exists
     const empresaInfo = backendRole.empresa ? {
       id: backendRole.empresa.id,
-      nombre: backendRole.empresa.nombre || backendRole.empresa.name
+      name: backendRole.empresa.nombre || backendRole.empresa.name
     } : undefined
 
     return {
