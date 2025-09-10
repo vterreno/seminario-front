@@ -166,7 +166,15 @@ export function UsersActionDialog({
         onOpenChange(state)
       }}
     >
-      <DialogContent className='sm:max-w-lg'>
+      <DialogContent
+        resizable={true}
+        minWidth={300}
+        minHeight={200}
+        maxWidth={window.innerWidth * 0.9}
+        maxHeight={window.innerHeight * 0.9}
+        defaultWidth={512}
+        defaultHeight={450} 
+        className='sm:max-w-lg'>
         <DialogHeader className='text-start'>
           <DialogTitle>{isEdit ? 'Editar usuario' : 'Agregar nuevo usuario'}</DialogTitle>
           <DialogDescription>
@@ -174,12 +182,12 @@ export function UsersActionDialog({
             Haga clic en guardar cuando haya terminado.
           </DialogDescription>
         </DialogHeader>
-        <div className='h-[26.25rem] w-[calc(100%+0.75rem)] overflow-y-auto py-1 pe-3'>
+        <div className='mb-5 overflow-y-auto py-1 pe-3'>
           <Form {...form}>
             <form
               id='user-form'
               onSubmit={form.handleSubmit(onSubmit)}
-              className='space-y-4 px-0.5'
+              className='space-y-4 mt-4 px-0.5'
             >
               <FormField
                 control={form.control}

@@ -152,7 +152,15 @@ export function SucursalesActionDialog({
         onOpenChange(state)
       }}
     >
-      <DialogContent className='sm:max-w-md'>
+      <DialogContent
+        resizable={true}
+        minWidth={300}
+        minHeight={200}
+        maxWidth={window.innerWidth * 0.9}
+        maxHeight={window.innerHeight * 0.9}
+        defaultWidth={512}
+        defaultHeight={450} 
+        className='sm:max-w-md'>
         <DialogHeader>
           <DialogTitle>
             {isEdit ? 'Editar sucursal' : 'Crear nueva sucursal'}
@@ -165,7 +173,7 @@ export function SucursalesActionDialog({
         </DialogHeader>
         
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
+          <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4 mt-4'>
             <FormField
               control={form.control}
               name='nombre'
