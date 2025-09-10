@@ -1,0 +1,246 @@
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import { Switch } from '@/components/ui/switch'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { Role, RoleForm, roleFormSchema, permissionsSchema } from '../data/schema'
+import { PermissionsSelector } from './permissions-selector'
+import { toast } from 'sonner'
+import { useEffect, useState } from 'react'
+import { Empresa } from '@/features/empresa/data/schema'
+import apiEmpresaService from '@/service/apiEmpresa.service'
+import apiRolesService from '@/service/apiRoles.service'
+import { getStorageItem } from '@/hooks/use-local-storage'
+import { STORAGE_KEYS } from '@/lib/constants'
+
+type RolesActionDialogProps = {
+  currentRow?: Role
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  onSuccess?: () => void
+}
+
+export function RolesActionDialog({
+  currentRow,
+  open,
+  onOpenChange,
+  onSuccess,
+}: RolesActionDialogProps) {
+  const isEdit = !!currentRow
+  const [empresas, setEmpresas] = useState<Empresa[]>([])
+  const [loading, setLoading] = useState(false)
+
+  // Obtener datos del usuario desde localStorage
+  const userData = getStorageItem(STORAGE_KEYS.USER_DATA, null) as any
+  const userEmpresaId = userData?.empresa?.id
+  const isSuperAdmin = !userEmpresaId // If user doesn't have empresa_id, they are superadmin
+
+  const defaultPermissions = permissionsSchema.parse({})
+
+  const form = useForm<RoleForm>({
+    resolver: zodResolver(roleFormSchema) as any,
+    defaultValues: isEdit && currentRow
+      ? {
+          nombre: currentRow.nombre,
+          empresa_id: currentRow.empresa_id,
+          permisos: currentRow.permisos || defaultPermissions,
+          estado: currentRow.estado,
+          isEdit,
+        }
+      : {
+          nombre: '',
+          empresa_id: isSuperAdmin ? 0 : userEmpresaId || 0,
+          permisos: defaultPermissions,
+          estado: true,
+          isEdit,
+        },
+  })
+
+  // Cargar empresas si es superadmin
+  useEffect(() => {
+    if (isSuperAdmin && open) {
+      fetchEmpresas()
+    }
+  }, [isSuperAdmin, open])
+
+  const fetchEmpresas = async () => {
+    try {
+      setLoading(true)
+      const data = await apiEmpresaService.getAllEmpresas()
+      setEmpresas(data.filter((empresa: Empresa) => empresa.estado))
+    } catch (error) {
+      console.error('Error fetching empresas:', error)
+      toast.error('Error al cargar las empresas')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const onSubmit = async (values: RoleForm) => {
+    try {
+      if (isEdit && currentRow?.id) {
+        await apiRolesService.updateRole(currentRow.id, values)
+        toast.success('Rol actualizado exitosamente')
+      } else {
+        await apiRolesService.createRole(values)
+        toast.success('Rol creado exitosamente')
+      }
+      
+      form.reset()
+      onOpenChange(false)
+      onSuccess?.()
+    } catch (error) {
+      console.error('Error saving role:', error)
+      toast.error(isEdit ? 'Error al actualizar el rol' : 'Error al crear el rol')
+    }
+  }
+
+  return (
+    <Dialog
+      open={open}
+      onOpenChange={(state) => {
+        if (!state) {
+          form.reset()
+        }
+        onOpenChange(state)
+      }}
+    >
+      <DialogContent className='sm:max-w-4xl max-h-[90vh] overflow-hidden flex flex-col'>
+        <DialogHeader>
+          <DialogTitle>
+            {isEdit ? 'Editar rol' : 'Crear nuevo rol'}
+          </DialogTitle>
+          <DialogDescription>
+            {isEdit
+              ? 'Modifica los datos del rol y sus permisos.'
+              : 'Completa los siguientes campos para crear un nuevo rol.'}
+          </DialogDescription>
+        </DialogHeader>
+        
+        <div className="flex-1 overflow-y-auto">
+          <Form {...form}>
+            <form id='role-form' onSubmit={form.handleSubmit(onSubmit as any)} className='space-y-6 my-4'>
+              <div className="grid gap-4 md:grid-cols-2">
+              <FormField
+                control={form.control}
+                name='nombre'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Nombre del rol</FormLabel>
+                    <FormControl>
+                      <Input 
+                        placeholder='Ingrese el nombre del rol' 
+                        {...field} 
+                        autoComplete='off'
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {isSuperAdmin ? (
+                <FormField
+                  control={form.control}
+                  name='empresa_id'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Empresa</FormLabel>
+                      <Select 
+                        onValueChange={(value) => field.onChange(parseInt(value))} 
+                        value={field.value?.toString()}
+                        disabled={loading}
+                      >
+                        <FormControl>
+                          <SelectTrigger className='w-full'>
+                            <SelectValue className='w-full' placeholder="Seleccione una empresa" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {empresas.map((empresa) => (
+                            <SelectItem key={empresa.id} value={empresa.id!.toString()}>
+                              {empresa.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              ) : (
+                <div></div>
+              )}
+            </div>
+
+            <FormField
+              control={form.control}
+              name='estado'
+              render={({ field }) => (
+                <FormItem className='flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm'>
+                  <div className='space-y-0.5'>
+                    <FormLabel className='text-base'>Estado activo</FormLabel>
+                    <div className='text-sm text-muted-foreground'>
+                      El rol estará {field.value ? 'activo' : 'inactivo'} en el sistema
+                    </div>
+                  </div>
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+
+              <div className="border-t pt-4">
+                <PermissionsSelector />
+              </div>
+            </form>
+          </Form>
+        </div>
+
+        <DialogFooter className="gap-2 mt-4">
+          <Button
+            type='button'
+            variant='outline'
+            onClick={() => onOpenChange(false)}
+          >
+            Cancelar
+          </Button>
+          <Button 
+            type='submit'
+            form='role-form'
+            onClick={form.handleSubmit(onSubmit as any)}
+          >
+            {isEdit ? 'Actualizar' : 'Crear'} rol
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
+}

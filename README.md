@@ -31,4 +31,3 @@ npm run dev → Levanta el proyecto en modo desarrollo
 npm run build → Genera la versión optimizada para producción
 
 npm run preview → Sirve la aplicación ya compilada
-
