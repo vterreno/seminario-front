@@ -152,7 +152,15 @@ export function SucursalesActionDialog({
         onOpenChange(state)
       }}
     >
-      <DialogContent className='sm:max-w-md'>
+      <DialogContent
+        resizable={true}
+        minWidth={300}
+        minHeight={200}
+        maxWidth={window.innerWidth * 0.9}
+        maxHeight={window.innerHeight * 0.9}
+        defaultWidth={512}
+        defaultHeight={450} 
+        className='sm:max-w-md'>
         <DialogHeader>
           <DialogTitle>
             {isEdit ? 'Editar sucursal' : 'Crear nueva sucursal'}

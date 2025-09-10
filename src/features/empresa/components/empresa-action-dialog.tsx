@@ -86,7 +86,8 @@ export function EmpresaActionDialog({
         onOpenChange(state)
       }}
     >
-      <DialogContent resizable={true}
+      <DialogContent
+        resizable={true}
         minWidth={300}
         minHeight={200}
         maxWidth={window.innerWidth * 0.9}

@@ -166,7 +166,15 @@ export function UsersActionDialog({
         onOpenChange(state)
       }}
     >
-      <DialogContent className='sm:max-w-lg'>
+      <DialogContent
+        resizable={true}
+        minWidth={300}
+        minHeight={200}
+        maxWidth={window.innerWidth * 0.9}
+        maxHeight={window.innerHeight * 0.9}
+        defaultWidth={512}
+        defaultHeight={450} 
+        className='sm:max-w-lg'>
         <DialogHeader className='text-start'>
           <DialogTitle>{isEdit ? 'Editar usuario' : 'Agregar nuevo usuario'}</DialogTitle>
           <DialogDescription>
