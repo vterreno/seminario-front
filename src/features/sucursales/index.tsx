@@ -39,6 +39,9 @@ export function Sucursales() {
   const [loading, setLoading] = useState(true)
   const { hasPermission } = usePermissions()
 
+  const canEdit = hasPermission('sucursal_modificar')
+  const canDelete = hasPermission('sucursal_eliminar')
+  const canBulkAction = canEdit || canDelete
   // Verificar si el usuario tiene permiso para ver sucursales
   if (!hasPermission('sucursal_ver')) {
     return (
@@ -107,7 +110,13 @@ export function Sucursales() {
           <SucursalesPrimaryButtons />
         </div>
         <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-y-0 lg:space-x-12'>
-          <SucursalesTable data={sucursales} search={search} navigate={navigate} onSuccess={fetchSucursales} />
+          <SucursalesTable 
+            data={sucursales} 
+            search={search} 
+            navigate={navigate as any} 
+            onSuccess={fetchSucursales} 
+            canBulkAction={canBulkAction} // Pasar la propiedad canBulkAction
+          />        
         </div>
       </Main>
 

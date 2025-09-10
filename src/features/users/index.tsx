@@ -43,6 +43,11 @@ export function Users() {
   const [users, setUsers] = useState<User[]>([])
   const [loading, setLoading] = useState(true)
 
+  // Verificar permisos para bulk actions
+  const canEdit = hasPermission('usuario_modificar')
+  const canDelete = hasPermission('usuario_eliminar')
+  const canBulkAction = canEdit || canDelete
+  
   // Verificar si el usuario tiene permisos para ver usuarios
   if (!hasPermission('usuario_ver')) {
     return (
@@ -124,7 +129,13 @@ export function Users() {
           <UsersPrimaryButtons />
         </div>
         <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-y-0 lg:space-x-12'>
-          <UsersTable data={users} search={search} navigate={navigate as any} onSuccess={fetchUsers} />
+          <UsersTable 
+            data={users} 
+            search={search} 
+            navigate={navigate as any} 
+            onSuccess={fetchUsers} 
+            canBulkAction={canBulkAction} // Pasar la propiedad canBulkAction
+          />
         </div>
       </Main>
 

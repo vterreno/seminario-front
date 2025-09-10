@@ -1,3 +1,4 @@
+// filepath: /home/ignacio/Música/MatePyme/seminario-front/src/features/roles/index.tsx
 import { getRouteApi } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 import { Header } from '@/components/layout/header'
@@ -9,7 +10,7 @@ import { RolesDialogs } from './components/roles-dialogs'
 import { RolesPrimaryButtons } from './components/roles-primary-buttons'
 import { RoleProvider } from './components/roles-provider'
 import { RolesTable } from './components/roles-table'
-import { Role } from './data/schema'
+import { type Role } from './data/schema'
 import { toast } from 'sonner'
 import apiRolesService from '@/service/apiRoles.service'
 import { getStorageItem } from '@/hooks/use-local-storage'
@@ -43,6 +44,11 @@ export function Roles() {
   const [roles, setRoles] = useState<Role[]>([])
   const [loading, setLoading] = useState(true)
 
+  // Verificar permisos para bulk actions
+  const canEdit = hasPermission('roles_modificar')
+  const canDelete = hasPermission('roles_eliminar')
+  const canBulkAction = canEdit || canDelete
+  
   // Verificar si el usuario tiene permisos para ver roles
   if (!hasPermission('roles_ver')) {
     return (
@@ -67,7 +73,7 @@ export function Roles() {
   const fetchRoles = async () => {
     try {
       setLoading(true)
-      
+
       // Get user data from localStorage
       const userData = getStorageItem(STORAGE_KEYS.USER_DATA, null) as UserData | null
       const userEmpresaId = userData?.empresa?.id
@@ -75,11 +81,14 @@ export function Roles() {
 
       // If superadmin, fetch all roles from all companies
       // Otherwise, fetch only roles from user's company
-      const data = isSuperAdmin 
-        ? await apiRolesService.getAllRoles()
-        : await apiRolesService.getRolesByEmpresa(userEmpresaId || 0)
-      
-      setRoles(data)
+      const data = await apiRolesService.getAllRoles()
+
+      // Filter roles by empresa if not superadmin
+      const filteredRoles = isSuperAdmin
+        ? data
+        : data.filter(role => role.empresa?.id === userEmpresaId)
+
+      setRoles(filteredRoles)
     } catch (error) {
       console.error('Error fetching roles:', error)
       toast.error('Error al cargar los roles')
@@ -115,13 +124,19 @@ export function Roles() {
           <div>
             <h2 className='text-2xl font-bold tracking-tight'>Lista de roles</h2>
             <p className='text-muted-foreground'>
-              Administre aquí los roles y permisos del sistema.
+              Administre aquí los roles y sus permisos.
             </p>
           </div>
           <RolesPrimaryButtons />
         </div>
         <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-y-0 lg:space-x-12'>
-          <RolesTable data={roles} search={search} navigate={navigate as any} onSuccess={fetchRoles} />
+          <RolesTable 
+            data={roles} 
+            search={search} 
+            navigate={navigate} 
+            onSuccess={fetchRoles} 
+            canBulkAction={canBulkAction}
+          />
         </div>
       </Main>
 
