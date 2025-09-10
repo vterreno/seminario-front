@@ -26,12 +26,76 @@ interface UserData {
   roles: Array<{
     id: number
     nombre: string
-    permissions: Array<{
+    permissions?: Array<{
       id: number
       nombre: string
       codigo: string
     }>
+    permisos?: Record<string, boolean>
   }>
+}
+
+/**
+ * Verifica si el usuario tiene un permiso específico
+ */
+const hasPermission = (userData: UserData | null, permission: string): boolean => {
+  if (!userData?.roles || userData.roles.length === 0) {
+    return false
+  }
+  
+  // Si es superadmin (sin empresa), tiene acceso a todo
+  const isSuperAdmin = !userData?.empresa?.id
+  if (isSuperAdmin) {
+    return true // Superadmin tiene todos los permisos
+  }
+  
+  // Revisar todos los roles del usuario
+  for (const role of userData.roles) {
+    // Verificar permisos en formato Record<string, boolean>
+    if (role.permisos && role.permisos[permission] === true) {
+      return true
+    }
+    
+    // Verificar permisos en formato Array
+    if (role.permissions && Array.isArray(role.permissions)) {
+      const hasPermissionInArray = role.permissions.some(p => p.codigo === permission)
+      if (hasPermissionInArray) {
+        return true
+      }
+    }
+  }
+  
+  return false
+}
+
+/**
+ * Obtiene la primera ruta disponible para el usuario
+ */
+export const getFirstAvailableRoute = (userData: UserData | null): string => {
+  // Si tiene permisos de dashboard, ir al dashboard
+  if (hasPermission(userData, 'dashboard_ver')) {
+    return '/dashboard'
+  }
+  
+  // Buscar la primera opción disponible en orden de prioridad
+  const rutasDisponibles = [
+    { permiso: 'usuario_ver', ruta: '/users' },
+    { permiso: 'producto_ver', ruta: '/productos' },
+    { permiso: 'ventas_ver', ruta: '/ventas' },
+    { permiso: 'compras_ver', ruta: '/compras' },
+    { permiso: 'cliente_ver', ruta: '/contactos' },
+    { permiso: 'roles_ver', ruta: '/roles' },
+    { permiso: 'sucursal_ver', ruta: '/settings/sucursales' },
+  ]
+  
+  for (const opcion of rutasDisponibles) {
+    if (hasPermission(userData, opcion.permiso)) {
+      return opcion.ruta
+    }
+  }
+  
+  // Si no tiene ningún permiso específico, quedarse en bienvenida
+  return '/bienvenida'
 }
 
 export const getSidebarData = (): SidebarData => {
@@ -41,224 +105,151 @@ export const getSidebarData = (): SidebarData => {
   // Check if user has a company assigned (if empresa.id exists and is not null)
   const hasCompany = userData?.empresa?.id !== null && userData?.empresa?.id !== undefined
   
-  const baseNavGroups = [
-    {
+  const baseNavGroups = []
+
+  // Sección de Inicio - siempre visible
+  if (hasPermission(userData, 'dashboard_ver')) {
+    // Si tiene permisos para dashboard, mostrar Dashboard
+    baseNavGroups.push({
       title: 'Inicio',
       items: [
         {
           title: 'Dashboard',
-          url: '/',
+          url: '/dashboard',
           icon: LayoutDashboard,
-          backgroundColor: '#f7c33b', // yellow
-          textColor: '#ffffff', // white
+          backgroundColor: '#f7c33b',
+          textColor: '#ffffff',
         },
       ],
-    },
-    {
+    })
+  } else {
+    baseNavGroups.push({
+      title: 'Inicio',
+      items: [
+        {
+          title: 'Bienvenida',
+          url: '/bienvenida',
+          icon: LayoutDashboard,
+          backgroundColor: '#f7c33b',
+          textColor: '#ffffff', 
+        },
+      ],
+    })
+  }
+
+  // Sección de Usuarios - solo si tiene permisos para ver usuarios o roles
+  const usuariosItems = []
+  
+  if (hasPermission(userData, 'usuario_ver')) {
+    usuariosItems.push({
       title: 'Usuarios',
-      items: [
-        {
-          title: 'Usuarios',
-          url: '/users',
-          icon: Users,
-          backgroundColor: '#f7c33b', // emerald-500 (color personalizado)
-          textColor: '#ffffff',
-        },
-        {
-          title: 'Roles',
-          url: '/roles',
-          icon: UserCheck,
-          backgroundColor: '#f7c33b',
-          textColor: '#ffffff',
-        },
-      ],
-    },
-    {
+      url: '/users',
+      icon: Users,
+      backgroundColor: '#f7c33b',
+      textColor: '#ffffff',
+    })
+  }
+  
+  if (hasPermission(userData, 'roles_ver')) {
+    usuariosItems.push({
+      title: 'Roles',
+      url: '/roles',
+      icon: UserCheck,
+      backgroundColor: '#f7c33b',
+      textColor: '#ffffff',
+    })
+  }
+
+  if (usuariosItems.length > 0) {
+    baseNavGroups.push({
+      title: 'Usuarios',
+      items: usuariosItems,
+    })
+  }
+
+  // Sección General - basada en permisos específicos
+  const generalItems = []
+
+  // Solo agregar si tiene permisos para ver clientes
+  if (hasPermission(userData, 'cliente_ver')) {
+    generalItems.push({
+      title: 'Contactos',
+      url: '/contactos',
+      icon: Users,
+      backgroundColor: '#f7c33b',
+      textColor: '#ffffff',
+    })
+  }
+
+  // Solo agregar si tiene permisos para ver productos
+  if (hasPermission(userData, 'producto_ver')) {
+    generalItems.push({
+      title: 'Productos',
+      url: '/productos',
+      icon: Package,
+      backgroundColor: '#f7c33b',
+      textColor: '#ffffff',
+    })
+  }
+
+  // Solo agregar si tiene permisos para ver ventas
+  if (hasPermission(userData, 'ventas_ver')) {
+    generalItems.push({
+      title: 'Ventas',
+      url: '/ventas',
+      icon: ShoppingCart,
+      backgroundColor: '#f7c33b',
+      textColor: '#ffffff',
+    })
+  }
+
+  // Solo agregar si tiene permisos para ver compras
+  if (hasPermission(userData, 'compras_ver')) {
+    generalItems.push({
+      title: 'Compras',
+      url: '/compras',
+      icon: CreditCard,
+      backgroundColor: '#f7c33b',
+      textColor: '#ffffff',
+    })
+  }
+
+  if (generalItems.length > 0) {
+    baseNavGroups.push({
       title: 'General',
-      items: [
-        // {
-        //   title: 'Tasks',
-        //   url: '/tasks',
-        //   icon: ListTodo,
-        // },
-        // {
-        //   title: 'Apps',
-        //   url: '/apps',
-        //   icon: Package,
-        // },
-        // {
-        //   title: 'Chats',
-        //   url: '/chats',
-        //   badge: '3',
-        //   icon: MessagesSquare,
-        // },
-        {
-          title: 'Contactos',
-          url: '/contactos',
-          icon: Users,
-          backgroundColor: '#f7c33b',
-          textColor: '#ffffff',
-        },
-        {
-          title: 'Productos',
-          url: '/productos',
-          icon: Package,
-          backgroundColor: '#f7c33b', // violet-500 (color personalizado)
-          textColor: '#ffffff',
-        },
-        {
-          title: 'Ventas',
-          url: '/ventas',
-          icon: ShoppingCart,
-          backgroundColor: '#f7c33b',
-          textColor: '#ffffff',
-        },
-        {
-          title: 'Compras',
-          url: '/compras',
-          icon: CreditCard,
-          backgroundColor: '#f7c33b',
-          textColor: '#ffffff',
-        },
-        // {
-        //   title: 'Secured by Clerk',
-        //   icon: ClerkLogo,
-        //   items: [
-        //     {
-        //       title: 'Sign In',
-        //       url: '/clerk/sign-in',
-        //     },
-        //     {
-        //       title: 'Sign Up',
-        //       url: '/clerk/sign-up',
-        //     },
-        //     {
-        //       title: 'User Management',
-        //       url: '/clerk/user-management',
-        //     },
-        //   ],
-        // },
-      ],
-    },
-    /* {
-      title: 'Paginas',
-      items: [
-        {
-          title: 'Auth',
-          icon: ShieldCheck,
-          items: [
-            {
-              title: 'Sign In',
-              url: '/sign-in',
-            },
-            {
-              title: 'Sign In (2 Col)',
-              url: '/sign-in-2',
-            },
-            {
-              title: 'Sign Up',
-              url: '/sign-up',
-            },
-            {
-              title: 'Forgot Password',
-              url: '/forgot-password',
-            },
-            {
-              title: 'OTP',
-              url: '/otp',
-            },
-          ],
-        },
-        {
-          title: 'Errors',
-          icon: Bug,
-          items: [
-            {
-              title: 'Unauthorized',
-              url: '/errors/unauthorized',
-              icon: Lock,
-            },
-            {
-              title: 'Forbidden',
-              url: '/errors/forbidden',
-              icon: UserX,
-            },
-            {
-              title: 'Not Found',
-              url: '/errors/not-found',
-              icon: FileX,
-            },
-            {
-              title: 'Internal Server Error',
-              url: '/errors/internal-server-error',
-              icon: ServerOff,
-            },
-            {
-              title: 'Maintenance Error',
-              url: '/errors/maintenance-error',
-              icon: Construction,
-            },
-          ],
-        },
-      ],
-    }, */
-    {
+      items: generalItems,
+    })
+  }
+
+  // Sección de Configuración
+  const configuracionItems = []
+
+  // Solo agregar sucursales si tiene permisos para verlas
+  if (hasPermission(userData, 'sucursal_ver')) {
+    configuracionItems.push({
+      title: 'Sucursales',
+      url: '/settings/sucursales',
+      icon: MapPin,
+      backgroundColor: '#40ba22',
+      textColor: '#ffffff',
+    })
+  }
+
+  // Solo mostrar configuración si hay items disponibles
+  if (configuracionItems.length > 0) {
+    baseNavGroups.push({
       title: 'Otros',
       items: [
         {
           title: 'Ajustes',
           icon: Settings,
-          backgroundColor: '#40ba22', // blue-500
+          backgroundColor: '#40ba22',
           textColor: '#ffffff',
-          items: [
-           /*  {
-              title: 'Pefil',
-              url: '/settings',
-              icon: UserCog,
-              backgroundColor: '#f7c33b', // blue-500 (para configuración)
-              textColor: '#ffffff',
-            },
-            {
-              title: 'Cuenta',
-              url: '/settings/account',
-              icon: Wrench,
-              backgroundColor: '#f7c33b', // blue-600
-              textColor: '#ffffff',
-            },
-            {
-              title: 'Apariencia',
-              url: '/settings/appearance',
-              icon: Palette,
-              backgroundColor: '#f7c33b', // blue-700
-              textColor: '#ffffff',
-            }, */
-            {
-              title: 'Sucursales',
-              url: '/settings/sucursales',
-              icon: MapPin,
-              backgroundColor: '#40ba22', // blue-800
-              textColor: '#ffffff',
-            }
-            // {
-            //   title: 'Notifications',
-            //   url: '/settings/notifications',
-            //   icon: Bell,
-            // },
-            // {
-            //   title: 'Display',
-            //   url: '/settings/display',
-            //   icon: Monitor,
-            // },
-          ],
+          items: configuracionItems,
         },
-        // {
-        //   title: 'Help Center',
-        //   url: '/help-center',
-        //   icon: HelpCircle,
-        // },
       ],
-    },
-  ]
+    })
+  }
 
   // Only add Superadmin section if user doesn't have a company (empresa.id is null)
   const navGroups = !hasCompany ? [
@@ -279,8 +270,8 @@ export const getSidebarData = (): SidebarData => {
 
   return {
     user: {
-      name: 'satnaing',
-      email: 'satnaingdev@gmail.com',
+      name: userData?.name || 'Usuario',
+      email: userData?.email || 'usuario@ejemplo.com',
       avatar: '/avatars/shadcn.jpg',
     },
     teams: [
