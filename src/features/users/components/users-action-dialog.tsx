@@ -182,12 +182,12 @@ export function UsersActionDialog({
             Haga clic en guardar cuando haya terminado.
           </DialogDescription>
         </DialogHeader>
-        <div className='h-[26.25rem] w-[calc(100%+0.75rem)] overflow-y-auto py-1 pe-3'>
+        <div className='mb-5 overflow-y-auto py-1 pe-3'>
           <Form {...form}>
             <form
               id='user-form'
               onSubmit={form.handleSubmit(onSubmit)}
-              className='space-y-4 px-0.5'
+              className='space-y-4 mt-4 px-0.5'
             >
               <FormField
                 control={form.control}
