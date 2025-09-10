@@ -7,7 +7,7 @@ Antes de comenzar asegurate de tener instalado en tu máquina:
 
 ## Clonar el repositorio
 ```
-bash git clone https://github.com/vterreno/seminario-front.git
+git clone https://github.com/vterreno/seminario-front.git
 ```
 ```
 cd seminario-front
@@ -31,3 +31,4 @@ npm run dev → Levanta el proyecto en modo desarrollo
 npm run build → Genera la versión optimizada para producción
 
 npm run preview → Sirve la aplicación ya compilada
+
