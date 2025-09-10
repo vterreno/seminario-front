@@ -6,10 +6,12 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Sucursal } from '../data/schema'
 import { useSucursales } from './sucursales-provider'
+import { usePermissions } from '@/hooks/use-permissions'
 
 type DataTableRowActionsProps = {
   row: Row<Sucursal>
@@ -17,7 +19,17 @@ type DataTableRowActionsProps = {
 
 export function DataTableRowActions({ row }: DataTableRowActionsProps) {
   const { setOpen, setCurrentRow } = useSucursales()
+  const { hasPermission } = usePermissions()
   const sucursal = row.original
+
+  // Verificar permisos
+  const canEdit = hasPermission('sucursal_modificar')
+  const canDelete = hasPermission('sucursal_eliminar')
+
+  // Si no tiene ningún permiso, no mostrar el menú
+  if (!canEdit && !canDelete) {
+    return null
+  }
 
   return (
     <DropdownMenu>
@@ -31,25 +43,30 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align='end' className='w-[160px]'>
-        <DropdownMenuItem
-          onClick={() => {
-            setCurrentRow(sucursal)
-            setOpen('edit')
-          }}
-        >
-          <Pencil size={16} />
-          Editar
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          onClick={() => {
-            setCurrentRow(sucursal)
-            setOpen('delete')
-          }}
-          className='text-red-600 hover:text-red-600'
-        >
-          <Trash2 size={16} color='red'/>
-          Eliminar
-        </DropdownMenuItem>
+        {canEdit && (
+          <DropdownMenuItem
+            onClick={() => {
+              setCurrentRow(sucursal)
+              setOpen('edit')
+            }}
+          >
+            <Pencil size={16} />
+            Editar
+          </DropdownMenuItem>
+        )}
+        {canEdit && canDelete && <DropdownMenuSeparator />}
+        {canDelete && (
+          <DropdownMenuItem
+            onClick={() => {
+              setCurrentRow(sucursal)
+              setOpen('delete')
+            }}
+            className='text-red-600 hover:text-red-600'
+          >
+            <Trash2 size={16} color='red'/>
+            Eliminar
+          </DropdownMenuItem>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   )

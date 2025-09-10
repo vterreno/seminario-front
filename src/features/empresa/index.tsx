@@ -13,14 +13,37 @@ import { EmpresaTable } from './components/empresa-table'
 import { Empresa } from './data/schema'
 import apiEmpresaService from '@/service/apiEmpresa.service'
 import { toast } from 'sonner'
+import { usePermissions } from '@/hooks/use-permissions'
 
 const route = getRouteApi('/_authenticated/empresa/')
 
 export function Empresa() {
+  const { hasPermission } = usePermissions()
   const search = route.useSearch()
   const navigate = route.useNavigate()
   const [empresas, setEmpresas] = useState<Empresa[]>([])
   const [loading, setLoading] = useState(true)
+
+  // Verificar si el usuario tiene permisos para ver empresas
+  if (!hasPermission('empresa_ver')) {
+    return (
+      <>
+        <Header>
+          <div className='ms-auto flex items-center space-x-4'>
+            <Search />
+            <ThemeSwitch />
+            <ProfileDropdown />
+          </div>
+        </Header>
+        <Main>
+          <div className="text-center p-8">
+            <h2 className="text-2xl font-bold mb-4">Sin permisos</h2>
+            <p className="text-muted-foreground">No tienes permisos para ver esta sección.</p>
+          </div>
+        </Main>
+      </>
+    )
+  }
 
   const fetchEmpresas = async () => {
     try {

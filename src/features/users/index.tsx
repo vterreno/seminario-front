@@ -14,6 +14,7 @@ import { toast } from 'sonner'
 import apiUsersService from '@/service/apiUser.service'
 import { getStorageItem } from '@/hooks/use-local-storage'
 import { STORAGE_KEYS } from '@/lib/constants'
+import { usePermissions } from '@/hooks/use-permissions'
 
 interface UserData {
   id: number
@@ -36,10 +37,32 @@ interface UserData {
 const route = getRouteApi('/_authenticated/users/')
 
 export function Users() {
+  const { hasPermission } = usePermissions()
   const search = route.useSearch()
   const navigate = route.useNavigate()
   const [users, setUsers] = useState<User[]>([])
   const [loading, setLoading] = useState(true)
+
+  // Verificar si el usuario tiene permisos para ver usuarios
+  if (!hasPermission('usuario_ver')) {
+    return (
+      <>
+        <Header>
+          <div className='ms-auto flex items-center space-x-4'>
+            <Search />
+            <ThemeSwitch />
+            <ProfileDropdown />
+          </div>
+        </Header>
+        <Main>
+          <div className="text-center p-8">
+            <h2 className="text-2xl font-bold mb-4">Sin permisos</h2>
+            <p className="text-muted-foreground">No tienes permisos para ver esta sección.</p>
+          </div>
+        </Main>
+      </>
+    )
+  }
 
   const fetchUsers = async () => {
     try {

@@ -12,6 +12,7 @@ import {
 import { DataTableBulkActions as BulkActionsToolbar } from '@/components/data-table'
 import { type Empresa } from '../data/schema'
 import { EmpresaMultiDeleteDialog } from './empresa-multi-delete-dialog'
+import { usePermissions } from '@/hooks/use-permissions'
 
 type DataTableBulkActionsProps<TData> = {
   table: Table<TData>
@@ -23,7 +24,11 @@ export function DataTableBulkActions<TData>({
   onSuccess,
 }: DataTableBulkActionsProps<TData>) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const { hasPermission } = usePermissions()
   const selectedRows = table.getFilteredSelectedRowModel().rows
+
+  const canModify = hasPermission('empresa_modificar')
+  const canDelete = hasPermission('empresa_eliminar')
 
   const handleBulkStatusChange = async (status: 'active' | 'inactive') => {
     const selectedEmpresas = selectedRows.map((row) => row.original as Empresa)
@@ -44,62 +49,68 @@ export function DataTableBulkActions<TData>({
   return (
     <>
       <BulkActionsToolbar table={table} entityName='empresa' entityNamePlural='empresas' isFeminine={true}>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant='outline'
-              size='icon'
-              onClick={() => handleBulkStatusChange('active')}
-              className='size-8'
-              aria-label='Activar empresas seleccionadas'
-              title='Activar empresas seleccionadas'
-            >
-              <Building2 />
-              <span className='sr-only'>Activar empresas seleccionadas</span>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Activar empresas seleccionadas</p>
-          </TooltipContent>
-        </Tooltip>
+        {canModify && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant='outline'
+                size='icon'
+                onClick={() => handleBulkStatusChange('active')}
+                className='size-8'
+                aria-label='Activar empresas seleccionadas'
+                title='Activar empresas seleccionadas'
+              >
+                <Building2 />
+                <span className='sr-only'>Activar empresas seleccionadas</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Activar empresas seleccionadas</p>
+            </TooltipContent>
+          </Tooltip>
+        )}
 
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant='outline'
-              size='icon'
-              onClick={() => handleBulkStatusChange('inactive')}
-              className='size-8'
-              aria-label='Desactivar empresas seleccionadas'
-              title='Desactivar empresas seleccionadas'
-            >
-              <Building />
-              <span className='sr-only'>Desactivar empresas seleccionadas</span>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Desactivar empresas seleccionadas</p>
-          </TooltipContent>
-        </Tooltip>
+        {canModify && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant='outline'
+                size='icon'
+                onClick={() => handleBulkStatusChange('inactive')}
+                className='size-8'
+                aria-label='Desactivar empresas seleccionadas'
+                title='Desactivar empresas seleccionadas'
+              >
+                <Building />
+                <span className='sr-only'>Desactivar empresas seleccionadas</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Desactivar empresas seleccionadas</p>
+            </TooltipContent>
+          </Tooltip>
+        )}
 
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant='destructive'
-              size='icon'
-              onClick={() => setShowDeleteConfirm(true)}
-              className='size-8'
-              aria-label='Eliminar empresas seleccionadas'
-              title='Eliminar empresas seleccionadas'
-            >
-              <Trash2 />
-              <span className='sr-only'>Eliminar empresas seleccionadas</span>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Eliminar empresas seleccionadas</p>
-          </TooltipContent>
-        </Tooltip>
+        {canDelete && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant='destructive'
+                size='icon'
+                onClick={() => setShowDeleteConfirm(true)}
+                className='size-8'
+                aria-label='Eliminar empresas seleccionadas'
+                title='Eliminar empresas seleccionadas'
+              >
+                <Trash2 />
+                <span className='sr-only'>Eliminar empresas seleccionadas</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Eliminar empresas seleccionadas</p>
+            </TooltipContent>
+          </Tooltip>
+        )}
       </BulkActionsToolbar>
 
       <EmpresaMultiDeleteDialog
