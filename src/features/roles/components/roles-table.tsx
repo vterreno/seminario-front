@@ -72,7 +72,7 @@ export function RolesTable({ data, search, navigate, onSuccess, canBulkAction }:
     columnFilters: [
       // name per-column text filter
       { columnId: 'nombre', searchKey: 'nombre', type: 'string' },
-      { columnId: 'status', searchKey: 'status', type: 'array' },
+      { columnId: 'estado', searchKey: 'estado', type: 'array' },
     ],
   })
 
@@ -112,7 +112,7 @@ export function RolesTable({ data, search, navigate, onSuccess, canBulkAction }:
         searchKey='nombre'
         filters={[
           {
-            columnId: 'status',
+            columnId: 'estado',
             title: 'Estado',
             options: [
               { label: 'Activo', value: 'true' },

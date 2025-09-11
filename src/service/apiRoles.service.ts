@@ -15,11 +15,11 @@ class ApiRolesService {
   }
 
   async getRolesByEmpresa(empresaId: number): Promise<Role[]> {
+    const url = `${rutasBack.roles.getRolesByEmpresa}/${empresaId}`;
     try {
-      const response = await axiosService.get(`${rutasBack.roles.getRolesByEmpresa}/${empresaId}`)
+      const response = await axiosService.get(url)
       return response.data.map((role: any) => this.mapBackendPermissionsToFrontend(role))
     } catch (error) {
-      console.error('Error fetching roles by empresa:', error)
       throw new Error('Failed to fetch roles by empresa')
     }
   }
@@ -211,10 +211,9 @@ class ApiRolesService {
     // Map empresa information if it exists
     const empresaInfo = backendRole.empresa ? {
       id: backendRole.empresa.id,
-      name: backendRole.empresa.nombre || backendRole.empresa.name
+      nombre: backendRole.empresa.nombre || backendRole.empresa.name
     } : undefined
-
-    return {
+    const mappedRole = {
       id: backendRole.id,
       nombre: backendRole.nombre,
       empresa_id: backendRole.empresa_id,
@@ -224,7 +223,8 @@ class ApiRolesService {
       updated_at: backendRole.updated_at,
       deleted_at: backendRole.deleted_at,
       permisos: defaultPermissions
-    }
+    };
+    return mappedRole;
   }
 }
 
