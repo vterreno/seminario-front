@@ -10,7 +10,8 @@ import {
   CreditCard,
   Briefcase,
   UserCheck,
-  MapPin
+  MapPin,
+  Building2
 } from 'lucide-react'
 import { type SidebarData } from '../types'
 import { getStorageItem } from '@/hooks/use-local-storage'
@@ -230,6 +231,16 @@ export const getSidebarData = (): SidebarData => {
       title: 'Sucursales',
       url: '/settings/sucursales',
       icon: MapPin,
+      backgroundColor: '#40ba22',
+      textColor: '#ffffff',
+    })
+  }
+
+  if (hasPermission(userData, 'configuracion_empresa')) {
+    configuracionItems.push({
+      title: 'Configuración de empresa',
+      url: '/settings/company',
+      icon: Building2,
       backgroundColor: '#40ba22',
       textColor: '#ffffff',
     })
