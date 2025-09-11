@@ -19,9 +19,9 @@ import { Input } from '@/components/ui/input'
 import apiCorreoService from '@/service/apiCorreo.service'
 
 const formSchema = z.object({
-  email: z.email({
-    error: (iss) => (iss.input === '' ? 'Por favor ingrese su correo electrónico' : undefined),
-  }),
+  email: z.string()
+    .min(1, 'Por favor ingrese su correo electrónico')
+    .email('El formato del correo electrónico no es válido'),
 })
 
 export function ForgotPasswordForm({
@@ -49,7 +49,7 @@ export function ForgotPasswordForm({
       },
       error: () => {
         setIsLoading(false);
-        return 'Error al iniciar sesión'; 
+        return 'Error al enviar el correo electrónico. Por favor, intente nuevamente.'; 
       },
     })
   }
