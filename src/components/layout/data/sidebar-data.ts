@@ -157,7 +157,7 @@ export const getSidebarData = (): SidebarData => {
       title: 'Roles',
       url: '/roles',
       icon: UserCheck,
-      backgroundColor: '#f7c33b',
+      backgroundColor: '#40ba22',
       textColor: '#ffffff',
     })
   }
