@@ -16,6 +16,7 @@ import {
 import { type SidebarData } from '../types'
 import { getStorageItem } from '@/hooks/use-local-storage'
 import { STORAGE_KEYS } from '@/lib/constants'
+import { hasPermission } from '@/lib/auth-utils'
 
 interface UserData {
   name: string

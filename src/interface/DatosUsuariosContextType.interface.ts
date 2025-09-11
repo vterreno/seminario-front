@@ -5,4 +5,5 @@ export interface DatosUsuariosContextType {
     crearUsuario: (usuario: any) => Promise<any>;
     login: (email: string, password: string) => Promise<any>;
     logout: () => void;
+    cambiarContrasena: (email: string, nuevaContrasena: string) => Promise<any>;
 }
