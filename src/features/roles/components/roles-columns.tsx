@@ -8,6 +8,8 @@ import { DataTableRowActions } from './data-table-row-actions'
 import { Badge } from '@/components/ui/badge'
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
+import { getStorageItem } from '@/hooks/use-local-storage'
+import { STORAGE_KEYS } from '@/lib/constants'
 
 declare module '@tanstack/react-table' {
   interface ColumnMeta<TData, TValue> {
@@ -44,14 +46,26 @@ export const rolesColumns = (options: RolesColumnsOptions = {}): ColumnDef<Role>
       meta: {
         className: cn('sticky md:table-cell start-0 z-10 rounded-tl-[inherit]'),
       },
-      cell: ({ row }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label='Seleccionar fila'
-          className='translate-y-[2px]'
-        />
-      ),
+      cell: ({ row }) => {
+        // Obtener datos del usuario actual desde localStorage
+        const userData = getStorageItem(STORAGE_KEYS.USER_DATA, null) as any
+        const currentUserRoles = userData?.roles || []
+        const role = row.original
+        
+        // Verificar si es el propio rol del usuario
+        const isOwnRole = currentUserRoles.some((userRole: any) => userRole.nombre === role.nombre)
+        
+        return (
+          <Checkbox
+            checked={row.getIsSelected()}
+            onCheckedChange={(value) => row.toggleSelected(!!value)}
+            aria-label='Seleccionar fila'
+            className='translate-y-[2px]'
+            disabled={isOwnRole}
+            title={isOwnRole ? 'No puedes seleccionar tu propio rol' : undefined}
+          />
+        )
+      },
       enableSorting: false,
       enableHiding: false,
     })
@@ -65,7 +79,24 @@ export const rolesColumns = (options: RolesColumnsOptions = {}): ColumnDef<Role>
         <DataTableColumnHeader column={column} title='Nombre del rol' />
       ),
       cell: ({ row }) => {
-        return <LongText className='max-w-36'>{row.getValue('nombre')}</LongText>
+        // Obtener datos del usuario actual desde localStorage
+        const userData = getStorageItem(STORAGE_KEYS.USER_DATA, null) as any
+        const currentUserRoles = userData?.roles || []
+        const role = row.original
+        
+        // Verificar si es el propio rol del usuario
+        const isOwnRole = currentUserRoles.some((userRole: any) => userRole.nombre === role.nombre)
+        
+        return (
+          <div className="flex items-center gap-2">
+            <LongText className='max-w-36'>{row.getValue('nombre')}</LongText>
+            {isOwnRole && (
+              <Badge variant="secondary" className="text-xs">
+                Tu rol
+              </Badge>
+            )}
+          </div>
+        )
       },
       meta: { 
         className: 'w-36',
@@ -95,15 +126,15 @@ export const rolesColumns = (options: RolesColumnsOptions = {}): ColumnDef<Role>
       },
     },
     {
-      accessorKey: 'status',
+      accessorKey: 'estado',
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title='Estado' />
       ),
       cell: ({ row }) => {
-        const status = row.getValue('status') as boolean
+        const estado = row.getValue('estado') as boolean
         return (
-          <Badge variant={status ? 'green' : 'secondary'}>
-            {status ? 'Activo' : 'Inactivo'}
+          <Badge variant={estado ? 'green' : 'secondary'}>
+            {estado ? 'Activo' : 'Inactivo'}
           </Badge>
         )
       },

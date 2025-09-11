@@ -12,6 +12,8 @@ import {
 import { Role } from '../data/schema'
 import { useRoles } from './roles-provider'
 import { usePermissions } from '@/hooks/use-permissions'
+import { getStorageItem } from '@/hooks/use-local-storage'
+import { STORAGE_KEYS } from '@/lib/constants'
 
 type DataTableRowActionsProps = {
   row: Row<Role>
@@ -22,9 +24,16 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
   const { hasPermission } = usePermissions()
   const role = row.original
 
-  // Verificar permisos
-  const canEdit = hasPermission('roles_modificar')
-  const canDelete = hasPermission('roles_eliminar')
+  // Obtener datos del usuario actual desde localStorage
+  const userData = getStorageItem(STORAGE_KEYS.USER_DATA, null) as any
+  const currentUserRoles = userData?.roles || []
+  
+  // Verificar si es el propio rol del usuario (buscar por nombre en todos los roles del usuario)
+  const isOwnRole = currentUserRoles.some((userRole: any) => userRole.nombre === role.nombre)
+
+  // Verificar permisos (pero no permitir editar/eliminar el propio rol)
+  const canEdit = hasPermission('roles_modificar') && !isOwnRole
+  const canDelete = hasPermission('roles_eliminar') && !isOwnRole
 
   // Si no tiene ningún permiso, no mostrar el menú
   if (!canEdit && !canDelete) {

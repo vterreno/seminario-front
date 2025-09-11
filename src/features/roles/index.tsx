@@ -79,16 +79,17 @@ export function Roles() {
       const userEmpresaId = userData?.empresa?.id
       const isSuperAdmin = !userEmpresaId // If user doesn't have empresa_id, they are superadmin
 
-      // If superadmin, fetch all roles from all companies
-      // Otherwise, fetch only roles from user's company
-      const data = await apiRolesService.getAllRoles()
+      let data: Role[]
+      
+      if (isSuperAdmin) {
+        // Superadmin: get all roles from all companies
+        data = await apiRolesService.getAllRoles()
+      } else {
+        // Regular admin: get only roles from their company
+        data = await apiRolesService.getRolesByEmpresa(userEmpresaId!)
+      }
 
-      // Filter roles by empresa if not superadmin
-      const filteredRoles = isSuperAdmin
-        ? data
-        : data.filter(role => role.empresa?.id === userEmpresaId)
-
-      setRoles(filteredRoles)
+      setRoles(data)
     } catch (error) {
       console.error('Error fetching roles:', error)
       toast.error('Error al cargar los roles')

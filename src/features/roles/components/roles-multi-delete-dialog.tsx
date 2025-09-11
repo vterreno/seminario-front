@@ -11,6 +11,8 @@ import {
 import { toast } from 'sonner'
 import { type Role } from '../data/schema'
 import apiRolesService from '@/service/apiRoles.service'
+import { getStorageItem } from '@/hooks/use-local-storage'
+import { STORAGE_KEYS } from '@/lib/constants'
 
 type RolesMultiDeleteDialogProps<TData> = {
   open: boolean
@@ -28,7 +30,21 @@ export function RolesMultiDeleteDialog<TData>({
   const selectedRows = table.getFilteredSelectedRowModel().rows
   const selectedRoles = selectedRows.map((row) => row.original as Role)
 
+  // Obtener datos del usuario actual desde localStorage
+  const userData = getStorageItem(STORAGE_KEYS.USER_DATA, null) as any
+  const currentUserRoles = userData?.roles || []
+  
+  // Verificar si alguno de los roles seleccionados es del usuario actual
+  const includesOwnRole = selectedRoles.some(role => 
+    currentUserRoles.some((userRole: any) => userRole.nombre === role.nombre)
+  )
+
   const handleDelete = async () => {
+    if (includesOwnRole) {
+      toast.error('No puedes eliminar tu propio rol')
+      return
+    }
+    
     try {
       const roleIds = selectedRoles.map(role => role.id!).filter(id => id !== undefined)
       await apiRolesService.bulkDeleteRoles(roleIds)
