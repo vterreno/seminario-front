@@ -55,7 +55,3 @@ export function Bienvenida() {
         </>
     )
 }
-
-export default function BienvenidaPage() {
-  return <Bienvenida />
-}

@@ -31,7 +31,7 @@ interface UserData {
       nombre: string
       codigo: string
     }>
-    permisos?: Record<string, boolean>
+    permisos?: Record<string, boolean> // Soporte para permisos en formato objeto { permiso: true/false }
   }>
 }
 
