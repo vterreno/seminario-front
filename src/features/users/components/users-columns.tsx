@@ -103,12 +103,6 @@ export const usersColumns = (options: UsersColumnsOptions = {}): ColumnDef<User>
         const currentUserId = userData?.id
         const user = row.original
         
-        // Debug: mostrar información en consola
-        console.log('User Data from localStorage:', userData)
-        console.log('Current User ID:', currentUserId)
-        console.log('Row User:', user)
-        console.log('Is Own User?:', user.id === currentUserId)
-        
         // Verificar si es el propio usuario - probemos también con email como fallback
         const isOwnUserById = user.id === currentUserId
         const isOwnUserByEmail = userData?.email && user.email === userData.email
