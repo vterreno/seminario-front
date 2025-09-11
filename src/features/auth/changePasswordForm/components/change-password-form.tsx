@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useContext } from 'react'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -15,7 +15,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import apiUserService from '@/service/apiUser.service'
+import { AuthContext } from '@/context/auth-provider'
 import { useNavigate, useSearch } from '@tanstack/react-router'
 import { Route } from '@/routes/(auth)/change-password'
 
@@ -37,6 +37,8 @@ export function ChangePasswordForm({
   const [isLoading, setIsLoading] = useState(false)
   const search = useSearch({from: Route.id});
   const email = search.email;
+  const { cambiarContrasena } = useContext(AuthContext);
+  
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -47,7 +49,7 @@ export function ChangePasswordForm({
 
   function onSubmit(data: z.infer<typeof formSchema>) {
     setIsLoading(true)
-    toast.promise(apiUserService.cambiarContraseña(email, data.newPassword), {
+    toast.promise(cambiarContrasena(email, data.newPassword), {
       loading: 'Cambiando contraseña...',
       success: () => {
         setIsLoading(false)

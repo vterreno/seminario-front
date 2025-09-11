@@ -10,11 +10,13 @@ import {
   CreditCard,
   Briefcase,
   UserCheck,
-  MapPin
+  MapPin,
+  Building2
 } from 'lucide-react'
 import { type SidebarData } from '../types'
 import { getStorageItem } from '@/hooks/use-local-storage'
 import { STORAGE_KEYS } from '@/lib/constants'
+import { hasPermission } from '@/lib/auth-utils'
 
 interface UserData {
   name: string
@@ -238,7 +240,14 @@ export const getSidebarData = (): SidebarData => {
               icon: MapPin,
               backgroundColor: '#40ba22', // blue-800
               textColor: '#ffffff',
-            }
+            },
+            ...(hasPermission('configuracion_empresa') ? [{
+              title: 'Configuración de empresa',
+              url: '/settings/company',
+              icon: Building2,
+              backgroundColor: '#40ba22',
+              textColor: '#ffffff',
+            }] : [])
             // {
             //   title: 'Notifications',
             //   url: '/settings/notifications',

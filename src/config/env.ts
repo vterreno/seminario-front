@@ -36,6 +36,7 @@ export const rutasBack = {
         deleteEmpresa: `${baseUrl}/empresa`,
         getEmpresaPorId: `${baseUrl}/empresa`,
         deleteEmpresas: `${baseUrl}/empresa/bulk/delete`,
+        updateMyCompany: `${baseUrl}/empresa/mi-empresa`,
     },
     correo: {
         sendMail: `${baseUrl}/mail-service/send`,

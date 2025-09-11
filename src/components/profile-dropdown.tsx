@@ -44,16 +44,14 @@ export function ProfileDropdown() {
               </p>
             </div>
           </DropdownMenuLabel>
-          <DropdownMenuSeparator />
+          {/* <DropdownMenuSeparator />
           <DropdownMenuGroup>
             <DropdownMenuItem asChild>
               <Link to='/settings'>
                 Perfil
-                {/* <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut> */}
               </Link>
             </DropdownMenuItem>
-            {/* <DropdownMenuItem>New Team</DropdownMenuItem> */}
-          </DropdownMenuGroup>
+          </DropdownMenuGroup> */}
           <DropdownMenuSeparator />
           <DropdownMenuItem
             onClick={() => {
