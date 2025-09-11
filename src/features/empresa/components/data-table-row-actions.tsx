@@ -6,10 +6,12 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Empresa } from '../data/schema'
 import { useEmpresa } from './empresa-provider'
+import { usePermissions } from '@/hooks/use-permissions'
 
 type DataTableRowActionsProps = {
   row: Row<Empresa>
@@ -17,7 +19,17 @@ type DataTableRowActionsProps = {
 
 export function DataTableRowActions({ row }: DataTableRowActionsProps) {
   const { setOpen, setCurrentRow } = useEmpresa()
+  const { hasPermission } = usePermissions()
   const empresa = row.original
+
+  // Verificar permisos
+  const canEdit = hasPermission('empresa_modificar')
+  const canDelete = hasPermission('empresa_eliminar')
+
+  // Si no tiene ningún permiso, no mostrar el menú
+  if (!canEdit && !canDelete) {
+    return null
+  }
 
   return (
     <DropdownMenu>
@@ -31,25 +43,30 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align='end' className='w-[160px]'>
-        <DropdownMenuItem
-          onClick={() => {
-            setCurrentRow(empresa)
-            setOpen('edit')
-          }}
-        >
-          <Pencil size={16} />
-          Editar
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          onClick={() => {
-            setCurrentRow(empresa)
-            setOpen('delete')
-          }}
-          className='text-red-600 hover:text-red-600'
-        >
-          <Trash2 size={16} color='red'/>
-          Eliminar
-        </DropdownMenuItem>
+        {canEdit && (
+          <DropdownMenuItem
+            onClick={() => {
+              setCurrentRow(empresa)
+              setOpen('edit')
+            }}
+          >
+            <Pencil size={16} />
+            Editar
+          </DropdownMenuItem>
+        )}
+        {canEdit && canDelete && <DropdownMenuSeparator />}
+        {canDelete && (
+          <DropdownMenuItem
+            onClick={() => {
+              setCurrentRow(empresa)
+              setOpen('delete')
+            }}
+            className='text-red-600 hover:text-red-600'
+          >
+            <Trash2 size={16} color='red'/>
+            Eliminar
+          </DropdownMenuItem>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   )

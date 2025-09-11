@@ -1,184 +1,181 @@
-import { ColumnDef } from '@tanstack/react-table'
+import { type ColumnDef } from '@tanstack/react-table'
+import { cn } from '@/lib/utils'
 import { Checkbox } from '@/components/ui/checkbox'
 import { DataTableColumnHeader } from '@/components/data-table'
+import { LongText } from '@/components/long-text'
+import { type Role } from '../data/schema'
 import { DataTableRowActions } from './data-table-row-actions'
-import { Role } from '../data/schema'
 import { Badge } from '@/components/ui/badge'
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
 
 declare module '@tanstack/react-table' {
   interface ColumnMeta<TData, TValue> {
+    className?: string
     displayName?: string
   }
 }
 
-const baseColumns: ColumnDef<Role>[] = [
-  {
-    id: 'select',
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && 'indeterminate')
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label='Seleccionar todos'
-        className='translate-y-[2px]'
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label='Seleccionar fila'
-        className='translate-y-[2px]'
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: 'id',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='ID' />
-    ),
-    cell: ({ row }) => <div className='w-[80px]'>{row.getValue('id')}</div>,
-    enableSorting: true,
-    enableHiding: false,
-  },
-  {
-    accessorKey: 'nombre',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Nombre del rol' />
-    ),
-    cell: ({ row }) => {
-      return (
-        <div className='flex space-x-2'>
-          <span className='max-w-[200px] truncate font-medium'>
-            {row.getValue('nombre')}
-          </span>
-        </div>
-      )
-    },
-    meta: {
-      displayName: 'Nombre',
-      className: '',
-    },
-    enableSorting: true,
-    filterFn: (row, id, value) => {
-      const cellValue = String(row.getValue(id)).toLowerCase()
-      const searchValue = String(value).toLowerCase()
-      return cellValue.includes(searchValue)
-    },
-  },
-  {
-    accessorKey: 'empresa_id',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Empresa' />
-    ),
-    cell: ({ row }) => {
-      const role = row.original as Role
-      const empresaNombre = role.empresa?.nombre || `Empresa ${role.empresa_id}`
-      
-      return (
-        <div className='w-[140px] truncate'>
-          {empresaNombre}
-        </div>
-      )
-    },
-    meta: {
-      displayName: 'Empresa',
-      className: '',
-    },
-    enableSorting: true,
-    filterFn: (row, _, value) => {
-      const role = row.original as Role
-      const empresaNombre = role.empresa?.nombre || ''
-      const searchValue = String(value).toLowerCase()
-      return empresaNombre.toLowerCase().includes(searchValue)
-    },
-  },
-  {
-    accessorKey: 'estado',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Estado' />
-    ),
-    cell: ({ row }) => {
-      const estado = row.getValue('estado') as boolean
+interface RolesColumnsOptions {
+  showEmpresaColumn?: boolean
+  canBulkAction?: boolean // Nueva opción para controlar bulk actions
+}
 
-      return (
-        <Badge variant={estado ? 'green' : 'secondary'}>
-          {estado ? 'Activo' : 'Inactivo'}
-        </Badge>
-      )
+export const rolesColumns = (options: RolesColumnsOptions = {}): ColumnDef<Role>[] => {
+  const { showEmpresaColumn = false, canBulkAction = true } = options
+  
+  const baseColumns: ColumnDef<Role>[] = []
+
+  // Solo agregar la columna de selección si tiene permisos para bulk actions
+  if (canBulkAction) {
+    baseColumns.push({
+      id: 'select',
+      header: ({ table }) => (
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && 'indeterminate')
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label='Seleccionar todos'
+          className='translate-y-[2px]'
+        />
+      ),
+      meta: {
+        className: cn('sticky md:table-cell start-0 z-10 rounded-tl-[inherit]'),
+      },
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label='Seleccionar fila'
+          className='translate-y-[2px]'
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    })
+  }
+
+  // Agregar las demás columnas
+  baseColumns.push(
+    {
+      accessorKey: 'nombre',
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title='Nombre del rol' />
+      ),
+      cell: ({ row }) => {
+        return <LongText className='max-w-36'>{row.getValue('nombre')}</LongText>
+      },
+      meta: { 
+        className: 'w-36',
+        displayName: 'Nombre'
+      },
     },
-    meta: {
-      displayName: 'Estado',
-      className: '',
+    {
+      accessorKey: 'descripcion',
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title='Descripción' />
+      ),
+      cell: ({ row }) => (
+        <div className='max-w-[300px] truncate'>
+          {row.getValue('descripcion') || '-'}
+        </div>
+      ),
+      meta: {
+        displayName: 'Descripción'
+      },
     },
-    filterFn: (row, id, value) => {
-      const estado = row.getValue(id) as boolean
-      return value.includes(estado.toString())
+    {
+      id: 'permisos_count',
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title='Permisos' />
+      ),
+      cell: ({ row }) => {
+        const { permisos } = row.original
+        const permisosCount = permisos ? Object.keys(permisos).length : 0
+        return (
+          <div className='flex items-center gap-x-2'>
+            <Badge variant='outline' className='text-xs'>
+              {permisosCount} {permisosCount === 1 ? 'permiso' : 'permisos'}
+            </Badge>
+          </div>
+        )
+      },
+      enableSorting: false,
+      enableHiding: false,
+      meta: {
+        displayName: 'Permisos'
+      },
     },
-    enableSorting: true,
-  },
-  {
+    {
+      accessorKey: 'status',
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title='Estado' />
+      ),
+      cell: ({ row }) => {
+        const status = row.getValue('status') as boolean
+        return (
+          <Badge variant={status ? 'green' : 'secondary'}>
+            {status ? 'Activo' : 'Inactivo'}
+          </Badge>
+        )
+      },
+      enableSorting: true,
+      meta: {
+        displayName: 'Estado'
+      },
+    }
+  )
+
+  // Agregar columna de empresa solo si es necesario
+  if (showEmpresaColumn) {
+    const empresaColumnIndex = canBulkAction ? 4 : 3 // Ajustar índice según si hay columna select
+    baseColumns.splice(empresaColumnIndex, 0, {
+      id: 'empresa',
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title='Empresa' />
+      ),
+      cell: ({ row }) => {
+        const { empresa } = row.original
+        return (
+          <div className='flex items-center gap-x-2'>
+            <span className='text-sm'>{empresa?.nombre || 'Sin empresa'}</span>
+          </div>
+        )
+      },
+      enableSorting: false,
+      meta: {
+        displayName: 'Empresa'
+      },
+    })
+  }
+
+  // Agregar columna de fecha de creación
+  baseColumns.push({
     accessorKey: 'created_at',
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='Fecha de creación' />
     ),
     cell: ({ row }) => {
-      const created_at = row.getValue('created_at') as string
+      const created_at = row.getValue('created_at') as Date
       return (
         <div className='w-[140px]'>
-          {created_at ? format(new Date(created_at), 'dd/MM/yyyy', { locale: es }) : '-'}
+          {created_at ? format(created_at, 'dd/MM/yyyy', { locale: es }) : '-'}
         </div>
       )
     },
-    meta: {
-      displayName: 'Fecha de creación',
-      className: '',
-    },
     enableSorting: true,
-  },
-  {
-    accessorKey: 'updated_at',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Última actualización' />
-    ),
-    cell: ({ row }) => {
-      const updated_at = row.getValue('updated_at') as string
-      return (
-        <div className='w-[140px]'>
-          {updated_at ? format(new Date(updated_at), 'dd/MM/yyyy', { locale: es }) : '-'}
-        </div>
-      )
-    },
     meta: {
-      displayName: 'Última actualización',
-      className: '',
+      displayName: 'Fecha de creación'
     },
-    enableSorting: true,
-  },
-  {
+  })
+
+  // Agregar columna de acciones
+  baseColumns.push({
     id: 'actions',
-    cell: ({ row }) => <DataTableRowActions row={row} />,
-  },
-]
+    cell: DataTableRowActions,
+  })
 
-// Function to get columns based on user type
-export function getRolesColumns(isSuperAdmin: boolean): ColumnDef<Role>[] {
-  if (isSuperAdmin) {
-    // Superadmin sees all columns including empresa
-    return baseColumns
-  } else {
-    // Regular users don't see empresa column
-    return baseColumns.filter(column => 
-      !('accessorKey' in column) || column.accessorKey !== 'empresa_id'
-    )
-  }
+  return baseColumns
 }
-
-// Export the base columns for backward compatibility
-export const rolesColumns = baseColumns

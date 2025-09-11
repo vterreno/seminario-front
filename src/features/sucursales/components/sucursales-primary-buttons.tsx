@@ -1,9 +1,17 @@
 import { Button } from '@/components/ui/button'
 import { Plus } from 'lucide-react'
 import { useSucursales } from './sucursales-provider'
+import { usePermissions } from '@/hooks/use-permissions'
 
 export function SucursalesPrimaryButtons() {
   const { setOpen } = useSucursales()
+  const { hasPermission } = usePermissions()
+
+  const canAdd = hasPermission('sucursal_agregar')
+
+  if (!canAdd) {
+    return null
+  }
 
   return (
     <div className='flex items-center space-x-2'>

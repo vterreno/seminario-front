@@ -9,9 +9,19 @@ import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
 import { Badge } from '@/components/ui/badge'
 
-export const usersColumns = (showEmpresaColumn: boolean = false): ColumnDef<User>[] => {
-  const baseColumns: ColumnDef<User>[] = [
-    {
+interface UsersColumnsOptions {
+  showEmpresaColumn?: boolean
+  canBulkAction?: boolean // Nueva opción
+}
+
+export const usersColumns = (options: UsersColumnsOptions = {}): ColumnDef<User>[] => {
+  const { showEmpresaColumn = false, canBulkAction = true } = options
+  
+  const baseColumns: ColumnDef<User>[] = []
+
+  // Solo agregar la columna de selección si tiene permisos para bulk actions
+  if (canBulkAction) {
+    baseColumns.push({
       id: 'select',
       header: ({ table }) => (
         <Checkbox
@@ -37,7 +47,11 @@ export const usersColumns = (showEmpresaColumn: boolean = false): ColumnDef<User
       ),
       enableSorting: false,
       enableHiding: false,
-    },
+    })
+  }
+
+  // Agregar las demás columnas
+  baseColumns.push(
     {
       id: 'nombre',
       header: ({ column }) => (
@@ -89,27 +103,13 @@ export const usersColumns = (showEmpresaColumn: boolean = false): ColumnDef<User
       },
       enableSorting: false,
       enableHiding: false,
-    },
-     {
-      accessorKey: 'created_at',
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='Fecha de creación' />
-      ),
-      cell: ({ row }) => {
-        const created_at = row.getValue('created_at') as Date
-        return (
-          <div className='w-[140px]'>
-            {created_at ? format(created_at, 'dd/MM/yyyy', { locale: es }) : '-'}
-          </div>
-        )
-      },
-      enableSorting: true,
-    },
-  ]
+    }
+  )
 
   // Add empresa column only for superadmin
   if (showEmpresaColumn) {
-    baseColumns.splice(4, 0, {
+    const empresaColumnIndex = canBulkAction ? 4 : 3 // Ajustar índice según si hay columna select
+    baseColumns.splice(empresaColumnIndex, 0, {
       id: 'empresa',
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title='Empresa' />
@@ -125,7 +125,23 @@ export const usersColumns = (showEmpresaColumn: boolean = false): ColumnDef<User
       enableSorting: false,
     })
   }
-  
+
+  // Agregar columna de fecha de creación
+  baseColumns.push({
+    accessorKey: 'created_at',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='Fecha de creación' />
+    ),
+    cell: ({ row }) => {
+      const created_at = row.getValue('created_at') as Date
+      return (
+        <div className='w-[140px]'>
+          {created_at ? format(created_at, 'dd/MM/yyyy', { locale: es }) : '-'}
+        </div>
+      )
+    },
+    enableSorting: true,
+  })
 
   // Add actions column
   baseColumns.push({
