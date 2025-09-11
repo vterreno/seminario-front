@@ -73,20 +73,6 @@ export const rolesColumns = (options: RolesColumnsOptions = {}): ColumnDef<Role>
       },
     },
     {
-      accessorKey: 'descripcion',
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='Descripción' />
-      ),
-      cell: ({ row }) => (
-        <div className='max-w-[300px] truncate'>
-          {row.getValue('descripcion') || '-'}
-        </div>
-      ),
-      meta: {
-        displayName: 'Descripción'
-      },
-    },
-    {
       id: 'permisos_count',
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title='Permisos' />
