@@ -73,7 +73,7 @@ export const usersColumns = (options: UsersColumnsOptions = {}): ColumnDef<User>
         
         // Si es el usuario propio, no renderizar el checkbox
         if (isOwnUser) {
-          return <div className="w-[20px]"></div> // Placeholder para mantener el espacio
+          return <Checkbox disabled aria-hidden="true" tabIndex={-1} className="pointer-events-none" />
         }
         
         return (
