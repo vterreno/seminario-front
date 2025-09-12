@@ -116,7 +116,7 @@ export const usersColumns = (options: UsersColumnsOptions = {}): ColumnDef<User>
             <LongText className='max-w-36'>{fullName}</LongText>
             {isOwnUser && (
               <Badge variant="secondary" className="text-xs">
-                Tú {isOwnUserById ? '(ID)' : '(Email)'}
+                Vos
               </Badge>
             )}
           </div>
