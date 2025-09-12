@@ -32,17 +32,36 @@ export const rolesColumns = (options: RolesColumnsOptions = {}): ColumnDef<Role>
   if (canBulkAction) {
     baseColumns.push({
       id: 'select',
-      header: ({ table }) => (
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && 'indeterminate')
-          }
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label='Seleccionar todos'
-          className='translate-y-[2px]'
-        />
-      ),
+      header: ({ table }) => {
+        // Obtener datos del usuario actual desde localStorage para filtrar roles propios
+        const userData = getStorageItem(STORAGE_KEYS.USER_DATA, null) as any
+        const currentUserRoles = userData?.roles || []
+        
+        // Filtrar filas que no sean roles propios del usuario
+        const selectableRows = table.getRowModel().rows.filter(row => {
+          const role = row.original
+          return !currentUserRoles.some((userRole: any) => userRole.nombre === role.nombre)
+        })
+        
+        // Verificar cuántas filas seleccionables están seleccionadas
+        const selectedSelectableRows = selectableRows.filter(row => row.getIsSelected())
+        const isAllSelectableSelected = selectableRows.length > 0 && selectedSelectableRows.length === selectableRows.length
+        const isSomeSelectableSelected = selectedSelectableRows.length > 0 && selectedSelectableRows.length < selectableRows.length
+        
+        return (
+          <Checkbox
+            checked={isAllSelectableSelected || (isSomeSelectableSelected && 'indeterminate')}
+            onCheckedChange={(value) => {
+              // Seleccionar/deseleccionar solo las filas que no son roles propios
+              selectableRows.forEach(row => {
+                row.toggleSelected(!!value)
+              })
+            }}
+            aria-label='Seleccionar todos'
+            className='translate-y-[2px]'
+          />
+        )
+      },
       meta: {
         className: cn('sticky md:table-cell start-0 z-10 rounded-tl-[inherit]'),
       },
@@ -55,14 +74,17 @@ export const rolesColumns = (options: RolesColumnsOptions = {}): ColumnDef<Role>
         // Verificar si es el propio rol del usuario
         const isOwnRole = currentUserRoles.some((userRole: any) => userRole.nombre === role.nombre)
         
+        // Si es el rol propio, no renderizar el checkbox
+        if (isOwnRole) {
+          return null
+        }
+        
         return (
           <Checkbox
             checked={row.getIsSelected()}
             onCheckedChange={(value) => row.toggleSelected(!!value)}
             aria-label='Seleccionar fila'
             className='translate-y-[2px]'
-            disabled={isOwnRole}
-            title={isOwnRole ? 'No puedes seleccionar tu propio rol' : undefined}
           />
         )
       },

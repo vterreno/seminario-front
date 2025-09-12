@@ -8,6 +8,8 @@ import { DataTableRowActions } from './data-table-row-actions'
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
 import { Badge } from '@/components/ui/badge'
+import { getStorageItem } from '@/hooks/use-local-storage'
+import { STORAGE_KEYS } from '@/lib/constants'
 
 interface UsersColumnsOptions {
   showEmpresaColumn?: boolean
@@ -23,28 +25,66 @@ export const usersColumns = (options: UsersColumnsOptions = {}): ColumnDef<User>
   if (canBulkAction) {
     baseColumns.push({
       id: 'select',
-      header: ({ table }) => (
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && 'indeterminate')
-          }
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label='Select all'
-          className='translate-y-[2px]'
-        />
-      ),
+      header: ({ table }) => {
+        // Obtener datos del usuario actual desde localStorage para filtrar usuario propio
+        const userData = getStorageItem(STORAGE_KEYS.USER_DATA, null) as any
+        const currentUserId = userData?.id
+        
+        // Filtrar filas que no sean del usuario actual
+        const selectableRows = table.getRowModel().rows.filter(row => {
+          const user = row.original
+          const isOwnUserById = user.id === currentUserId
+          const isOwnUserByEmail = userData?.email && user.email === userData.email
+          return !(isOwnUserById || isOwnUserByEmail)
+        })
+        
+        // Verificar cuántas filas seleccionables están seleccionadas
+        const selectedSelectableRows = selectableRows.filter(row => row.getIsSelected())
+        const isAllSelectableSelected = selectableRows.length > 0 && selectedSelectableRows.length === selectableRows.length
+        const isSomeSelectableSelected = selectedSelectableRows.length > 0 && selectedSelectableRows.length < selectableRows.length
+        
+        return (
+          <Checkbox
+            checked={isAllSelectableSelected || (isSomeSelectableSelected && 'indeterminate')}
+            onCheckedChange={(value) => {
+              // Seleccionar/deseleccionar solo las filas que no son del usuario actual
+              selectableRows.forEach(row => {
+                row.toggleSelected(!!value)
+              })
+            }}
+            aria-label='Seleccionar todos'
+            className='translate-y-[2px]'
+          />
+        )
+      },
       meta: {
         className: cn('sticky md:table-cell start-0 z-10 rounded-tl-[inherit]'),
       },
-      cell: ({ row }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label='Select row'
-          className='translate-y-[2px]'
-        />
-      ),
+      cell: ({ row }) => {
+        // Obtener datos del usuario actual desde localStorage
+        const userData = getStorageItem(STORAGE_KEYS.USER_DATA, null) as any
+        const currentUserId = userData?.id
+        const user = row.original
+        
+        // Verificar si es el propio usuario - usando múltiples métodos de verificación
+        const isOwnUserById = user.id === currentUserId
+        const isOwnUserByEmail = userData?.email && user.email === userData.email
+        const isOwnUser = isOwnUserById || isOwnUserByEmail
+        
+        // Si es el usuario propio, no renderizar el checkbox
+        if (isOwnUser) {
+          return <Checkbox disabled aria-hidden="true" tabIndex={-1} className="pointer-events-none" />
+        }
+        
+        return (
+          <Checkbox
+            checked={row.getIsSelected()}
+            onCheckedChange={(value) => row.toggleSelected(!!value)}
+            aria-label='Seleccionar fila'
+            className='translate-y-[2px]'
+          />
+        )
+      },
       enableSorting: false,
       enableHiding: false,
     })
@@ -58,9 +98,29 @@ export const usersColumns = (options: UsersColumnsOptions = {}): ColumnDef<User>
         <DataTableColumnHeader column={column} title='Nombre' />
       ),
       cell: ({ row }) => {
-        const { nombre, apellido } = row.original
+        // Obtener datos del usuario actual desde localStorage
+        const userData = getStorageItem(STORAGE_KEYS.USER_DATA, null) as any
+        const currentUserId = userData?.id
+        const user = row.original
+        
+        // Verificar si es el propio usuario - probemos también con email como fallback
+        const isOwnUserById = user.id === currentUserId
+        const isOwnUserByEmail = userData?.email && user.email === userData.email
+        const isOwnUser = isOwnUserById || isOwnUserByEmail
+        
+        const { nombre, apellido } = user
         const fullName = `${nombre} ${apellido}`
-        return <LongText className='max-w-36'>{fullName}</LongText>
+        
+        return (
+          <div className="flex items-center gap-2">
+            <LongText className='max-w-36'>{fullName}</LongText>
+            {isOwnUser && (
+              <Badge variant="secondary" className="text-xs">
+                Vos
+              </Badge>
+            )}
+          </div>
+        )
       },
       meta: { className: 'w-36' },
     },

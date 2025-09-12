@@ -89,7 +89,7 @@ export function UsersTable({ data, search, navigate, onSuccess, canBulkAction }:
       columnFilters,
       columnVisibility,
     },
-    enableRowSelection: true,
+    enableRowSelection: canBulkAction, // Usar canBulkAction para habilitar/deshabilitar la selección de filas
     onPaginationChange,
     onColumnFiltersChange,
     onRowSelectionChange: setRowSelection,

@@ -13,6 +13,8 @@ import {
 import { type User } from '../data/schema'
 import { useUsers } from './users-provider'
 import { usePermissions } from '@/hooks/use-permissions'
+import { getStorageItem } from '@/hooks/use-local-storage'
+import { STORAGE_KEYS } from '@/lib/constants'
 
 type DataTableRowActionsProps = {
   row: Row<User>
@@ -21,6 +23,21 @@ type DataTableRowActionsProps = {
 export function DataTableRowActions({ row }: DataTableRowActionsProps) {
   const { setOpen, setCurrentRow } = useUsers()
   const { hasPermission } = usePermissions()
+  const user = row.original
+
+  // Obtener datos del usuario actual desde localStorage
+  const userData = getStorageItem(STORAGE_KEYS.USER_DATA, null) as any
+  const currentUserId = userData?.id
+  
+  // Verificar si es el propio usuario - usando múltiples métodos
+  const isOwnUserById = user.id === currentUserId
+  const isOwnUserByEmail = userData?.email && user.email === userData.email
+  const isOwnUser = isOwnUserById || isOwnUserByEmail
+
+  // Si es el usuario propio, no mostrar acciones
+  if (isOwnUser) {
+    return null
+  }
 
   // Verificar permisos
   const canEdit = hasPermission('usuario_modificar')

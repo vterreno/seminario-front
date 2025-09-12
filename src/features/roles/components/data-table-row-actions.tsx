@@ -31,9 +31,14 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
   // Verificar si es el propio rol del usuario (buscar por nombre en todos los roles del usuario)
   const isOwnRole = currentUserRoles.some((userRole: any) => userRole.nombre === role.nombre)
 
-  // Verificar permisos (pero no permitir editar/eliminar el propio rol)
-  const canEdit = hasPermission('roles_modificar') && !isOwnRole
-  const canDelete = hasPermission('roles_eliminar') && !isOwnRole
+  // Si es el rol propio del usuario, no mostrar acciones
+  if (isOwnRole) {
+    return null
+  }
+
+  // Verificar permisos
+  const canEdit = hasPermission('roles_modificar')
+  const canDelete = hasPermission('roles_eliminar')
 
   // Si no tiene ningún permiso, no mostrar el menú
   if (!canEdit && !canDelete) {

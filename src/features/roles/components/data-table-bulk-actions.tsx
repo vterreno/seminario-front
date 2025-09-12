@@ -13,8 +13,6 @@ import { type Role } from '../data/schema'
 import { RolesMultiDeleteDialog } from './roles-multi-delete-dialog'
 import apiRolesService from '@/service/apiRoles.service'
 import { usePermissions } from '@/hooks/use-permissions'
-import { getStorageItem } from '@/hooks/use-local-storage'
-import { STORAGE_KEYS } from '@/lib/constants'
 
 type DataTableBulkActionsProps<TData> = {
   table: Table<TData>
@@ -29,26 +27,12 @@ export function DataTableBulkActions<TData>({
   const { hasPermission } = usePermissions()
   const selectedRows = table.getFilteredSelectedRowModel().rows
 
-  // Obtener datos del usuario actual desde localStorage
-  const userData = getStorageItem(STORAGE_KEYS.USER_DATA, null) as any
-  const currentUserRoles = userData?.roles || []
-  
   const selectedRoles = selectedRows.map((row) => row.original as Role)
-  
-  // Verificar si alguno de los roles seleccionados es del usuario actual
-  const includesOwnRole = selectedRoles.some(role => 
-    currentUserRoles.some((userRole: any) => userRole.nombre === role.nombre)
-  )
 
-  const canModify = hasPermission('roles_modificar') && !includesOwnRole
-  const canDelete = hasPermission('roles_eliminar') && !includesOwnRole
+  const canModify = hasPermission('roles_modificar')
+  const canDelete = hasPermission('roles_eliminar')
 
   const handleBulkStatusChange = async (status: 'active' | 'inactive') => {
-    if (includesOwnRole) {
-      toast.error('No puedes cambiar el estado de tu propio rol')
-      return
-    }
-    
     const roleIds = selectedRoles.map(role => role.id!).filter(id => id !== undefined)
     
     try {
