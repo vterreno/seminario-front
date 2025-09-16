@@ -86,6 +86,7 @@ export const getFirstAvailableRoute = (userData: UserData | null): string => {
     { permiso: 'ventas_ver', ruta: '/ventas' },
     { permiso: 'compras_ver', ruta: '/compras' },
     { permiso: 'cliente_ver', ruta: '/contactos' },
+    { permiso: 'proveedor_ver', ruta: '/contactos' },
     { permiso: 'roles_ver', ruta: '/roles' },
     { permiso: 'sucursal_ver', ruta: '/settings/sucursales' },
   ]
@@ -172,8 +173,8 @@ export const getSidebarData = (): SidebarData => {
   // Sección General - basada en permisos específicos
   const generalItems = []
 
-  // Solo agregar si tiene permisos para ver clientes
-  if (hasPermission(userData, 'cliente_ver')) {
+  // Solo agregar si tiene permisos para ver clientes o proveedores
+  if (hasPermission(userData, 'cliente_ver') || hasPermission(userData, 'proveedor_ver')) {
     generalItems.push({
       title: 'Contactos',
       url: '/contactos',
