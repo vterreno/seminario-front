@@ -16,7 +16,6 @@ import {
 import { type SidebarData } from '../types'
 import { getStorageItem } from '@/hooks/use-local-storage'
 import { STORAGE_KEYS } from '@/lib/constants'
-import { hasPermission } from '@/lib/auth-utils'
 
 interface UserData {
   name: string
@@ -182,7 +181,7 @@ export const getSidebarData = (): SidebarData => {
       textColor: '#ffffff',
     })
   }
-  const productosSubItems: SidebarItem[] = []
+  const productosSubItems: { title: string; url: string; icon: React.ElementType; backgroundColor: string; textColor: string; }[] = []
   
   // Solo agregar si tiene permisos para ver productos
   if (hasPermission(userData, 'producto_ver')) {
@@ -254,6 +253,17 @@ export const getSidebarData = (): SidebarData => {
       title: 'Sucursales',
       url: '/settings/sucursales',
       icon: MapPin,
+      backgroundColor: '#40ba22',
+      textColor: '#ffffff',
+    })
+  }
+
+  // Solo agregar unidades de medida si tiene permisos para verlas
+  if (hasPermission(userData, 'unidad_ver')) {
+    configuracionItems.push({
+      title: 'Unidades de medida',
+      url: '/settings/unidades-medida',
+      icon: Package,
       backgroundColor: '#40ba22',
       textColor: '#ffffff',
     })

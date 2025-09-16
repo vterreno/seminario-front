@@ -41,6 +41,8 @@ import { Route as ClerkAuthenticatedUserManagementRouteImport } from './routes/c
 import { Route as ClerkauthSignUpRouteImport } from './routes/clerk/(auth)/sign-up'
 import { Route as ClerkauthSignInRouteImport } from './routes/clerk/(auth)/sign-in'
 import { Route as AuthenticatedVentaVentaRouteImport } from './routes/_authenticated/venta/venta'
+import { Route as AuthenticatedSettingsUnitsOfMeasureRouteImport } from './routes/_authenticated/settings/units-of-measure'
+import { Route as AuthenticatedSettingsUnidadesMedidaRouteImport } from './routes/_authenticated/settings/unidades-medida'
 import { Route as AuthenticatedSettingsSucursalesRouteImport } from './routes/_authenticated/settings/sucursales'
 import { Route as AuthenticatedSettingsNotificationsRouteImport } from './routes/_authenticated/settings/notifications'
 import { Route as AuthenticatedSettingsDisplayRouteImport } from './routes/_authenticated/settings/display'
@@ -214,6 +216,18 @@ const AuthenticatedVentaVentaRoute = AuthenticatedVentaVentaRouteImport.update({
   path: '/venta/venta',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedSettingsUnitsOfMeasureRoute =
+  AuthenticatedSettingsUnitsOfMeasureRouteImport.update({
+    id: '/units-of-measure',
+    path: '/units-of-measure',
+    getParentRoute: () => AuthenticatedSettingsRouteRoute,
+  } as any)
+const AuthenticatedSettingsUnidadesMedidaRoute =
+  AuthenticatedSettingsUnidadesMedidaRouteImport.update({
+    id: '/unidades-medida',
+    path: '/unidades-medida',
+    getParentRoute: () => AuthenticatedSettingsRouteRoute,
+  } as any)
 const AuthenticatedSettingsSucursalesRoute =
   AuthenticatedSettingsSucursalesRouteImport.update({
     id: '/sucursales',
@@ -296,6 +310,8 @@ export interface FileRoutesByFullPath {
   '/settings/display': typeof AuthenticatedSettingsDisplayRoute
   '/settings/notifications': typeof AuthenticatedSettingsNotificationsRoute
   '/settings/sucursales': typeof AuthenticatedSettingsSucursalesRoute
+  '/settings/unidades-medida': typeof AuthenticatedSettingsUnidadesMedidaRoute
+  '/settings/units-of-measure': typeof AuthenticatedSettingsUnitsOfMeasureRoute
   '/venta/venta': typeof AuthenticatedVentaVentaRoute
   '/clerk/sign-in': typeof ClerkauthSignInRoute
   '/clerk/sign-up': typeof ClerkauthSignUpRoute
@@ -335,6 +351,8 @@ export interface FileRoutesByTo {
   '/settings/display': typeof AuthenticatedSettingsDisplayRoute
   '/settings/notifications': typeof AuthenticatedSettingsNotificationsRoute
   '/settings/sucursales': typeof AuthenticatedSettingsSucursalesRoute
+  '/settings/unidades-medida': typeof AuthenticatedSettingsUnidadesMedidaRoute
+  '/settings/units-of-measure': typeof AuthenticatedSettingsUnitsOfMeasureRoute
   '/venta/venta': typeof AuthenticatedVentaVentaRoute
   '/clerk/sign-in': typeof ClerkauthSignInRoute
   '/clerk/sign-up': typeof ClerkauthSignUpRoute
@@ -379,6 +397,8 @@ export interface FileRoutesById {
   '/_authenticated/settings/display': typeof AuthenticatedSettingsDisplayRoute
   '/_authenticated/settings/notifications': typeof AuthenticatedSettingsNotificationsRoute
   '/_authenticated/settings/sucursales': typeof AuthenticatedSettingsSucursalesRoute
+  '/_authenticated/settings/unidades-medida': typeof AuthenticatedSettingsUnidadesMedidaRoute
+  '/_authenticated/settings/units-of-measure': typeof AuthenticatedSettingsUnitsOfMeasureRoute
   '/_authenticated/venta/venta': typeof AuthenticatedVentaVentaRoute
   '/clerk/(auth)/sign-in': typeof ClerkauthSignInRoute
   '/clerk/(auth)/sign-up': typeof ClerkauthSignUpRoute
@@ -422,6 +442,8 @@ export interface FileRouteTypes {
     | '/settings/display'
     | '/settings/notifications'
     | '/settings/sucursales'
+    | '/settings/unidades-medida'
+    | '/settings/units-of-measure'
     | '/venta/venta'
     | '/clerk/sign-in'
     | '/clerk/sign-up'
@@ -461,6 +483,8 @@ export interface FileRouteTypes {
     | '/settings/display'
     | '/settings/notifications'
     | '/settings/sucursales'
+    | '/settings/unidades-medida'
+    | '/settings/units-of-measure'
     | '/venta/venta'
     | '/clerk/sign-in'
     | '/clerk/sign-up'
@@ -504,6 +528,8 @@ export interface FileRouteTypes {
     | '/_authenticated/settings/display'
     | '/_authenticated/settings/notifications'
     | '/_authenticated/settings/sucursales'
+    | '/_authenticated/settings/unidades-medida'
+    | '/_authenticated/settings/units-of-measure'
     | '/_authenticated/venta/venta'
     | '/clerk/(auth)/sign-in'
     | '/clerk/(auth)/sign-up'
@@ -761,6 +787,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedVentaVentaRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/settings/units-of-measure': {
+      id: '/_authenticated/settings/units-of-measure'
+      path: '/units-of-measure'
+      fullPath: '/settings/units-of-measure'
+      preLoaderRoute: typeof AuthenticatedSettingsUnitsOfMeasureRouteImport
+      parentRoute: typeof AuthenticatedSettingsRouteRoute
+    }
+    '/_authenticated/settings/unidades-medida': {
+      id: '/_authenticated/settings/unidades-medida'
+      path: '/unidades-medida'
+      fullPath: '/settings/unidades-medida'
+      preLoaderRoute: typeof AuthenticatedSettingsUnidadesMedidaRouteImport
+      parentRoute: typeof AuthenticatedSettingsRouteRoute
+    }
     '/_authenticated/settings/sucursales': {
       id: '/_authenticated/settings/sucursales'
       path: '/sucursales'
@@ -834,6 +874,8 @@ interface AuthenticatedSettingsRouteRouteChildren {
   AuthenticatedSettingsDisplayRoute: typeof AuthenticatedSettingsDisplayRoute
   AuthenticatedSettingsNotificationsRoute: typeof AuthenticatedSettingsNotificationsRoute
   AuthenticatedSettingsSucursalesRoute: typeof AuthenticatedSettingsSucursalesRoute
+  AuthenticatedSettingsUnidadesMedidaRoute: typeof AuthenticatedSettingsUnidadesMedidaRoute
+  AuthenticatedSettingsUnitsOfMeasureRoute: typeof AuthenticatedSettingsUnitsOfMeasureRoute
   AuthenticatedSettingsIndexRoute: typeof AuthenticatedSettingsIndexRoute
 }
 
@@ -846,6 +888,10 @@ const AuthenticatedSettingsRouteRouteChildren: AuthenticatedSettingsRouteRouteCh
     AuthenticatedSettingsNotificationsRoute:
       AuthenticatedSettingsNotificationsRoute,
     AuthenticatedSettingsSucursalesRoute: AuthenticatedSettingsSucursalesRoute,
+    AuthenticatedSettingsUnidadesMedidaRoute:
+      AuthenticatedSettingsUnidadesMedidaRoute,
+    AuthenticatedSettingsUnitsOfMeasureRoute:
+      AuthenticatedSettingsUnitsOfMeasureRoute,
     AuthenticatedSettingsIndexRoute: AuthenticatedSettingsIndexRoute,
   }
 
