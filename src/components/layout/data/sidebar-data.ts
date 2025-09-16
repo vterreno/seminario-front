@@ -182,15 +182,37 @@ export const getSidebarData = (): SidebarData => {
       textColor: '#ffffff',
     })
   }
-
+  const productosSubItems: SidebarItem[] = []
+  
   // Solo agregar si tiene permisos para ver productos
   if (hasPermission(userData, 'producto_ver')) {
+    // Agregar subitems si tiene los permisos correspondientes
+    if (hasPermission(userData, 'marca_ver')) {
+      productosSubItems.push({
+        title: 'Marcas',
+        url: '/productos/marcas',
+        icon: Package,
+        backgroundColor: '#f7c33b',
+        textColor: '#ffffff',
+      })
+    }
+
+    if (hasPermission(userData, 'categoria_ver')) {
+      productosSubItems.push({
+        title: 'Categorías',
+        url: '/productos/categorias',
+        icon: Package,
+        backgroundColor: '#f7c33b',
+        textColor: '#ffffff',
+      })
+    }
+
     generalItems.push({
       title: 'Productos',
-      url: '/productos',
       icon: Package,
       backgroundColor: '#f7c33b',
       textColor: '#ffffff',
+      items: productosSubItems,
     })
   }
 
