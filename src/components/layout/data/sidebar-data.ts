@@ -182,7 +182,7 @@ export const getSidebarData = (): SidebarData => {
       textColor: '#ffffff',
     })
   }
-  const productosSubItems = []
+  const productosSubItems: SidebarItem[] = []
   
   // Solo agregar si tiene permisos para ver productos
   if (hasPermission(userData, 'producto_ver')) {
