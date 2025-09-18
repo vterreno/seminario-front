@@ -39,6 +39,7 @@ import { STORAGE_KEYS } from '@/lib/constants'
 import apiMarcasService from '@/service/apiMarcas.service'
 import apiEmpresaService, { type Empresa } from '@/service/apiEmpresa.service'
 
+
 interface UserData {
     id: number
     nombre: string
@@ -132,13 +133,15 @@ export function MarcasActionDialog({
             toast.success('Marca creada exitosamente')
         }
         
-        form.reset()
         onOpenChange(false)
         onSuccess?.()
+        form.reset()
+
         } catch (error: any) {
-        toast.error(error.message || `Error al ${isEdit ? 'actualizar' : 'crear'} la marca`)
+            form.reset()
+            toast.error(error.message || `Error al ${isEdit ? 'actualizar' : 'crear'} la marca`)
         } finally {
-        setLoading(false)
+            setLoading(false)
         }
     }
 
