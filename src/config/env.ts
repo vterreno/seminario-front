@@ -54,5 +54,15 @@ export const rutasBack = {
     },
     permisos: {
         getPermisos: `${baseUrl}/permisos/all`,
+    },
+    categorias: {
+        getCategorias: `${baseUrl}/categorias`,
+        getCategoriasByEmpresa: `${baseUrl}/categorias/empresa`,
+        postCategoria: `${baseUrl}/categorias`,
+        putCategoria: `${baseUrl}/categorias`,
+        deleteCategoria: `${baseUrl}/categorias`,
+        getCategoriaPorId: `${baseUrl}/categorias`,
+        bulkDeleteCategorias: `${baseUrl}/categorias/bulk/delete`,
+        bulkUpdateStatus: `${baseUrl}/categorias/bulk/status`,
     }
 };
