@@ -54,5 +54,15 @@ export const rutasBack = {
     },
     permisos: {
         getPermisos: `${baseUrl}/permisos/all`,
-    }
+    },
+    marcas: {
+        getMarcas: `${baseUrl}/marcas`,
+        postMarca: `${baseUrl}/marcas`,
+        putMarca: `${baseUrl}/marcas`,
+        deleteMarca: `${baseUrl}/marcas`,
+        getMarcaPorId: `${baseUrl}/marcas`,
+        getMarcasByEmpresa: `${baseUrl}/marcas/empresa`,
+        bulkDeleteMarcas: `${baseUrl}/marcas/bulk/delete`,
+        bulkUpdateStatus: `${baseUrl}/marcas/bulk/status`,
+    },
 };
