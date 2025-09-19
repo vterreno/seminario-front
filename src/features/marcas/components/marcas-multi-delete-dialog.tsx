@@ -30,7 +30,7 @@ export function MarcasMultiDeleteDialog<TData>({
 
     const handleDelete = async () => {
         try {
-        const marcaIds = selectedMarcas.map(marca => marca.id).filter(id => id !== undefined)
+        const marcaIds = selectedMarcas.filter(marca => marca.id !== undefined).map(marca => marca.id)
         await apiMarcasService.bulkDeleteMarcas(marcaIds)
         
         table.resetRowSelection()
