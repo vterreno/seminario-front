@@ -33,7 +33,7 @@ export function DataTableBulkActions<TData>({
     const canDelete = hasPermission('marca_eliminar')
 
     const handleBulkStatusChange = async (status: 'active' | 'inactive') => {
-        const marcaIds = selectedMarcas.map(marca => marca.id).filter(id => id !== undefined)
+        const marcaIds = selectedMarcas.filter(marca => marca.id !== undefined).map(marca => marca.id)
         
         try {
         await apiMarcasService.bulkUpdateMarcaStatus(marcaIds, status === 'active')
