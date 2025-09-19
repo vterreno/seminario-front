@@ -104,7 +104,7 @@ export function DataTableBulkActions<TData>({
                     title='Eliminar marcas seleccionadas'
                 >
                     <Trash2 />
-                    <span className='sr-only'>Eliminar marcas seleccionados</span>
+                    <span className='sr-only'>Eliminar marcas seleccionadas</span>
                 </Button>
                 </TooltipTrigger>
                 <TooltipContent>
