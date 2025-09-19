@@ -147,7 +147,16 @@ export function MarcasActionDialog({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent 
+            resizable={true}
+            minWidth={300}
+            minHeight={200}
+            maxWidth={window.innerWidth * 0.9}
+            maxHeight={window.innerHeight * 0.9}
+            defaultWidth={512}
+            defaultHeight={450}
+            className='sm:max-w-lg'
+        >
             <DialogHeader>
             <DialogTitle>
                 {isEdit ? 'Editar marca' : 'Agregar marca'}
@@ -155,7 +164,7 @@ export function MarcasActionDialog({
             </DialogHeader>
 
             <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-4">
                 <FormField
                 control={form.control}
                 name="nombre"
@@ -188,7 +197,7 @@ export function MarcasActionDialog({
                             disabled={loading}
                         >
                             <FormControl>
-                            <SelectTrigger>
+                            <SelectTrigger className='w-full'>
                                 <SelectValue placeholder="Selecciona una empresa" />
                             </SelectTrigger>
                             </FormControl>
