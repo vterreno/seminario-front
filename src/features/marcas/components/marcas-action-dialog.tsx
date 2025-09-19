@@ -202,11 +202,13 @@ export function MarcasActionDialog({
                             </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                            {empresas.map((empresa) => (
-                                <SelectItem key={empresa.id} value={empresa.id!.toString()}>
-                                {empresa.name}
-                                </SelectItem>
-                            ))}
+                            {empresas
+                                .filter((empresa) => empresa.id != null)
+                                .map((empresa) => (
+                                    <SelectItem key={empresa.id} value={empresa.id.toString()}>
+                                        {empresa.name}
+                                    </SelectItem>
+                                ))}
                             </SelectContent>
                         </Select>
                         <FormMessage />
