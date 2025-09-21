@@ -187,7 +187,16 @@ export const getSidebarData = (): SidebarData => {
   
   // Solo agregar si tiene permisos para ver productos
   if (hasPermission(userData, 'producto_ver')) {
-    // Agregar subitems si tiene los permisos correspondientes
+    
+    if (hasPermission(userData, 'producto_ver')) {
+      productosSubItems.push({
+        title: 'Productos',
+        url: '/productos/productos/',
+        icon: Package,
+        backgroundColor: '#f7c33b',
+        textColor: '#ffffff',
+      })
+    }
     if (hasPermission(userData, 'marca_ver')) {
       productosSubItems.push({
         title: 'Marcas',

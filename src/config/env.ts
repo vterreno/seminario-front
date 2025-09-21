@@ -65,4 +65,14 @@ export const rutasBack = {
         bulkDeleteMarcas: `${baseUrl}/marcas/bulk/delete`,
         bulkUpdateStatus: `${baseUrl}/marcas/bulk/status`,
     },
+    productos: {
+        getProductos: `${baseUrl}/productos`,
+        postProducto: `${baseUrl}/productos`,
+        putProducto: `${baseUrl}/productos`,
+        deleteProducto: `${baseUrl}/productos`,
+        getProductoPorId: `${baseUrl}/productos`,
+        getProductosByEmpresa: `${baseUrl}/productos/empresa`,
+        bulkDeleteProductos: `${baseUrl}/productos/bulk/delete`,
+        bulkUpdateStatus: `${baseUrl}/productos/bulk/status`,
+    }
 };

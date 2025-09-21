@@ -50,6 +50,7 @@ import { Route as AuthenticatedSettingsAppearanceRouteImport } from './routes/_a
 import { Route as AuthenticatedSettingsAccountRouteImport } from './routes/_authenticated/settings/account'
 import { Route as AuthenticatedErrorsErrorRouteImport } from './routes/_authenticated/errors/$error'
 import { Route as AuthenticatedContactoContactoRouteImport } from './routes/_authenticated/contacto/contacto'
+import { Route as AuthenticatedProductosProductosIndexRouteImport } from './routes/_authenticated/productos/productos/index'
 import { Route as AuthenticatedProductosMarcasIndexRouteImport } from './routes/_authenticated/productos/marcas/index'
 
 const ClerkRouteRoute = ClerkRouteRouteImport.update({
@@ -269,6 +270,12 @@ const AuthenticatedContactoContactoRoute =
     path: '/contacto/contacto',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedProductosProductosIndexRoute =
+  AuthenticatedProductosProductosIndexRouteImport.update({
+    id: '/productos/',
+    path: '/productos/',
+    getParentRoute: () => AuthenticatedProductosRouteRoute,
+  } as any)
 const AuthenticatedProductosMarcasIndexRoute =
   AuthenticatedProductosMarcasIndexRouteImport.update({
     id: '/marcas/',
@@ -317,6 +324,7 @@ export interface FileRoutesByFullPath {
   '/tasks': typeof AuthenticatedTasksIndexRoute
   '/users': typeof AuthenticatedUsersIndexRoute
   '/productos/marcas': typeof AuthenticatedProductosMarcasIndexRoute
+  '/productos/productos': typeof AuthenticatedProductosProductosIndexRoute
 }
 export interface FileRoutesByTo {
   '/productos': typeof AuthenticatedProductosRouteRouteWithChildren
@@ -357,6 +365,7 @@ export interface FileRoutesByTo {
   '/tasks': typeof AuthenticatedTasksIndexRoute
   '/users': typeof AuthenticatedUsersIndexRoute
   '/productos/marcas': typeof AuthenticatedProductosMarcasIndexRoute
+  '/productos/productos': typeof AuthenticatedProductosProductosIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -402,6 +411,7 @@ export interface FileRoutesById {
   '/_authenticated/tasks/': typeof AuthenticatedTasksIndexRoute
   '/_authenticated/users/': typeof AuthenticatedUsersIndexRoute
   '/_authenticated/productos/marcas/': typeof AuthenticatedProductosMarcasIndexRoute
+  '/_authenticated/productos/productos/': typeof AuthenticatedProductosProductosIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -446,6 +456,7 @@ export interface FileRouteTypes {
     | '/tasks'
     | '/users'
     | '/productos/marcas'
+    | '/productos/productos'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/productos'
@@ -486,6 +497,7 @@ export interface FileRouteTypes {
     | '/tasks'
     | '/users'
     | '/productos/marcas'
+    | '/productos/productos'
   id:
     | '__root__'
     | '/_authenticated'
@@ -530,6 +542,7 @@ export interface FileRouteTypes {
     | '/_authenticated/tasks/'
     | '/_authenticated/users/'
     | '/_authenticated/productos/marcas/'
+    | '/_authenticated/productos/productos/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -837,6 +850,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedContactoContactoRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/productos/productos/': {
+      id: '/_authenticated/productos/productos/'
+      path: '/productos'
+      fullPath: '/productos/productos'
+      preLoaderRoute: typeof AuthenticatedProductosProductosIndexRouteImport
+      parentRoute: typeof AuthenticatedProductosRouteRoute
+    }
     '/_authenticated/productos/marcas/': {
       id: '/_authenticated/productos/marcas/'
       path: '/marcas'
@@ -849,12 +869,15 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedProductosRouteRouteChildren {
   AuthenticatedProductosMarcasIndexRoute: typeof AuthenticatedProductosMarcasIndexRoute
+  AuthenticatedProductosProductosIndexRoute: typeof AuthenticatedProductosProductosIndexRoute
 }
 
 const AuthenticatedProductosRouteRouteChildren: AuthenticatedProductosRouteRouteChildren =
   {
     AuthenticatedProductosMarcasIndexRoute:
       AuthenticatedProductosMarcasIndexRoute,
+    AuthenticatedProductosProductosIndexRoute:
+      AuthenticatedProductosProductosIndexRoute,
   }
 
 const AuthenticatedProductosRouteRouteWithChildren =
