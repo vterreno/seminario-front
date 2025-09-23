@@ -115,10 +115,13 @@ export function CategoriasActionDialog({
   const onSubmit = async (values: CategoriaForm) => {
     try {
       // Asegurarnos de que haya un empresa_id válido
-      const dataToSend = {
-        ...values,
-        empresa_id: values.empresa_id || userEmpresaId
+      const dataToSend = isSuperAdmin
+        ? values as CategoriaForm
+        : { 
+            ...values, 
+            empresa_id: values.empresa_id || userEmpresaId
       };
+      console.log(dataToSend.empresa_id)
 
       if (isEdit && currentRow?.id) {
         await apiCategoriasService.updateCategoria(currentRow.id, dataToSend)
@@ -130,9 +133,9 @@ export function CategoriasActionDialog({
       form.reset()
       onOpenChange(false)
       onSuccess?.()
-    } catch (error) {
-      console.error('Error saving categoria:', error)
-      toast.error(isEdit ? 'Error al actualizar la categoría' : 'Error al crear la categoría')
+    } catch (error: any) {
+      form.reset()
+      toast.error(error.message || 'Error al guardar la categoría')
     }
   }
 
