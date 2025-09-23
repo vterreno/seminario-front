@@ -139,7 +139,7 @@ export function ContactosTable({
         </Table>
       </div>
       <DataTablePagination table={table} />
-      {canBulkAction && <ContactosBulkActions table={table} tipo={tipo} onSuccess={onSuccess || (() => {})} canModify={canEdit} canDelete={canDelete} />}
+      {canBulkAction && <ContactosBulkActions table={table} tipo={tipo} onSuccess={onSuccess} />}
     </div>
   )
 }

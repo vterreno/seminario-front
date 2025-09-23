@@ -52,7 +52,10 @@ export function ContactoMultiDeleteDialog<TData>({
       if (consumidoresBloqueados > 0) {
         toast.warning(`${contactosEliminables.length} contacto${contactosEliminables.length > 1 ? 's' : ''} eliminado${contactosEliminables.length > 1 ? 's' : ''}. ${consumidoresBloqueados} consumidor${consumidoresBloqueados > 1 ? 'es' : ''} final${consumidoresBloqueados > 1 ? 'es' : ''} no se pudo${consumidoresBloqueados > 1 ? 'ieron' : ''} eliminar.`)
       } else {
-        toast.success(`${contactosEliminables.length} ${tipo}${contactosEliminables.length > 1 ? 's' : ''} eliminado${contactosEliminables.length > 1 ? 's' : ''} exitosamente`)
+        const tipoPlural = tipo === 'proveedor' ? 'proveedores' : `${tipo}s`
+        const tipoSingular = tipo
+        const tipoFinal = contactosEliminables.length > 1 ? tipoPlural : tipoSingular
+        toast.success(`${contactosEliminables.length} ${tipoFinal} eliminado${contactosEliminables.length > 1 ? 's' : ''} exitosamente`)
       }
       
       onSuccess?.()
@@ -86,12 +89,12 @@ export function ContactoMultiDeleteDialog<TData>({
         <DialogHeader>
           <DialogTitle>Confirmar eliminación</DialogTitle>
           <DialogDescription>
-            ¿Está seguro que desea eliminar {contactosEliminables.length} {tipo}{contactosEliminables.length > 1 ? 's' : ''}?
+            ¿Está seguro que desea eliminar {contactosEliminables.length} {contactosEliminables.length > 1 ? (tipo === 'proveedor' ? 'proveedores' : `${tipo}s`) : tipo}?
             {selectedContactos.length > contactosEliminables.length && (
               <span className="block mt-2 text-orange-600">
                 Nota: {selectedContactos.length - contactosEliminables.length} consumidor{selectedContactos.length - contactosEliminables.length > 1 ? 'es' : ''} final{selectedContactos.length - contactosEliminables.length > 1 ? 'es' : ''} no será{selectedContactos.length - contactosEliminables.length > 1 ? 'n' : ''} eliminado{selectedContactos.length - contactosEliminables.length > 1 ? 's' : ''}.
               </span>
-            )}
+            )} {}
             Esta acción no se puede deshacer.
           </DialogDescription>
         </DialogHeader>

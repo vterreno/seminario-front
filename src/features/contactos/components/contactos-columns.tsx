@@ -16,25 +16,49 @@ const displayValue = (value: any): string => {
 export const getContactosColumns = (isSuperAdmin: boolean = false): ColumnDef<Contacto>[] => [
   {
     id: 'select',
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && 'indeterminate')
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label='Seleccionar todos'
-        className='translate-y-[2px]'
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label='Seleccionar fila'
-        className='translate-y-[2px]'
-      />
-    ),
+    header: ({ table }) => {
+      // Filtrar filas que no sean consumidor final
+      const selectableRows = table.getRowModel().rows.filter(row => {
+        const contacto = row.original
+        return !contacto.es_consumidor_final
+      })
+      
+      // Verificar cuántas filas seleccionables están seleccionadas
+      const selectedSelectableRows = selectableRows.filter(row => row.getIsSelected())
+      const isAllSelectableSelected = selectableRows.length > 0 && selectedSelectableRows.length === selectableRows.length
+      const isSomeSelectableSelected = selectedSelectableRows.length > 0 && selectedSelectableRows.length < selectableRows.length
+      
+      return (
+        <Checkbox
+          checked={isAllSelectableSelected || (isSomeSelectableSelected && 'indeterminate')}
+          onCheckedChange={(value) => {
+            // Seleccionar/deseleccionar solo las filas que no son consumidor final
+            selectableRows.forEach(row => {
+              row.toggleSelected(!!value)
+            })
+          }}
+          aria-label='Seleccionar todos'
+          className='translate-y-[2px]'
+        />
+      )
+    },
+    cell: ({ row }) => {
+      const contacto = row.original
+      
+      // Si es consumidor final, no renderizar el checkbox funcional
+      if (contacto.es_consumidor_final) {
+        return <Checkbox disabled aria-hidden="true" tabIndex={-1} className="pointer-events-none" />
+      }
+      
+      return (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label='Seleccionar fila'
+          className='translate-y-[2px]'
+        />
+      )
+    },
     enableSorting: false,
     enableHiding: false,
   },
@@ -47,7 +71,18 @@ export const getContactosColumns = (isSuperAdmin: boolean = false): ColumnDef<Co
     enableSorting: true,
     cell: ({ row }) => {
       const value = row.getValue('nombre_razon_social') as string
-      return displayValue(value)
+      const contacto = row.original
+      
+      return (
+        <div className="flex items-center gap-2">
+          <span>{displayValue(value)}</span>
+          {contacto.es_consumidor_final && (
+            <Badge variant="secondary" className="text-xs">
+              CF
+            </Badge>
+          )}
+        </div>
+      )
     },
     filterFn: (row, id, value) => {
       const cellValue = String(row.getValue(id)).toLowerCase()
@@ -78,6 +113,7 @@ export const getContactosColumns = (isSuperAdmin: boolean = false): ColumnDef<Co
       const value = row.getValue('condicion_iva') as string
       return displayValue(value)
     },
+    enableHiding: true,
   },
   {
     accessorKey: 'telefono_movil',
@@ -87,17 +123,6 @@ export const getContactosColumns = (isSuperAdmin: boolean = false): ColumnDef<Co
     meta: { displayName: 'Teléfono' },
     cell: ({ row }) => {
       const value = row.getValue('telefono_movil') as string
-      return displayValue(value)
-    },
-  },
-  {
-    accessorKey: 'email',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Email' />
-    ),
-    meta: { displayName: 'Email' },
-    cell: ({ row }) => {
-      const value = row.getValue('email') as string
       return displayValue(value)
     },
   },

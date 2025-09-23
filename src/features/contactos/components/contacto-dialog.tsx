@@ -10,6 +10,10 @@ import { useState, useEffect } from 'react'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Switch } from '@/components/ui/switch'
 import { usePermissions } from '@/hooks/use-permissions'
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Check, ChevronsUpDown } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 export function ContactoDialog({ 
   open, 
@@ -36,11 +40,83 @@ export function ContactoDialog({
   const [empresaId, setEmpresaId] = useState<number | undefined>(value.empresa?.id || undefined)
   const [esEmpresa, setEsEmpresa] = useState<boolean>(!!value.es_empresa)
   const [estado, setEstado] = useState<boolean>(value.estado !== false) // Por defecto true si no está definido
+  const [emailError, setEmailError] = useState<string>('')
+  const [empresaError, setEmpresaError] = useState<string>('')
+  const [nombreError, setNombreError] = useState<string>('')
+  const [tipoDocError, setTipoDocError] = useState<string>('')
+  const [numeroDocError, setNumeroDocError] = useState<string>('')
+  
+  // Estados para controlar los popovers
+  const [openProvincia, setOpenProvincia] = useState(false)
+  const [openCiudad, setOpenCiudad] = useState(false)
+  
+  // Estados controlados para los campos principales
+  const [nombreRazonSocial, setNombreRazonSocial] = useState<string>('')
+  const [tipoIdentificacion, setTipoIdentificacion] = useState<string>('')
+  const [numeroIdentificacion, setNumeroIdentificacion] = useState<string>('')
+  const [condicionIva, setCondicionIva] = useState<string>('')
+  const [email, setEmail] = useState<string>('')
+  const [telefono, setTelefono] = useState<string>('')
+  const [direccionCalle, setDireccionCalle] = useState<string>('')
+  const [direccionNumero, setDireccionNumero] = useState<string>('')
+  const [direccionPisoDpto, setDireccionPisoDpto] = useState<string>('')
+  const [codigoPostal, setCodigoPostal] = useState<string>('')
   
   // Usar un nombre diferente para evitar conflictos
   const rolState = useState<'cliente' | 'proveedor'>((value.rol === 'ambos' ? 'cliente' : value.rol) || 'cliente')
   const rol = rolState[0]
   const setRol = rolState[1]
+
+  // Función para validar email
+  const validateEmail = (email: string): boolean => {
+    if (!email) return true // Email vacío es válido (no es obligatorio)
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    return emailRegex.test(email)
+  }
+
+  // Función para validar el formulario completo
+  const validateForm = (): boolean => {
+    let isValid = true
+    
+    // Validar email (solo formato, no obligatorio)
+    if (email && !validateEmail(email)) {
+      setEmailError('Ingrese un email válido')
+      isValid = false
+    } else {
+      setEmailError('')
+    }
+    
+    // Validar empresa (obligatorio si es superadmin)
+    if (isSuperAdmin && !empresaId) {
+      setEmpresaError('La empresa es obligatoria')
+      isValid = false
+    } else {
+      setEmpresaError('')
+    }
+
+    // Validar nombre o razón social (obligatorio)
+    if (!nombreRazonSocial || nombreRazonSocial.trim() === '') {
+      setNombreError('El nombre o razón social es obligatorio')
+      isValid = false
+    } else {
+      setNombreError('')
+    }
+
+    // Validar documentos: si hay tipo, número es obligatorio
+    if (tipoIdentificacion && tipoIdentificacion !== 'NONE' && (!numeroIdentificacion || numeroIdentificacion.trim() === '')) {
+      setNumeroDocError('El número de identificación es obligatorio cuando se selecciona un tipo')
+      isValid = false
+    } else {
+      setNumeroDocError('')
+    }
+
+    // Limpiar error de tipo si no hay tipo seleccionado
+    if (!tipoIdentificacion || tipoIdentificacion === 'NONE') {
+      setTipoDocError('')
+    }
+    
+    return isValid
+  }
 
   useEffect(() => {
     if (open) {
@@ -66,7 +142,26 @@ export function ContactoDialog({
     setEsEmpresa(!!value.es_empresa)
     setEstado(value.estado !== false) // Por defecto true si no está definido
     setRol((value.rol === 'ambos' ? 'cliente' : value.rol) || 'cliente')
-    setEmpresaId(value.empresa?.id || undefined)
+    setEmpresaId(value.empresa?.id || value.empresa_id || undefined)
+    
+    // Inicializar estados controlados
+    setNombreRazonSocial(value.nombre_razon_social || '')
+    setTipoIdentificacion(value.tipo_identificacion || 'NONE')
+    setNumeroIdentificacion(value.numero_identificacion || '')
+    setCondicionIva(value.condicion_iva || '')
+    setEmail(value.email || '')
+    setTelefono(value.telefono_movil || '')
+    setDireccionCalle(value.direccion_calle || '')
+    setDireccionNumero(value.direccion_numero || '')
+    setDireccionPisoDpto(value.direccion_piso_dpto || '')
+    setCodigoPostal(value.codigo_postal || '')
+    
+    // Limpiar errores de validación al cambiar el valor
+    setEmailError('')
+    setEmpresaError('')
+    setNombreError('')
+    setTipoDocError('')
+    setNumeroDocError('')
     
     // Si hay provincia, cargar sus ciudades y luego establecer la ciudad
     if (value.provincia_id) {
@@ -86,9 +181,8 @@ export function ContactoDialog({
     if (!provinciaId) { 
       setCiudades([])
       setCiudadId(undefined)
-      // Limpiar también del objeto value
-      delete (value as any).ciudad_id
-      value.codigo_postal = ''
+      // Limpiar también el código postal
+      setCodigoPostal('')
       return 
     }
     
@@ -100,8 +194,7 @@ export function ContactoDialog({
       // entonces limpiar la ciudad. Si la ciudad existe en las nuevas ciudades, mantenerla
       if (ciudadId && !ciuds.some(c => c.id === ciudadId)) {
         setCiudadId(undefined)
-        delete (value as any).ciudad_id
-        value.codigo_postal = ''
+        setCodigoPostal('')
       }
     })()
   }, [provinciaId])
@@ -125,9 +218,6 @@ export function ContactoDialog({
             <Label>Tipo de contacto *</Label>
             <Select value={rol} onValueChange={(v) => { 
               setRol(v as any); 
-              (value as any).rol = v;
-              // Asegurar que se actualice también el value
-              value.codigo_postal = value.codigo_postal || '';
             }}>
               <SelectTrigger className='w-full'><SelectValue placeholder="Seleccionar tipo" /></SelectTrigger>
               <SelectContent>
@@ -139,12 +229,18 @@ export function ContactoDialog({
           {isSuperAdmin && (
             <div className="grid gap-1">
               <Label>Empresa *</Label>
-              <Select value={empresaId ? String(empresaId) : undefined} onValueChange={(v) => { 
-                const id = Number(v); 
-                setEmpresaId(id); 
-                (value as any).empresa_id = id;
-              }}>
-                <SelectTrigger className='w-full'><SelectValue placeholder="Seleccionar empresa" /></SelectTrigger>
+              <Select 
+                value={empresaId ? String(empresaId) : undefined} 
+                onValueChange={(v) => { 
+                  const id = Number(v); 
+                  setEmpresaId(id); 
+                  // Limpiar error al seleccionar
+                  setEmpresaError('')
+                }}
+              >
+                <SelectTrigger className={`w-full ${empresaError ? 'border-red-500' : ''}`}>
+                  <SelectValue placeholder="Seleccionar empresa" />
+                </SelectTrigger>
                 <SelectContent>
                   {empresas.map(empresa => (
                     <SelectItem key={empresa.id} value={String(empresa.id)}>
@@ -153,10 +249,11 @@ export function ContactoDialog({
                   ))}
                 </SelectContent>
               </Select>
+              {empresaError && <span className="text-sm text-red-500">{empresaError}</span>}
             </div>
           )}
           <div className="flex items-center gap-2">
-            <Checkbox id="es_empresa" checked={esEmpresa} onCheckedChange={(v) => { const b = !!v; setEsEmpresa(b); (value as any).es_empresa = b }} />
+            <Checkbox id="es_empresa" checked={esEmpresa} onCheckedChange={(v) => { const b = !!v; setEsEmpresa(b) }} />
             <Label htmlFor="es_empresa">Es empresa</Label>
           </div>
           <div className='flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm'>
@@ -168,19 +265,50 @@ export function ContactoDialog({
             </div>
             <Switch
               checked={estado}
-              onCheckedChange={(v) => { setEstado(v); (value as any).estado = v }}
+              onCheckedChange={(v) => { setEstado(v) }}
             />
           </div>
           <div className="grid gap-1">
             <Label>{esEmpresa ? 'Razón social *' : 'Nombre completo *'}</Label>
-            <Input defaultValue={value?.nombre_razon_social} onChange={(e) => (value.nombre_razon_social = e.target.value)} />
+            <Input 
+              value={nombreRazonSocial} 
+              onChange={(e) => {
+                setNombreRazonSocial(e.target.value)
+                if (e.target.value.trim() !== '') {
+                  setNombreError('')
+                }
+              }} 
+              className={`${nombreError ? 'border-red-500' : ''}`}  
+            />
+            {nombreError && <span className="text-sm text-red-500">{nombreError}</span>}
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="grid gap-1">
               <Label>Tipo de identificación</Label>
-              <Select defaultValue={value?.tipo_identificacion || undefined} onValueChange={(v) => (value.tipo_identificacion = v as any)}>
-                <SelectTrigger className='w-full'><SelectValue placeholder="Seleccionar" /></SelectTrigger>
+              <Select 
+                value={tipoIdentificacion} 
+                onValueChange={(v) => {
+                  setTipoIdentificacion(v);
+                  // Limpiar errores al seleccionar
+                  setTipoDocError('');
+                  // Si se selecciona un tipo y no hay número, mostrar error
+                  if (v && v !== 'NONE' && (!numeroIdentificacion || numeroIdentificacion.trim() === '')) {
+                    setNumeroDocError('El número de identificación es obligatorio cuando se selecciona un tipo');
+                  } else {
+                    setNumeroDocError('');
+                  }
+                  // Si se deselecciona el tipo, limpiar también el número
+                  if (!v || v === 'NONE') {
+                    setNumeroIdentificacion('');
+                    setNumeroDocError('');
+                  }
+                }}
+              >
+                <SelectTrigger className={`w-full ${tipoDocError ? 'border-red-500' : ''}`}>
+                  <SelectValue placeholder="Seleccionar" />
+                </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="NONE">Sin tipo de identificación</SelectItem>
                   <SelectItem value="CUIT">CUIT</SelectItem>
                   <SelectItem value="DNI">DNI</SelectItem>
                   <SelectItem value="CUIL">CUIL</SelectItem>
@@ -188,15 +316,29 @@ export function ContactoDialog({
                   <SelectItem value="OTRO">OTRO</SelectItem>
                 </SelectContent>
               </Select>
+              {tipoDocError && <span className="text-sm text-red-500">{tipoDocError}</span>}
             </div>
             <div className="grid gap-1">
-              <Label>Número de identificación</Label>
-              <Input defaultValue={value?.numero_identificacion || ''} onChange={(e) => (value.numero_identificacion = e.target.value)} />
+              <Label>Número de identificación {(tipoIdentificacion && tipoIdentificacion !== 'NONE') ? '*' : ''}</Label>
+              <Input 
+                value={numeroIdentificacion} 
+                onChange={(e) => {
+                  setNumeroIdentificacion(e.target.value);
+                  // Validar en tiempo real
+                  if (tipoIdentificacion && tipoIdentificacion !== 'NONE' && (!e.target.value || e.target.value.trim() === '')) {
+                    setNumeroDocError('El número de identificación es obligatorio cuando se selecciona un tipo');
+                  } else {
+                    setNumeroDocError('');
+                  }
+                }}
+                className={numeroDocError ? 'border-red-500' : ''}
+              />
+              {numeroDocError && <span className="text-sm text-red-500">{numeroDocError}</span>}
             </div>
           </div>
           <div className="grid gap-1">
             <Label>Condición IVA</Label>
-            <Select defaultValue={value?.condicion_iva || undefined} onValueChange={(v) => (value.condicion_iva = v as any)}>
+            <Select value={condicionIva} onValueChange={(v) => setCondicionIva(v)}>
               <SelectTrigger className='w-full'><SelectValue placeholder="Seleccionar" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="Responsable Inscripto">Responsable Inscripto</SelectItem>
@@ -209,57 +351,163 @@ export function ContactoDialog({
           <div className="grid grid-cols-2 gap-3">
             <div className="grid gap-1">
               <Label>Email</Label>
-              <Input type="email" defaultValue={value?.email || ''} onChange={(e) => (value.email = e.target.value)} />
+              <Input 
+                type="email" 
+                value={email} 
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  // Validar en tiempo real
+                  if (e.target.value && !validateEmail(e.target.value)) {
+                    setEmailError('Ingrese un email válido')
+                  } else {
+                    setEmailError('')
+                  }
+                }}
+                className={emailError ? 'border-red-500' : ''}
+              />
+              {emailError && <span className="text-sm text-red-500">{emailError}</span>}
             </div>
             <div className="grid gap-1">
               <Label>Teléfono</Label>
-              <Input defaultValue={value?.telefono_movil || ''} onChange={(e) => (value.telefono_movil = e.target.value)} />
+              <Input value={telefono} onChange={(e) => setTelefono(e.target.value)} />
             </div>
           </div>
           <div className="grid grid-cols-3 gap-3">
             <div className="grid gap-1">
               <Label>Calle</Label>
-              <Input defaultValue={value?.direccion_calle || ''} onChange={(e) => (value.direccion_calle = e.target.value)} />
+              <Input value={direccionCalle} onChange={(e) => setDireccionCalle(e.target.value)} />
             </div>
             <div className="grid gap-1">
               <Label>Número</Label>
-              <Input defaultValue={value?.direccion_numero || ''} onChange={(e) => (value.direccion_numero = e.target.value)} />
+              <Input value={direccionNumero} onChange={(e) => setDireccionNumero(e.target.value)} />
             </div>
             <div className="grid gap-1">
               <Label>Piso/Dpto</Label>
-              <Input defaultValue={value?.direccion_piso_dpto || ''} onChange={(e) => (value.direccion_piso_dpto = e.target.value)} />
+              <Input value={direccionPisoDpto} onChange={(e) => setDireccionPisoDpto(e.target.value)} />
             </div>
           </div>
           <div className="grid grid-cols-3 gap-3">
             <div className="grid gap-1">
               <Label>Provincia</Label>
-              <Select value={provinciaId ? String(provinciaId) : undefined} onValueChange={(v) => { const id = Number(v); setProvinciaId(id); (value as any).provincia_id = id }}>
-                <SelectTrigger className='w-full'><SelectValue placeholder="Seleccionar" /></SelectTrigger>
-                <SelectContent>
-                  {provincias.map(p => <SelectItem key={p.id} value={String(p.id)}>{p.nombre}</SelectItem>)}
-                </SelectContent>
-              </Select>
+              <Popover open={openProvincia} onOpenChange={setOpenProvincia}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={openProvincia}
+                    className="w-full justify-between"
+                  >
+                    {provinciaId
+                      ? provincias.find((provincia) => provincia.id === provinciaId)?.nombre
+                      : "Seleccionar provincia..."}
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-full p-0">
+                  <Command>
+                    <CommandInput placeholder="Buscar provincia..." />
+                    <CommandEmpty>No se encontró provincia.</CommandEmpty>
+                    <CommandList>
+                      <CommandGroup>
+                        {provincias.map((provincia) => (
+                          <CommandItem
+                            key={provincia.id}
+                            value={provincia.nombre}
+                            onSelect={() => {
+                              setProvinciaId(provincia.id)
+                              setOpenProvincia(false)
+                            }}
+                          >
+                            <Check
+                              className={cn(
+                                "mr-2 h-4 w-4",
+                                provinciaId === provincia.id ? "opacity-100" : "opacity-0"
+                              )}
+                            />
+                            {provincia.nombre}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
             </div>
             <div className="grid gap-1">
               <Label>Ciudad</Label>
-              <Select disabled={!provinciaId} value={ciudadId ? String(ciudadId) : undefined} onValueChange={(v) => { const id = Number(v); setCiudadId(id); (value as any).ciudad_id = id; const cz = ciudades.find(c => c.id === id); if (cz) (value.codigo_postal = cz.codigo_postal) }}>
-                <SelectTrigger className='w-full'><SelectValue placeholder="Seleccionar" /></SelectTrigger>
-                <SelectContent>
-                  {ciudades.map(c => <SelectItem key={c.id} value={String(c.id)}>{c.nombre}</SelectItem>)}
-                </SelectContent>
-              </Select>
+              <Popover open={openCiudad} onOpenChange={setOpenCiudad}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={openCiudad}
+                    className="w-full justify-between"
+                    disabled={!provinciaId}
+                  >
+                    {ciudadId
+                      ? ciudades.find((ciudad) => ciudad.id === ciudadId)?.nombre
+                      : "Seleccionar ciudad..."}
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-full p-0">
+                  <Command>
+                    <CommandInput placeholder="Buscar ciudad..." />
+                    <CommandEmpty>No se encontró ciudad.</CommandEmpty>
+                    <CommandList>
+                      <CommandGroup>
+                        {ciudades.map((ciudad) => (
+                          <CommandItem
+                            key={ciudad.id}
+                            value={ciudad.nombre}
+                            onSelect={() => {
+                              setCiudadId(ciudad.id)
+                              const cz = ciudades.find(c => c.id === ciudad.id)
+                              if (cz) setCodigoPostal(cz.codigo_postal)
+                              setOpenCiudad(false)
+                            }}
+                          >
+                            <Check
+                              className={cn(
+                                "mr-2 h-4 w-4",
+                                ciudadId === ciudad.id ? "opacity-100" : "opacity-0"
+                              )}
+                            />
+                            {ciudad.nombre}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
             </div>
             <div className="grid gap-1 my-3">
               <Label>Código postal</Label>
-              <Input value={value?.codigo_postal || ''} onChange={(e) => (value.codigo_postal = e.target.value)} />
+              <Input value={codigoPostal} onChange={(e) => setCodigoPostal(e.target.value)} />
             </div>
           </div>
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
           <Button onClick={() => {
+            // Validar formulario antes de enviar
+            if (!validateForm()) {
+              return
+            }
+            
             const finalData: any = {
-              ...value, 
+              // Usar los estados controlados en lugar del objeto value
+              nombre_razon_social: nombreRazonSocial,
+              tipo_identificacion: (tipoIdentificacion && tipoIdentificacion !== 'NONE') ? tipoIdentificacion : undefined,
+              numero_identificacion: (numeroIdentificacion && numeroIdentificacion !== '') ? numeroIdentificacion : undefined,
+              condicion_iva: condicionIva || undefined,
+              email: email || undefined,
+              telefono_movil: telefono || undefined,
+              direccion_calle: direccionCalle || undefined,
+              direccion_numero: direccionNumero || undefined,
+              direccion_piso_dpto: direccionPisoDpto || undefined,
+              codigo_postal: codigoPostal || undefined,
               rol, 
               estado, 
               empresa_id: empresaId,
@@ -267,12 +515,19 @@ export function ContactoDialog({
               ciudad_id: ciudadId,
               es_empresa: esEmpresa
             };
-            // Limpiar campos undefined/null
+            
+            // Si estamos editando, incluir el ID
+            if (isEdit && value.id) {
+              finalData.id = value.id;
+            }
+            
+            // Limpiar campos undefined/null para evitar problemas en el backend
             Object.keys(finalData).forEach(key => {
-              if (finalData[key] === undefined || finalData[key] === null) {
+              if (finalData[key] === undefined || finalData[key] === null || finalData[key] === '') {
                 delete finalData[key];
               }
             });
+            
             onSubmit(finalData);
           }}>{isEdit ? 'Guardar' : 'Crear'}</Button>
         </DialogFooter>
