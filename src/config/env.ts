@@ -74,5 +74,10 @@ export const rutasBack = {
         getProductosByEmpresa: `${baseUrl}/productos/empresa`,
         bulkDeleteProductos: `${baseUrl}/productos/bulk/delete`,
         bulkUpdateStatus: `${baseUrl}/productos/bulk/status`,
+    },
+    movimientosStock: {
+        getMovimientosStock: `${baseUrl}/movimientos-stock`,
+        getMovimientosByProducto: `${baseUrl}/movimientos-stock/producto`,
+        ajusteStock: `${baseUrl}/movimientos-stock/ajuste-stock`,
     }
 };

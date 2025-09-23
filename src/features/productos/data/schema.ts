@@ -227,3 +227,101 @@ export const formatProductoCreationDate = (producto: Producto): string => {
 export const formatProductoUpdateDate = (producto: Producto): string => {
     return new Date(producto.updated_at).toLocaleDateString('es-ES')
 }
+
+// Schemas para movimientos de stock
+
+export const movimientoStockBackendSchema = z.object({
+    id: z.number(),
+    producto_id: z.number(),
+    tipo_movimiento: z.string(), // 'STOCK_APERTURA', 'VENTA', 'COMPRA', 'AJUSTE_MANUAL'
+    descripcion: z.string(),
+    fecha: z.string(),
+    cantidad: z.number(),
+    stock_resultante: z.number(),
+    created_at: z.string(),
+    updated_at: z.string()
+})
+
+export type MovimientoStockBackend = z.infer<typeof movimientoStockBackendSchema>
+
+export const movimientoStockSchema = z.object({
+    id: z.number(),
+    producto_id: z.number(),
+    tipo_movimiento: z.string(),
+    descripcion: z.string(),
+    fecha: z.string(),
+    cantidad: z.number(),
+    stock_resultante: z.number(),
+    created_at: z.string(),
+    updated_at: z.string()
+})
+
+export type MovimientoStock = z.infer<typeof movimientoStockSchema>
+
+// Schema para el formulario de ajuste de stock
+export const ajusteStockFormSchema = z.object({
+    tipo_ajuste: z.enum(['aumento', 'disminucion'], {
+        message: 'Debe seleccionar un tipo de ajuste'
+    }),
+    cantidad: z.number()
+        .min(1, 'La cantidad debe ser mayor a 0')
+        .max(99999, 'La cantidad no puede ser mayor a 99999'),
+    motivo: z.string()
+        .min(3, 'El motivo debe tener al menos 3 caracteres')
+        .max(500, 'El motivo no puede exceder 500 caracteres')
+})
+
+export type AjusteStockForm = z.infer<typeof ajusteStockFormSchema>
+
+// Mapeo de backend a frontend para movimientos de stock
+export const mapBackendMovimientoToFrontend = (backendMovimiento: MovimientoStockBackend): MovimientoStock => {
+    return {
+        id: backendMovimiento.id,
+        producto_id: backendMovimiento.producto_id,
+        tipo_movimiento: backendMovimiento.tipo_movimiento,
+        descripcion: backendMovimiento.descripcion,
+        fecha: backendMovimiento.fecha,
+        cantidad: backendMovimiento.cantidad,
+        stock_resultante: backendMovimiento.stock_resultante,
+        created_at: backendMovimiento.created_at,
+        updated_at: backendMovimiento.updated_at
+    }
+}
+
+// Funciones de utilidad para movimientos de stock
+export const formatTipoMovimiento = (tipo: string): string => {
+    const tipos = {
+        'STOCK_APERTURA': 'Stock de apertura',
+        'VENTA': 'Venta',
+        'COMPRA': 'Compra',
+        'AJUSTE_MANUAL': 'Ajuste manual'
+    }
+    return tipos[tipo as keyof typeof tipos] || tipo
+}
+
+export const formatCantidadMovimiento = (cantidad: number): string => {
+    return cantidad >= 0 ? `+${cantidad}` : `${cantidad}`
+}
+
+export const getMovimientoStockColor = (tipo: string): string => {
+    const colores = {
+        'STOCK_APERTURA': 'text-blue-600',
+        'VENTA': 'text-red-600',
+        'COMPRA': 'text-green-600',
+        'AJUSTE_MANUAL': 'text-orange-600'
+    }
+    return colores[tipo as keyof typeof colores] || 'text-gray-600'
+}
+
+// Funciones de validación
+export const validateMovimientoStock = (data: unknown): MovimientoStock => {
+    return movimientoStockSchema.parse(data)
+}
+
+export const validateMovimientoStockBackend = (data: unknown): MovimientoStockBackend => {
+    return movimientoStockBackendSchema.parse(data)
+}
+
+export const validateAjusteStockForm = (data: unknown): AjusteStockForm => {
+    return ajusteStockFormSchema.parse(data)
+}
