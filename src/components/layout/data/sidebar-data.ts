@@ -182,7 +182,8 @@ export const getSidebarData = (): SidebarData => {
       textColor: '#ffffff',
     })
   }
-  const productosSubItems: { title: string; url: string; icon: React.ElementType; backgroundColor: string; textColor: string; }[] = []
+  
+  const productosSubItems: SidebarItem[] = []
   
   // Solo agregar si tiene permisos para ver productos
   if (hasPermission(userData, 'producto_ver')) {
@@ -190,7 +191,7 @@ export const getSidebarData = (): SidebarData => {
     if (hasPermission(userData, 'marca_ver')) {
       productosSubItems.push({
         title: 'Marcas',
-        url: '/productos/marcas',
+        url: '/productos/marcas/',
         icon: Package,
         backgroundColor: '#f7c33b',
         textColor: '#ffffff',

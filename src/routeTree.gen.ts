@@ -28,6 +28,7 @@ import { Route as authChangePasswordRouteImport } from './routes/(auth)/change-p
 import { Route as ClerkAuthenticatedRouteRouteImport } from './routes/clerk/_authenticated/route'
 import { Route as ClerkauthRouteRouteImport } from './routes/clerk/(auth)/route'
 import { Route as AuthenticatedSettingsRouteRouteImport } from './routes/_authenticated/settings/route'
+import { Route as AuthenticatedProductosRouteRouteImport } from './routes/_authenticated/productos/route'
 import { Route as AuthenticatedUsersIndexRouteImport } from './routes/_authenticated/users/index'
 import { Route as AuthenticatedUnidadesMedidaIndexRouteImport } from './routes/_authenticated/unidades-medida/index'
 import { Route as AuthenticatedTasksIndexRouteImport } from './routes/_authenticated/tasks/index'
@@ -50,9 +51,9 @@ import { Route as AuthenticatedSettingsDisplayRouteImport } from './routes/_auth
 import { Route as AuthenticatedSettingsCompanyRouteImport } from './routes/_authenticated/settings/company'
 import { Route as AuthenticatedSettingsAppearanceRouteImport } from './routes/_authenticated/settings/appearance'
 import { Route as AuthenticatedSettingsAccountRouteImport } from './routes/_authenticated/settings/account'
-import { Route as AuthenticatedProductoProductoRouteImport } from './routes/_authenticated/producto/producto'
 import { Route as AuthenticatedErrorsErrorRouteImport } from './routes/_authenticated/errors/$error'
 import { Route as AuthenticatedContactoContactoRouteImport } from './routes/_authenticated/contacto/contacto'
+import { Route as AuthenticatedProductosMarcasIndexRouteImport } from './routes/_authenticated/productos/marcas/index'
 
 const ClerkRouteRoute = ClerkRouteRouteImport.update({
   id: '/clerk',
@@ -145,6 +146,12 @@ const AuthenticatedSettingsRouteRoute =
   AuthenticatedSettingsRouteRouteImport.update({
     id: '/settings',
     path: '/settings',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedProductosRouteRoute =
+  AuthenticatedProductosRouteRouteImport.update({
+    id: '/productos',
+    path: '/productos',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedUsersIndexRoute = AuthenticatedUsersIndexRouteImport.update({
@@ -271,12 +278,6 @@ const AuthenticatedSettingsAccountRoute =
     path: '/account',
     getParentRoute: () => AuthenticatedSettingsRouteRoute,
   } as any)
-const AuthenticatedProductoProductoRoute =
-  AuthenticatedProductoProductoRouteImport.update({
-    id: '/producto/producto',
-    path: '/producto/producto',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
 const AuthenticatedErrorsErrorRoute =
   AuthenticatedErrorsErrorRouteImport.update({
     id: '/errors/$error',
@@ -289,9 +290,16 @@ const AuthenticatedContactoContactoRoute =
     path: '/contacto/contacto',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedProductosMarcasIndexRoute =
+  AuthenticatedProductosMarcasIndexRouteImport.update({
+    id: '/marcas/',
+    path: '/marcas/',
+    getParentRoute: () => AuthenticatedProductosRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/clerk': typeof ClerkAuthenticatedRouteRouteWithChildren
+  '/productos': typeof AuthenticatedProductosRouteRouteWithChildren
   '/settings': typeof AuthenticatedSettingsRouteRouteWithChildren
   '/clerk/': typeof ClerkauthRouteRouteWithChildren
   '/change-password': typeof authChangePasswordRoute
@@ -310,7 +318,6 @@ export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
   '/contacto/contacto': typeof AuthenticatedContactoContactoRoute
   '/errors/$error': typeof AuthenticatedErrorsErrorRoute
-  '/producto/producto': typeof AuthenticatedProductoProductoRoute
   '/settings/account': typeof AuthenticatedSettingsAccountRoute
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
   '/settings/company': typeof AuthenticatedSettingsCompanyRoute
@@ -333,8 +340,10 @@ export interface FileRoutesByFullPath {
   '/tasks': typeof AuthenticatedTasksIndexRoute
   '/unidades-medida': typeof AuthenticatedUnidadesMedidaIndexRoute
   '/users': typeof AuthenticatedUsersIndexRoute
+  '/productos/marcas': typeof AuthenticatedProductosMarcasIndexRoute
 }
 export interface FileRoutesByTo {
+  '/productos': typeof AuthenticatedProductosRouteRouteWithChildren
   '/clerk': typeof ClerkAuthenticatedRouteRouteWithChildren
   '/change-password': typeof authChangePasswordRoute
   '/forgot-password': typeof authForgotPasswordRoute
@@ -352,7 +361,6 @@ export interface FileRoutesByTo {
   '/': typeof AuthenticatedIndexRoute
   '/contacto/contacto': typeof AuthenticatedContactoContactoRoute
   '/errors/$error': typeof AuthenticatedErrorsErrorRoute
-  '/producto/producto': typeof AuthenticatedProductoProductoRoute
   '/settings/account': typeof AuthenticatedSettingsAccountRoute
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
   '/settings/company': typeof AuthenticatedSettingsCompanyRoute
@@ -375,11 +383,13 @@ export interface FileRoutesByTo {
   '/tasks': typeof AuthenticatedTasksIndexRoute
   '/unidades-medida': typeof AuthenticatedUnidadesMedidaIndexRoute
   '/users': typeof AuthenticatedUsersIndexRoute
+  '/productos/marcas': typeof AuthenticatedProductosMarcasIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/clerk': typeof ClerkRouteRouteWithChildren
+  '/_authenticated/productos': typeof AuthenticatedProductosRouteRouteWithChildren
   '/_authenticated/settings': typeof AuthenticatedSettingsRouteRouteWithChildren
   '/clerk/(auth)': typeof ClerkauthRouteRouteWithChildren
   '/clerk/_authenticated': typeof ClerkAuthenticatedRouteRouteWithChildren
@@ -399,7 +409,6 @@ export interface FileRoutesById {
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/contacto/contacto': typeof AuthenticatedContactoContactoRoute
   '/_authenticated/errors/$error': typeof AuthenticatedErrorsErrorRoute
-  '/_authenticated/producto/producto': typeof AuthenticatedProductoProductoRoute
   '/_authenticated/settings/account': typeof AuthenticatedSettingsAccountRoute
   '/_authenticated/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
   '/_authenticated/settings/company': typeof AuthenticatedSettingsCompanyRoute
@@ -422,11 +431,13 @@ export interface FileRoutesById {
   '/_authenticated/tasks/': typeof AuthenticatedTasksIndexRoute
   '/_authenticated/unidades-medida/': typeof AuthenticatedUnidadesMedidaIndexRoute
   '/_authenticated/users/': typeof AuthenticatedUsersIndexRoute
+  '/_authenticated/productos/marcas/': typeof AuthenticatedProductosMarcasIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/clerk'
+    | '/productos'
     | '/settings'
     | '/clerk/'
     | '/change-password'
@@ -445,7 +456,6 @@ export interface FileRouteTypes {
     | '/'
     | '/contacto/contacto'
     | '/errors/$error'
-    | '/producto/producto'
     | '/settings/account'
     | '/settings/appearance'
     | '/settings/company'
@@ -468,8 +478,10 @@ export interface FileRouteTypes {
     | '/tasks'
     | '/unidades-medida'
     | '/users'
+    | '/productos/marcas'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/productos'
     | '/clerk'
     | '/change-password'
     | '/forgot-password'
@@ -487,7 +499,6 @@ export interface FileRouteTypes {
     | '/'
     | '/contacto/contacto'
     | '/errors/$error'
-    | '/producto/producto'
     | '/settings/account'
     | '/settings/appearance'
     | '/settings/company'
@@ -510,10 +521,12 @@ export interface FileRouteTypes {
     | '/tasks'
     | '/unidades-medida'
     | '/users'
+    | '/productos/marcas'
   id:
     | '__root__'
     | '/_authenticated'
     | '/clerk'
+    | '/_authenticated/productos'
     | '/_authenticated/settings'
     | '/clerk/(auth)'
     | '/clerk/_authenticated'
@@ -533,7 +546,6 @@ export interface FileRouteTypes {
     | '/_authenticated/'
     | '/_authenticated/contacto/contacto'
     | '/_authenticated/errors/$error'
-    | '/_authenticated/producto/producto'
     | '/_authenticated/settings/account'
     | '/_authenticated/settings/appearance'
     | '/_authenticated/settings/company'
@@ -556,6 +568,7 @@ export interface FileRouteTypes {
     | '/_authenticated/tasks/'
     | '/_authenticated/unidades-medida/'
     | '/_authenticated/users/'
+    | '/_authenticated/productos/marcas/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -707,6 +720,13 @@ declare module '@tanstack/react-router' {
       path: '/settings'
       fullPath: '/settings'
       preLoaderRoute: typeof AuthenticatedSettingsRouteRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/productos': {
+      id: '/_authenticated/productos'
+      path: '/productos'
+      fullPath: '/productos'
+      preLoaderRoute: typeof AuthenticatedProductosRouteRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/users/': {
@@ -863,13 +883,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSettingsAccountRouteImport
       parentRoute: typeof AuthenticatedSettingsRouteRoute
     }
-    '/_authenticated/producto/producto': {
-      id: '/_authenticated/producto/producto'
-      path: '/producto/producto'
-      fullPath: '/producto/producto'
-      preLoaderRoute: typeof AuthenticatedProductoProductoRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/errors/$error': {
       id: '/_authenticated/errors/$error'
       path: '/errors/$error'
@@ -884,8 +897,30 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedContactoContactoRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/productos/marcas/': {
+      id: '/_authenticated/productos/marcas/'
+      path: '/marcas'
+      fullPath: '/productos/marcas'
+      preLoaderRoute: typeof AuthenticatedProductosMarcasIndexRouteImport
+      parentRoute: typeof AuthenticatedProductosRouteRoute
+    }
   }
 }
+
+interface AuthenticatedProductosRouteRouteChildren {
+  AuthenticatedProductosMarcasIndexRoute: typeof AuthenticatedProductosMarcasIndexRoute
+}
+
+const AuthenticatedProductosRouteRouteChildren: AuthenticatedProductosRouteRouteChildren =
+  {
+    AuthenticatedProductosMarcasIndexRoute:
+      AuthenticatedProductosMarcasIndexRoute,
+  }
+
+const AuthenticatedProductosRouteRouteWithChildren =
+  AuthenticatedProductosRouteRoute._addFileChildren(
+    AuthenticatedProductosRouteRouteChildren,
+  )
 
 interface AuthenticatedSettingsRouteRouteChildren {
   AuthenticatedSettingsAccountRoute: typeof AuthenticatedSettingsAccountRoute
@@ -921,13 +956,13 @@ const AuthenticatedSettingsRouteRouteWithChildren =
   )
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedProductosRouteRoute: typeof AuthenticatedProductosRouteRouteWithChildren
   AuthenticatedSettingsRouteRoute: typeof AuthenticatedSettingsRouteRouteWithChildren
   AuthenticatedBienvenidaRoute: typeof AuthenticatedBienvenidaRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
   AuthenticatedContactoContactoRoute: typeof AuthenticatedContactoContactoRoute
   AuthenticatedErrorsErrorRoute: typeof AuthenticatedErrorsErrorRoute
-  AuthenticatedProductoProductoRoute: typeof AuthenticatedProductoProductoRoute
   AuthenticatedVentaVentaRoute: typeof AuthenticatedVentaVentaRoute
   AuthenticatedAppsIndexRoute: typeof AuthenticatedAppsIndexRoute
   AuthenticatedChatsIndexRoute: typeof AuthenticatedChatsIndexRoute
@@ -941,13 +976,14 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedProductosRouteRoute:
+    AuthenticatedProductosRouteRouteWithChildren,
   AuthenticatedSettingsRouteRoute: AuthenticatedSettingsRouteRouteWithChildren,
   AuthenticatedBienvenidaRoute: AuthenticatedBienvenidaRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
   AuthenticatedContactoContactoRoute: AuthenticatedContactoContactoRoute,
   AuthenticatedErrorsErrorRoute: AuthenticatedErrorsErrorRoute,
-  AuthenticatedProductoProductoRoute: AuthenticatedProductoProductoRoute,
   AuthenticatedVentaVentaRoute: AuthenticatedVentaVentaRoute,
   AuthenticatedAppsIndexRoute: AuthenticatedAppsIndexRoute,
   AuthenticatedChatsIndexRoute: AuthenticatedChatsIndexRoute,
