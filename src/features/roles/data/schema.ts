@@ -211,7 +211,7 @@ export const permissionGroups = [
     permissions: [
       { key: 'categoria_ver', label: 'Ver categoría' },
       { key: 'categoria_agregar', label: 'Agregar categoría' },
-      { key: 'categoria_modificar', label: 'Modificar categoria' },
+      { key: 'categoria_modificar', label: 'Modificar categoría' },
       { key: 'categoria_eliminar', label: 'Eliminar categoría' },
     ]
   },
