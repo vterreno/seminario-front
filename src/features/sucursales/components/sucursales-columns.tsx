@@ -6,6 +6,8 @@ import { Sucursal } from '../data/schema'
 import { Badge } from '@/components/ui/badge'
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
+import { getStorageItem } from '@/hooks/use-local-storage'
+import { STORAGE_KEYS } from '@/lib/constants'
 
 declare module '@tanstack/react-table' {
   interface ColumnMeta<TData, TValue> {
@@ -18,21 +20,38 @@ interface SucursalesColumnsOptions {
   canBulkAction?: boolean // Nueva opción para controlar bulk actions
 }
 
-// Obtener datos del usuario desde localStorage para determinar si es superadmin
-const getUserData = () => {
-  try {
-    return JSON.parse(localStorage.getItem('user_data') || '{}')
-  } catch {
-    return {}
+interface UserData {
+  name: string
+  email: string
+  empresa: {
+    id: number | null
+    nombre: string | null
   }
+  roles: Array<{
+    id: number
+    nombre: string
+    permissions: Array<{
+      id: number
+      nombre: string
+      codigo: string
+    }>
+  }>
+}
+
+// Obtener datos del usuario desde localStorage para determinar si es superadmin
+const getUserData = (): UserData | null => {
+  return getStorageItem(STORAGE_KEYS.USER_DATA, null)
 }
 
 // Verificar si el usuario es superadmin basándose en los roles
-const isSuperAdmin = () => {
+const isSuperAdmin = (): boolean => {
   try {
     const userData = getUserData()
+    if (!userData || !userData.empresa) {
+      return false
+    }
     // Verificar si tiene empresa asociada
-    return userData.empresa && userData.empresa.id == null
+    return userData.empresa.id == null
   } catch {
     return false
   }
