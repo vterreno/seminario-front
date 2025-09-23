@@ -11,29 +11,91 @@ import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { ContactosTable } from './components/contactos-table'
 import { ContactoDialog } from './components/contacto-dialog'
+import { ConfirmDialog } from '@/components/confirm-dialog'
 
 export function Contactos() {
-  const { hasPermission } = usePermissions()
+  const { hasPermission, isSuperAdmin } = usePermissions()
   const [tab, setTab] = useState<'clientes' | 'proveedores'>('clientes')
   const [clientes, setClientes] = useState<Contacto[]>([])
   const [proveedores, setProveedores] = useState<Contacto[]>([])
   const [openDialog, setOpenDialog] = useState(false)
   const [dialogValue, setDialogValue] = useState<Partial<Contacto>>({})
+  
+  // Estados para el modal de confirmación de eliminación
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false)
+  const [contactoToDelete, setContactoToDelete] = useState<Contacto | null>(null)
+  const [isDeleting, setIsDeleting] = useState(false)
 
   const canVerClientes = hasPermission('cliente_ver')
   const canVerProveedores = hasPermission('proveedor_ver')
+  const canAgregarClientes = hasPermission('cliente_agregar')
+  const canAgregarProveedores = hasPermission('proveedor_agregar')
+  const canModificarClientes = hasPermission('cliente_modificar')
+  const canModificarProveedores = hasPermission('proveedor_modificar')
+  const canEliminarClientes = hasPermission('cliente_eliminar')
+  const canEliminarProveedores = hasPermission('proveedor_eliminar')
+
+  // Función para refrescar ambas tablas
+  const refreshTables = async () => {
+    try {
+      const promises = [];
+      
+      if (canVerClientes) {
+        promises.push(
+          apiContactosService.getClientesAll().then(data => setClientes(data))
+        );
+      }
+      
+      if (canVerProveedores) {
+        promises.push(
+          apiContactosService.getProveedoresAll().then(data => setProveedores(data))
+        );
+      }
+      
+      await Promise.all(promises);
+    } catch (error) {
+      console.error('Error al refrescar tablas:', error);
+      toast.error('Error al refrescar los datos');
+    }
+  }
+
+  // Función para iniciar el proceso de eliminación
+  const handleDelete = (contacto: Contacto) => {
+    setContactoToDelete(contacto)
+    setConfirmDeleteOpen(true)
+  }
+
+  // Función para confirmar la eliminación
+  const confirmDelete = async () => {
+    if (!contactoToDelete) return
+    
+    setIsDeleting(true)
+    try {
+      // Determinar si es cliente o proveedor basado en la pestaña activa
+      if (tab === 'clientes') {
+        await apiContactosService.deleteCliente(contactoToDelete.id!)
+        toast.success('Cliente eliminado')
+      } else {
+        await apiContactosService.deleteProveedor(contactoToDelete.id!)
+        toast.success('Proveedor eliminado')
+      }
+      
+      // Refrescar ambas tablas
+      await refreshTables()
+      
+      setConfirmDeleteOpen(false)
+      setContactoToDelete(null)
+    } catch (e: any) {
+      toast.error(e?.response?.data?.message || 'No se pudo eliminar')
+    } finally {
+      setIsDeleting(false)
+    }
+  }
 
   useEffect(() => {
     const load = async () => {
       try {
-        if (canVerClientes) {
-          const data = await apiContactosService.getClientesAll()
-          setClientes(data)
-        }
-        if (canVerProveedores) {
-          const data = await apiContactosService.getProveedoresAll()
-          setProveedores(data)
-        }
+        await refreshTables()
       } catch (e) {
         toast.error('Error al cargar contactos')
       }
@@ -68,8 +130,8 @@ export function Contactos() {
             <p className='text-muted-foreground'>Gestione clientes y proveedores.</p>
           </div>
           <div className='flex gap-2'>
-            {(canVerClientes || canVerProveedores) && (
-              <Button onClick={() => { setDialogValue({}); setOpenDialog(true) }}>Nuevo contacto</Button>
+            {((tab === 'clientes' && canAgregarClientes) || (tab === 'proveedores' && canAgregarProveedores)) && (
+              <Button onClick={() => { setDialogValue({ rol: tab === 'proveedores' ? 'proveedor' : 'cliente' }); setOpenDialog(true) }}>Nuevo contacto</Button>
             )}
           </div>
         </div>
@@ -82,20 +144,14 @@ export function Contactos() {
             <TabsContent value="clientes">
               <ContactosTable 
                 data={clientes}
-                onEdit={(c) => { setDialogValue({...c, tipo_contacto: 'cliente'}); setOpenDialog(true) }}
-                onDelete={async (c) => {
-                  try {
-                    await apiContactosService.deleteCliente(c.id!)
-                    toast.success('Cliente eliminado')
-                    const data = await apiContactosService.getClientesAll()
-                    setClientes(data)
-                  } catch (e: any) {
-                    toast.error(e?.response?.data?.message || 'No se pudo eliminar')
-                  }
-                }}
-                canBulkAction
+                onEdit={(c) => { setDialogValue({...c}); setOpenDialog(true) }}
+                onDelete={handleDelete}
+                canBulkAction={canModificarClientes || canEliminarClientes}
                 tipo='cliente'
-                onSuccess={async () => { const data = await apiContactosService.getClientesAll(); setClientes(data) }}
+                onSuccess={refreshTables}
+                isSuperAdmin={isSuperAdmin}
+                canEdit={canModificarClientes}
+                canDelete={canEliminarClientes}
               />
             </TabsContent>
           )}
@@ -103,20 +159,14 @@ export function Contactos() {
             <TabsContent value="proveedores">
               <ContactosTable 
                 data={proveedores}
-                onEdit={(c) => { setDialogValue({...c, tipo_contacto: 'proveedor'}); setOpenDialog(true) }}
-                onDelete={async (c) => {
-                  try {
-                    await apiContactosService.deleteProveedor(c.id!)
-                    toast.success('Proveedor eliminado')
-                    const data = await apiContactosService.getProveedoresAll()
-                    setProveedores(data)
-                  } catch (e: any) {
-                    toast.error(e?.response?.data?.message || 'No se pudo eliminar')
-                  }
-                }}
-                canBulkAction
+                onEdit={(c) => { setDialogValue({...c}); setOpenDialog(true) }}
+                onDelete={handleDelete}
+                canBulkAction={canModificarProveedores || canEliminarProveedores}
                 tipo='proveedor'
-                onSuccess={async () => { const data = await apiContactosService.getProveedoresAll(); setProveedores(data) }}
+                onSuccess={refreshTables}
+                isSuperAdmin={isSuperAdmin}
+                canEdit={canModificarProveedores}
+                canDelete={canEliminarProveedores}
               />
             </TabsContent>
           )}
@@ -129,24 +179,39 @@ export function Contactos() {
           canVerProveedores={canVerProveedores}
           onSubmit={async (val) => {
             try {
-              const tipoContacto = (val as any).tipo_contacto || 'cliente'
-              if (tipoContacto === 'cliente') {
-                if (val.id) await apiContactosService.updateCliente(val.id, val as any)
+              const rol = val.rol || 'cliente'
+              const isUpdate = !!val.id
+              
+              if (rol === 'cliente') {
+                if (isUpdate) await apiContactosService.updateCliente(val.id!, val as any)
                 else await apiContactosService.createCliente({ ...val, rol: 'cliente' } as any)
-                const data = await apiContactosService.getClientesAll()
-                setClientes(data)
               } else {
-                if (val.id) await apiContactosService.updateProveedor(val.id, val as any)
+                if (isUpdate) await apiContactosService.updateProveedor(val.id!, val as any)
                 else await apiContactosService.createProveedor({ ...val, rol: 'proveedor' } as any)
-                const data = await apiContactosService.getProveedoresAll()
-                setProveedores(data)
               }
+              
+              // Refrescar ambas tablas después de cualquier operación
+              await refreshTables()
+              
               setOpenDialog(false)
-              toast.success('Guardado correctamente')
+              setDialogValue({}) // Limpiar el formulario
+              toast.success(isUpdate ? 'Contacto actualizado correctamente' : 'Contacto creado correctamente')
             } catch (e: any) {
+              console.error('Error al guardar contacto:', e)
               toast.error(e?.response?.data?.message || 'Error al guardar')
             }
           }}
+        />
+        
+        <ConfirmDialog
+          open={confirmDeleteOpen}
+          onOpenChange={setConfirmDeleteOpen}
+          title="Confirmar eliminación"
+          desc={`¿Está seguro que desea eliminar el contacto "${contactoToDelete?.nombre_razon_social}"? Esta acción no se puede deshacer.`}
+          confirmText="Eliminar"
+          destructive
+          isLoading={isDeleting}
+          handleConfirm={confirmDelete}
         />
       </Main>
     </>

@@ -14,6 +14,15 @@ export interface Contacto {
   codigo_postal?: string | null
   estado?: boolean
   rol?: 'cliente' | 'proveedor' | 'ambos'
+  es_consumidor_final?: boolean
+  es_empresa?: boolean
+  provincia_id?: number | null
+  ciudad_id?: number | null
+  empresa_id?: number | null
+  empresa?: {
+    id: number
+    name: string
+  } | null
 }
 
 import axiosService from '@/api/apiClient'

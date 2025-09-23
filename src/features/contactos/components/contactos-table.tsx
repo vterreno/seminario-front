@@ -1,7 +1,7 @@
-import { useMemo, useState, useEffect } from 'react'
+import { useMemo, useState } from 'react'
 import { ColumnDef } from '@tanstack/react-table'
-import { DataTable, DataTableToolbar, DataTablePagination } from '@/components/data-table'
-import { contactosColumns } from './contactos-columns'
+import { DataTableToolbar, DataTablePagination } from '@/components/data-table'
+import { getContactosColumns } from './contactos-columns'
 import { Contacto } from '@/service/apiContactos.service'
 import { DataTableRowActions } from './data-table-row-actions'
 import { ContactosBulkActions } from './data-table-bulk-actions'
@@ -9,16 +9,36 @@ import { useReactTable, getCoreRowModel, getFilteredRowModel, getSortedRowModel,
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { cn } from '@/lib/utils'
 
-export function ContactosTable({ data, onEdit, onDelete, canBulkAction, tipo = 'cliente', onSuccess }: { data: Contacto[], onEdit: (c: Contacto) => void, onDelete: (c: Contacto) => void, canBulkAction?: boolean, tipo?: 'cliente' | 'proveedor', onSuccess?: () => void }) {
+export function ContactosTable({ 
+  data, 
+  onEdit, 
+  onDelete, 
+  canBulkAction, 
+  tipo = 'cliente', 
+  onSuccess,
+  isSuperAdmin = false,
+  canEdit = true,
+  canDelete = true
+}: { 
+  data: Contacto[], 
+  onEdit: (c: Contacto) => void, 
+  onDelete: (c: Contacto) => void, 
+  canBulkAction?: boolean, 
+  tipo?: 'cliente' | 'proveedor', 
+  onSuccess?: () => void,
+  isSuperAdmin?: boolean,
+  canEdit?: boolean,
+  canDelete?: boolean
+}) {
   const columns: ColumnDef<Contacto>[] = useMemo(() => {
     return [
-      ...contactosColumns,
+      ...getContactosColumns(isSuperAdmin),
       {
         id: 'actions',
-        cell: ({ row }) => <DataTableRowActions row={row} onEdit={onEdit} onDelete={onDelete} />,
+        cell: ({ row }) => <DataTableRowActions row={row} onEdit={onEdit} onDelete={onDelete} canEdit={canEdit} canDelete={canDelete} />,
       },
     ]
-  }, [onEdit, onDelete])
+  }, [onEdit, onDelete, isSuperAdmin, canEdit, canDelete])
 
   const [rowSelection, setRowSelection] = useState({})
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
@@ -119,7 +139,7 @@ export function ContactosTable({ data, onEdit, onDelete, canBulkAction, tipo = '
         </Table>
       </div>
       <DataTablePagination table={table} />
-      {canBulkAction && <ContactosBulkActions table={table} tipo={tipo} onSuccess={onSuccess || (() => {})} />}
+      {canBulkAction && <ContactosBulkActions table={table} tipo={tipo} onSuccess={onSuccess || (() => {})} canModify={canEdit} canDelete={canDelete} />}
     </div>
   )
 }

@@ -1,11 +1,34 @@
 import { Row } from '@tanstack/react-table'
 import { Button } from '@/components/ui/button'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import { MoreHorizontal } from 'lucide-react'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu'
+import { MoreHorizontal, Edit, Trash2 } from 'lucide-react'
 import { Contacto } from '@/service/apiContactos.service'
 
-export function DataTableRowActions({ row, onEdit, onDelete }: { row: Row<Contacto>, onEdit: (c: Contacto) => void, onDelete: (c: Contacto) => void }) {
+export function DataTableRowActions({ 
+  row, 
+  onEdit, 
+  onDelete, 
+  canEdit = true, 
+  canDelete = true 
+}: { 
+  row: Row<Contacto>, 
+  onEdit: (c: Contacto) => void, 
+  onDelete: (c: Contacto) => void,
+  canEdit?: boolean,
+  canDelete?: boolean
+}) {
   const contacto = row.original
+  
+  // Si es consumidor final, no mostrar acciones
+  if (contacto.es_consumidor_final) {
+    return null
+  }
+  
+  // Si no tiene permisos, no mostrar nada
+  if (!canEdit && !canDelete) {
+    return null
+  }
+  
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -15,8 +38,19 @@ export function DataTableRowActions({ row, onEdit, onDelete }: { row: Row<Contac
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[160px]">
-        <DropdownMenuItem onClick={() => onEdit(contacto)}>Editar</DropdownMenuItem>
-        <DropdownMenuItem onClick={() => onDelete(contacto)}>Eliminar</DropdownMenuItem>
+        {canEdit && (
+          <DropdownMenuItem onClick={() => onEdit(contacto)}>
+            <Edit className="mr-2 h-4 w-4" />
+            Editar
+          </DropdownMenuItem>
+        )}
+        {canEdit && canDelete && <DropdownMenuSeparator />}
+        {canDelete && (
+          <DropdownMenuItem onClick={() => onDelete(contacto)} className="text-destructive hover:text-red-600">
+            <Trash2 className="mr-2 h-4 w-4 text-red-600 hover:text-red-600" />
+            Eliminar
+          </DropdownMenuItem>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   )

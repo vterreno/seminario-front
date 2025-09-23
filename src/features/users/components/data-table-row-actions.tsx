@@ -57,7 +57,7 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
             className='data-[state=open]:bg-muted flex h-8 w-8 p-0'
           >
             <DotsHorizontalIcon className='h-4 w-4' />
-            <span className='sr-only'>Open menu</span>
+            <span className='sr-only'>Abrir menú</span>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align='end' className='w-[160px]'>
@@ -68,10 +68,8 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
                 setOpen('edit')
               }}
             >
+              <UserPen size={16} />
               Editar
-              <DropdownMenuShortcut>
-                <UserPen size={16} />
-              </DropdownMenuShortcut>
             </DropdownMenuItem>
           )}
           {canEdit && canDelete && <DropdownMenuSeparator />}
@@ -83,10 +81,8 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
               }}
               className='text-red-500!'
             >
+              <Trash2 size={16} />
               Eliminar
-              <DropdownMenuShortcut>
-                <Trash2 size={16} />
-              </DropdownMenuShortcut>
             </DropdownMenuItem>
           )}
         </DropdownMenuContent>
