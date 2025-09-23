@@ -46,36 +46,51 @@ class UnidadesMedidaService {
   }
 
   async getAll(): Promise<UnidadMedida[]> {
-    return this.request<UnidadMedida[]>('/unidad-medida/all')
+    return this.request<UnidadMedida[]>('/unidades-medida')
   }
 
   async getById(id: number): Promise<UnidadMedida> {
-    return this.request<UnidadMedida>(`/unidad-medida/${id}`)
+    return this.request<UnidadMedida>(`/unidades-medida/${id}`)
   }
 
   async create(data: CreateUnidadMedidaData): Promise<UnidadMedida> {
-    return this.request<UnidadMedida>('/unidad-medida', {
+    return this.request<UnidadMedida>('/unidades-medida', {
       method: 'POST',
       body: JSON.stringify(data),
     })
   }
 
   async update(id: number, data: UpdateUnidadMedidaData): Promise<UnidadMedida> {
-    return this.request<UnidadMedida>(`/unidad-medida/${id}`, {
+    return this.request<UnidadMedida>(`/unidades-medida/${id}`, {
       method: 'PATCH',
       body: JSON.stringify(data),
     })
   }
 
   async delete(id: number): Promise<void> {
-    await this.request<void>(`/unidad-medida/${id}`, {
+    await this.request<void>(`/unidades-medida/${id}`, {
       method: 'DELETE',
     })
   }
 
+  async deleteMultiple(ids: number[]): Promise<{ message?: string }> {
+    console.log('Deleting unidades with IDs:', ids);
+    try {
+      const result = await this.request<{ message?: string }>('/unidades-medida/bulk-delete', {
+        method: 'DELETE',
+        body: JSON.stringify({ ids }),
+      });
+      console.log('Delete result:', result);
+      return result;
+    } catch (error) {
+      console.error('Error in deleteMultiple:', error);
+      throw error;
+    }
+  }
+
   async canDelete(id: number): Promise<{ canDelete: boolean; message?: string }> {
     return this.request<{ canDelete: boolean; message?: string }>(
-      `/unidad-medida/${id}/can-delete`
+      `/unidades-medida/${id}/can-delete`
     )
   }
 }

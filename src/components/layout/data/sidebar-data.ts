@@ -11,7 +11,8 @@ import {
   Briefcase,
   UserCheck,
   MapPin,
-  Building2
+  Building2,
+  Scale
 } from 'lucide-react'
 import { type SidebarData } from '../types'
 import { getStorageItem } from '@/hooks/use-local-storage'
@@ -259,11 +260,11 @@ export const getSidebarData = (): SidebarData => {
   }
 
   // Solo agregar unidades de medida si tiene permisos para verlas
-  if (hasPermission(userData, 'unidad_ver')) {
+  if (hasPermission(userData, 'unidad_medida_ver')) {
     configuracionItems.push({
       title: 'Unidades de medida',
-      url: '/settings/unidades-medida',
-      icon: Package,
+      url: '/unidades-medida',
+      icon: Scale,
       backgroundColor: '#40ba22',
       textColor: '#ffffff',
     })
