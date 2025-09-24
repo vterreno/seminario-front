@@ -10,7 +10,7 @@ import { UnidadMedidaPrimaryButtons } from './components/unidad-medida-primary-b
 import { UnidadMedidaProvider } from './components/unidad-medida-provider'
 import { UnidadMedidaTable } from './components/unidad-medida-table'
 import { UnidadMedida } from './data/schema'
-import { unidadesMedidaService } from '@/service/unidades-medida.service'
+import apiUnidadesMedida from '@/service/apiUnidadesMedida.service'
 import { toast } from 'sonner'
 import { usePermissions } from '@/hooks/use-permissions'
 
@@ -47,7 +47,7 @@ export function UnidadesMedida() {
   const fetchUnidadesMedida = async () => {
     try {
       setLoading(true)
-      const data = await unidadesMedidaService.getAll()
+      const data = await apiUnidadesMedida.getAllUnidadesMedida()
       setUnidadesMedida(data)
     } catch (error) {
       console.error('Error fetching unidades de medida:', error)

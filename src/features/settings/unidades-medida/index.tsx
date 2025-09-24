@@ -29,11 +29,11 @@ import { Badge } from '@/components/ui/badge'
 import { Plus, Pencil, Trash2, CheckCircle, XCircle } from 'lucide-react'
 import { UnidadMedidaFormDialog } from './components/unidad-medida-form-dialog'
 import {
-  unidadesMedidaService,
   type UnidadMedida,
-  type CreateUnidadMedidaData,
-  type UpdateUnidadMedidaData,
-} from '@/service/unidades-medida.service'
+  type CreateUnidadMedidaDto,
+  type UpdateUnidadMedidaDto,
+} from '@/service/apiUnidadesMedida.service'
+import apiUnidadesMedida from '@/service/apiUnidadesMedida.service'
 import { toast } from 'sonner'
 
 export function SettingsUnidadesMedida() {
@@ -51,7 +51,7 @@ export function SettingsUnidadesMedida() {
   const loadUnidadesMedida = async () => {
     try {
       setLoading(true)
-      const data = await unidadesMedidaService.getAll()
+      const data = await apiUnidadesMedida.getAllUnidadesMedida()
       setUnidadesMedida(data)
     } catch (error) {
       toast.error('Error al cargar las unidades de medida')
@@ -76,17 +76,17 @@ export function SettingsUnidadesMedida() {
     setDeleteDialogOpen(true)
   }
 
-  const handleFormSubmit = async (data: CreateUnidadMedidaData | UpdateUnidadMedidaData) => {
+  const handleFormSubmit = async (data: CreateUnidadMedidaDto | UpdateUnidadMedidaDto) => {
     try {
       setSubmitting(true)
       
       if (selectedUnidad) {
         // Editar unidad existente
-        await unidadesMedidaService.update(selectedUnidad.id, data)
+        await apiUnidadesMedida.updateUnidadMedidaPartial(selectedUnidad.id!, data)
         toast.success('Unidad de medida actualizada exitosamente')
       } else {
         // Crear nueva unidad
-        await unidadesMedidaService.create(data as CreateUnidadMedidaData)
+        await apiUnidadesMedida.createUnidadMedida(data as CreateUnidadMedidaDto)
         toast.success('Unidad de medida creada exitosamente')
       }
       
@@ -114,7 +114,7 @@ export function SettingsUnidadesMedida() {
       setSubmitting(true)
       
       // Verificar si se puede eliminar
-      const { canDelete, message } = await unidadesMedidaService.canDelete(selectedUnidad.id)
+      const { canDelete, message } = await apiUnidadesMedida.canDeleteUnidadMedida(selectedUnidad.id!)
       
       if (!canDelete) {
         toast.error(message || 'No se puede eliminar esta unidad de medida porque está siendo utilizada')
@@ -123,7 +123,7 @@ export function SettingsUnidadesMedida() {
         return
       }
       
-      await unidadesMedidaService.delete(selectedUnidad.id)
+      await apiUnidadesMedida.deleteUnidadMedida(selectedUnidad.id!)
       toast.success('Unidad de medida eliminada exitosamente')
       
       setDeleteDialogOpen(false)

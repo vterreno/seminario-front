@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/dialog'
 import { toast } from 'sonner'
 import { type UnidadMedida } from '../data/schema'
-import { unidadesMedidaService } from '@/service/unidades-medida.service'
+import apiUnidadesMedida from '@/service/apiUnidadesMedida.service'
 
 type UnidadMedidaMultiDeleteDialogProps<TData> = {
   open: boolean
@@ -31,7 +31,7 @@ export function UnidadMedidaMultiDeleteDialog<TData>({
   const handleDelete = async () => {
     try {
       const ids = selectedUnidades.map((unidad) => unidad.id!).filter(Boolean)
-      const response = await unidadesMedidaService.deleteMultiple(ids)
+      const response = await apiUnidadesMedida.deleteUnidadesMedida(ids)
       
       if (response.message && response.message.includes('en uso')) {
         toast.error('Algunas unidades de medida están siendo utilizadas por productos y no se pueden eliminar')

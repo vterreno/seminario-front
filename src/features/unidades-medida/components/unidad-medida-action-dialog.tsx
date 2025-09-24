@@ -21,7 +21,7 @@ import { Input } from '@/components/ui/input'
 import { Switch } from '@/components/ui/switch'
 import { UnidadMedida, UnidadMedidaForm, unidadMedidaFormSchema } from '../data/schema'
 import { toast } from 'sonner'
-import { unidadesMedidaService } from '@/service/unidades-medida.service'
+import apiUnidadesMedida from '@/service/apiUnidadesMedida.service'
 
 type UnidadMedidaActionDialogProps = {
   currentRow?: UnidadMedida
@@ -57,14 +57,14 @@ export function UnidadMedidaActionDialog({
   const onSubmit = async (values: UnidadMedidaForm) => {
     try {
       if (isEdit && currentRow?.id) {
-        await unidadesMedidaService.update(currentRow.id, {
+        await apiUnidadesMedida.updateUnidadMedidaPartial(currentRow.id, {
           nombre: values.nombre,
           abreviatura: values.abreviatura,
           aceptaDecimales: values.aceptaDecimales
         })
         toast.success('Unidad de medida actualizada exitosamente')
       } else {
-        await unidadesMedidaService.create({
+        await apiUnidadesMedida.createUnidadMedida({
           nombre: values.nombre,
           abreviatura: values.abreviatura,
           aceptaDecimales: values.aceptaDecimales
@@ -162,7 +162,7 @@ export function UnidadMedidaActionDialog({
                     <FormLabel className='text-base'>Acepta decimales</FormLabel>
                     <div className='text-sm text-muted-foreground'>
                       {field.value 
-                        ? 'Permite cantidades con decimales (ej. 2.5 kg)' 
+                        ? 'Permite cantidades con decimales (ej. 2,5 kg)' 
                         : 'Solo permite cantidades enteras (ej. 5 unidades)'
                       }
                     </div>

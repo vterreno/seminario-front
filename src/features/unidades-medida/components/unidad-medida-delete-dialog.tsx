@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/dialog'
 import { UnidadMedida } from '../data/schema'
 import { toast } from 'sonner'
-import { unidadesMedidaService } from '@/service/unidades-medida.service'
+import apiUnidadesMedida from '@/service/apiUnidadesMedida.service'
 
 type UnidadMedidaDeleteDialogProps = {
   open: boolean
@@ -28,14 +28,14 @@ export function UnidadMedidaDeleteDialog({
     try {
       if (currentRow.id) {
         // Verificar si se puede eliminar
-        const canDeleteResponse = await unidadesMedidaService.canDelete(currentRow.id)
+        const canDeleteResponse = await apiUnidadesMedida.canDeleteUnidadMedida(currentRow.id)
         
         if (!canDeleteResponse.canDelete) {
           toast.error(canDeleteResponse.message || 'Esta unidad de medida está siendo utilizada por al menos un producto y no se puede eliminar')
           return
         }
 
-        await unidadesMedidaService.delete(currentRow.id)
+        await apiUnidadesMedida.deleteUnidadMedida(currentRow.id)
         toast.success(`Unidad de medida "${currentRow.nombre}" eliminada exitosamente`)
         onOpenChange(false)
         onSuccess?.()

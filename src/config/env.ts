@@ -65,4 +65,15 @@ export const rutasBack = {
         bulkDeleteMarcas: `${baseUrl}/marcas/bulk/delete`,
         bulkUpdateStatus: `${baseUrl}/marcas/bulk/status`,
     },
+    unidadesMedida: {
+        getUnidadesMedida: `${baseUrl}/unidades-medida`,
+        getUnidadesMedidaPaginated: `${baseUrl}/unidades-medida`,
+        postUnidadMedida: `${baseUrl}/unidades-medida`,
+        putUnidadMedida: `${baseUrl}/unidades-medida`,
+        patchUnidadMedida: `${baseUrl}/unidades-medida`,
+        deleteUnidadMedida: `${baseUrl}/unidades-medida`,
+        getUnidadMedidaPorId: `${baseUrl}/unidades-medida`,
+        deleteUnidadesMedida: `${baseUrl}/unidades-medida/bulk-delete`,
+        canDeleteUnidadMedida: `${baseUrl}/unidades-medida`,
+    },
 };
