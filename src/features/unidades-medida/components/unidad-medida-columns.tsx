@@ -34,15 +34,6 @@ export const unidadMedidaColumns: ColumnDef<UnidadMedida>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: 'id',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='ID' />
-    ),
-    cell: ({ row }) => <div className='w-[80px]'>{row.getValue('id')}</div>,
-    enableSorting: true,
-    enableHiding: false,
-  },
-  {
     accessorKey: 'nombre',
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='Nombre' />
