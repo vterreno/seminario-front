@@ -43,7 +43,7 @@ export function UnidadMedidaActionDialog({
       ? {
           nombre: currentRow.nombre,
           abreviatura: currentRow.abreviatura,
-          aceptaDecimales: currentRow.aceptaDecimales,
+          aceptaDecimales: currentRow.aceptaDecimales ?? false,
           isEdit,
         }
       : {
@@ -60,14 +60,14 @@ export function UnidadMedidaActionDialog({
         await apiUnidadesMedida.updateUnidadMedidaPartial(currentRow.id, {
           nombre: values.nombre,
           abreviatura: values.abreviatura,
-          aceptaDecimales: values.aceptaDecimales
+          aceptaDecimales: values.aceptaDecimales ?? false
         })
         toast.success('Unidad de medida actualizada exitosamente')
       } else {
         await apiUnidadesMedida.createUnidadMedida({
           nombre: values.nombre,
           abreviatura: values.abreviatura,
-          aceptaDecimales: values.aceptaDecimales
+          aceptaDecimales: values.aceptaDecimales ?? false
         })
         toast.success('Unidad de medida creada exitosamente')
       }
@@ -161,7 +161,7 @@ export function UnidadMedidaActionDialog({
                   <div className='space-y-0.5'>
                     <FormLabel className='text-base'>Acepta decimales</FormLabel>
                     <div className='text-sm text-muted-foreground'>
-                      {field.value 
+                      {(field.value ?? false)
                         ? 'Permite cantidades con decimales (ej. 2,5 kg)' 
                         : 'Solo permite cantidades enteras (ej. 5 unidades)'
                       }
@@ -169,7 +169,7 @@ export function UnidadMedidaActionDialog({
                   </div>
                   <FormControl>
                     <Switch
-                      checked={field.value}
+                      checked={field.value ?? false}
                       onCheckedChange={field.onChange}
                     />
                   </FormControl>
