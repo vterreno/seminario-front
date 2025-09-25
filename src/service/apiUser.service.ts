@@ -7,7 +7,7 @@ import { User, UserForm } from '@/features/users/data/schema';
 class ApiUsers {
     async login(email: string, password: string): Promise<any> {
         try {
-        const response = await axiosService.post(rutasBack.usuarios.login, { email, password });
+        const response = await axiosService.post(rutasBack.usuarios.login, {email, password });
         setStorageItem(STORAGE_KEYS.ACCESS_TOKEN, response.data.accessToken);
         setStorageItem(STORAGE_KEYS.REFRESH_TOKEN, response.data.refreshToken);
 
@@ -20,6 +20,19 @@ class ApiUsers {
         }
     }
 
+    async register(empresa: string, nombre: string, apellido: string, email: string, password: string ): Promise<any> {
+        try {
+        const response = await axiosService.post(rutasBack.usuarios.register, {empresa, nombre, apellido, email, password});
+        console.log(response)
+        return response.data;
+        } catch (error: any) {
+        if (error.response.status === 401) {
+            throw new Error("Usuario o contraseña incorrectos");
+        }
+        throw new Error("Error en el servidor. Intente más tarde.");
+        }
+    }
+    
     async validateToken(): Promise<boolean> {
         try {
             const token = getStorageItem(STORAGE_KEYS.ACCESS_TOKEN, null);

@@ -5,6 +5,7 @@ import { useAuthStore } from "@/stores/auth-store";
 import { createContext, ReactNode } from "react";
 import axiosService from "@/api/apiClient";
 import { rutasBack } from "@/config/env";
+import { _email } from "zod/v4/core";
 
 export const AuthContext = createContext<DatosUsuariosContextType>({
     usuarios: [],
@@ -12,6 +13,7 @@ export const AuthContext = createContext<DatosUsuariosContextType>({
     modificarUsuario: async (_id: number, _usuario: any) => {return {};},
     crearUsuario: async (_usuario: any) => {return {};},
     login: async (_email: string, _password: string) => {return {};},
+    register: async(_empresa: string, _nombre: string, _apellido: string, _email: string, _password: string) => {return {};},
     logout: () => { console.log("Logout function not implemented yet.");}
 })
 
@@ -38,7 +40,6 @@ export const DatosUsuariosProvider = ({ children }: DatosUsuariosProviderProps) 
             empresa: userData.empresa,
             roles: userData.roles,
         });
-
         setAuthenticated(true);
         return response;
         } catch (error: any) {
@@ -48,7 +49,33 @@ export const DatosUsuariosProvider = ({ children }: DatosUsuariosProviderProps) 
 
         throw new Error("Error en el servidor. Intente más tarde.");
         }
-    };    
+    };
+
+
+    const register = async (empresa: string, nombre: string, apellido: string, email: string, password: string) => {
+        try {
+        const response = await apiUserService.register(empresa, nombre, apellido, email, password);
+        // Obtener datos completos del usuario después del login
+        console.log(response)
+        const userDataResponse = await axiosService.get(rutasBack.usuarios.me);
+        const userData = userDataResponse.data;
+        
+        auth.setUser({
+            name: userData.name,
+            email: userData.email,
+            empresa: userData.empresa,
+            roles: userData.roles,
+        });
+        setAuthenticated(true);
+        return response;
+        } catch (error: any) {
+        if (error.response.status === 401) {
+            throw new Error("Usuario o contraseña incorrectos");
+        }
+        throw new Error("Error en el servidor. Intente más tarde.");
+        }
+    };  
+
     const logout = () => {
         apiUserService.logout();
         // Limpiar datos del usuario del auth store
@@ -64,6 +91,7 @@ export const DatosUsuariosProvider = ({ children }: DatosUsuariosProviderProps) 
             modificarUsuario: async (_id: number, _usuario: any) => {return {};},
             crearUsuario: async (_usuario: any) => {return {};},
             login,
+            register,
             logout
         }}>
             {children}
