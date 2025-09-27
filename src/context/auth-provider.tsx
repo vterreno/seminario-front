@@ -5,7 +5,6 @@ import { useAuthStore } from "@/stores/auth-store";
 import { createContext, ReactNode } from "react";
 import axiosService from "@/api/apiClient";
 import { rutasBack } from "@/config/env";
-import { _email } from "zod/v4/core";
 
 export const AuthContext = createContext<DatosUsuariosContextType>({
     usuarios: [],
@@ -28,51 +27,69 @@ export const DatosUsuariosProvider = ({ children }: DatosUsuariosProviderProps) 
     
     const login = async (email: string, password: string) => {
         try {
-        const response = await apiUserService.login(email, password);
+            const response = await apiUserService.login(email, password);
 
-        // Obtener datos completos del usuario después del login
-        const userDataResponse = await axiosService.get(rutasBack.usuarios.me);
-        const userData = userDataResponse.data;
-        
-        auth.setUser({
-            name: userData.name,
-            email: userData.email,
-            empresa: userData.empresa,
-            roles: userData.roles,
-        });
-        setAuthenticated(true);
-        return response;
+            // Obtener datos completos del usuario después del login
+            const userDataResponse = await axiosService.get(rutasBack.usuarios.me);
+            const userData = userDataResponse.data;
+            
+            auth.setUser({
+                name: userData.name,
+                email: userData.email,
+                empresa: userData.empresa,
+                roles: userData.roles,
+            });
+            setAuthenticated(true);
+            return response;
         } catch (error: any) {
-        if (error.response.status === 401) {
-            throw new Error("Usuario o contraseña incorrectos");
-        }
-
-        throw new Error("Error en el servidor. Intente más tarde.");
+            console.error("Error en login:", error);
+            
+            // Primero intentar obtener el mensaje del backend
+            const backendMessage = error.response?.data?.message;
+            
+            if (backendMessage) {
+                // Si hay un mensaje del backend, usarlo directamente
+                throw new Error(backendMessage);
+            }
+            
+            // Si no hay mensaje del backend, usar mensajes por defecto según el tipo de error
+            if (error.response) {
+                // El servidor respondió con un código de estado de error
+                if (error.response.status === 401) {
+                    throw new Error("Usuario o contraseña incorrectos");
+                } else if (error.response.status === 400) {
+                    throw new Error("Datos inválidos");
+                } else {
+                    throw new Error("Error en el servidor. Intente más tarde.");
+                }
+            } else if (error.request) {
+                // La petición se hizo pero no se recibió respuesta
+                throw new Error("No se pudo conectar con el servidor");
+            } else {
+                // Error en la configuración de la petición
+                throw new Error("Error inesperado. Intente más tarde.");
+            }
         }
     };
 
 
     const register = async (empresa: string, nombre: string, apellido: string, email: string, password: string) => {
         try {
-        const response = await apiUserService.register(empresa, nombre, apellido, email, password);
-        // Obtener datos completos del usuario después del login
-        console.log(response)
-        const userDataResponse = await axiosService.get(rutasBack.usuarios.me);
-        const userData = userDataResponse.data;
-        
-        auth.setUser({
-            name: userData.name,
-            email: userData.email,
-            empresa: userData.empresa,
-            roles: userData.roles,
-        });
-        setAuthenticated(true);
-        return response;
-        } catch (error: any) {
-        if (error.response.status === 401) {
-            throw new Error("Usuario o contraseña incorrectos");
-        }
-        throw new Error("Error en el servidor. Intente más tarde.");
+            await apiUserService.register(empresa, nombre, apellido, email, password);
+            // Obtener datos completos del usuario después del registro
+            const userDataResponse = await axiosService.get(rutasBack.usuarios.me);
+            const userData = userDataResponse.data;
+            
+            auth.setUser({
+                name: userData.name,
+                email: userData.email,
+                empresa: userData.empresa,
+                roles: userData.roles,
+            });
+            setAuthenticated(true);
+        } catch (error: any) {     
+            // El error que llega desde apiUserService ya tiene el mensaje correcto
+            throw new Error(error.message || "Error al registrar usuario");
         }
     };  
 

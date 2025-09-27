@@ -69,20 +69,23 @@ export function SignUpForm({
   })
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
-  setIsLoading(true)
-  try{
+    setIsLoading(true)
+    try {
       await register(data.empresa, data.nombre, data.apellido, data.email, data.password);
+      
+      // Registro exitoso - redirigir al dashboard ya que será administrador
+      navigate({ to: '/', replace: true });
+      toast.success(`¡Cuenta creada exitosamente! Bienvenido, ${data.nombre}!`);
+
+    } catch (error: any) {
+      // Mostrar mensaje de error específico
+      const errorMessage = error?.message || "Error al crear la cuenta. Intente nuevamente.";
+      toast.error(errorMessage);
+      
+    } finally {
       setIsLoading(false);
-      navigate({ to: '/users', replace: true });
-      toast.success(`Bienvenido de nuevo, ${data.email}!`);
-
-  } catch (error) {
-    console.error("Error al registrar", error)
-
-  } finally {
-    setIsLoading(false)
+    }
   }
-}
 
   return (
     <Form {...form}>

@@ -23,14 +23,16 @@ class ApiUsers {
     async register(empresa: string, nombre: string, apellido: string, email: string, password: string ): Promise<any> {
         try {
         const response = await axiosService.post(rutasBack.usuarios.register, {empresa, nombre, apellido, email, password});
-        console.log(response)
-        return response.data;
-        } catch (error: any) {
-        if (error.response.status === 401) {
-            throw new Error("Usuario o contraseña incorrectos");
+            setStorageItem(STORAGE_KEYS.ACCESS_TOKEN, response.data.accessToken);
+            setStorageItem(STORAGE_KEYS.REFRESH_TOKEN, response.data.refreshToken);
+
+            return response.data;
+        } catch (error: any) {   
+            const backendMessage = error.response?.data?.message;
+            const errorMessage = backendMessage || "Fallo al crear usuario";
+            throw new Error(errorMessage);
         }
-        throw new Error("Error en el servidor. Intente más tarde.");
-        }
+        
     }
     
     async validateToken(): Promise<boolean> {
