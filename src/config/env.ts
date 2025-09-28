@@ -1,6 +1,22 @@
 let baseUrl = 'http://localhost:3001';
 
 export const rutasBack = {
+    contactos: {
+        clientes: {
+            getAll: `${baseUrl}/clientes/all`,
+            post: `${baseUrl}/clientes`,
+            put: `${baseUrl}/clientes`,
+            patch: `${baseUrl}/clientes`,
+            bulkStatus: `${baseUrl}/clientes/bulk/status`,
+        },
+        proveedores: {
+            getAll: `${baseUrl}/proveedores/all`,
+            post: `${baseUrl}/proveedores`,
+            put: `${baseUrl}/proveedores`,
+            patch: `${baseUrl}/proveedores`,
+            bulkStatus: `${baseUrl}/proveedores/bulk/status`,
+        },
+    },
     sucursales: {
         getSucursales: `${baseUrl}/sucursales/all`,
         getSucursalesByEmpresa: `${baseUrl}/sucursales/empresa`,
@@ -55,6 +71,10 @@ export const rutasBack = {
     permisos: {
         getPermisos: `${baseUrl}/permisos/all`,
     },
+    ubicaciones: {
+        provincias: `${baseUrl}/ubicaciones/provincias`,
+        ciudadesByProvincia: `${baseUrl}/ubicaciones/ciudades`,
+     },
     marcas: {
         getMarcas: `${baseUrl}/marcas`,
         postMarca: `${baseUrl}/marcas`,
