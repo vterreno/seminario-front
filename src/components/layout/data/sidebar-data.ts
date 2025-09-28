@@ -11,12 +11,12 @@ import {
   Briefcase,
   UserCheck,
   MapPin,
-  Building2
+  Building2,
+  Scale
 } from 'lucide-react'
 import { type SidebarData } from '../types'
 import { getStorageItem } from '@/hooks/use-local-storage'
 import { STORAGE_KEYS } from '@/lib/constants'
-import { hasPermission } from '@/lib/auth-utils'
 
 interface UserData {
   name: string
@@ -183,6 +183,7 @@ export const getSidebarData = (): SidebarData => {
       textColor: '#ffffff',
     })
   }
+  
   const productosSubItems: SidebarItem[] = []
   
   // Solo agregar si tiene permisos para ver productos
@@ -191,7 +192,7 @@ export const getSidebarData = (): SidebarData => {
     if (hasPermission(userData, 'marca_ver')) {
       productosSubItems.push({
         title: 'Marcas',
-        url: '/productos/marcas',
+        url: '/productos/marcas/',
         icon: Package,
         backgroundColor: '#f7c33b',
         textColor: '#ffffff',
@@ -255,6 +256,17 @@ export const getSidebarData = (): SidebarData => {
       title: 'Sucursales',
       url: '/settings/sucursales',
       icon: MapPin,
+      backgroundColor: '#40ba22',
+      textColor: '#ffffff',
+    })
+  }
+
+  // Solo agregar unidades de medida si tiene permisos para verlas
+  if (hasPermission(userData, 'unidad_medida_ver')) {
+    configuracionItems.push({
+      title: 'Unidades de medida',
+      url: '/unidades-medida',
+      icon: Scale,
       backgroundColor: '#40ba22',
       textColor: '#ffffff',
     })

@@ -74,5 +74,26 @@ export const rutasBack = {
     ubicaciones: {
         provincias: `${baseUrl}/ubicaciones/provincias`,
         ciudadesByProvincia: `${baseUrl}/ubicaciones/ciudades`,
+     },
+    marcas: {
+        getMarcas: `${baseUrl}/marcas`,
+        postMarca: `${baseUrl}/marcas`,
+        putMarca: `${baseUrl}/marcas`,
+        deleteMarca: `${baseUrl}/marcas`,
+        getMarcaPorId: `${baseUrl}/marcas`,
+        getMarcasByEmpresa: `${baseUrl}/marcas/empresa`,
+        bulkDeleteMarcas: `${baseUrl}/marcas/bulk/delete`,
+        bulkUpdateStatus: `${baseUrl}/marcas/bulk/status`,
+    },
+    unidadesMedida: {
+        getUnidadesMedida: `${baseUrl}/unidades-medida`,
+        getUnidadesMedidaPaginated: `${baseUrl}/unidades-medida`,
+        postUnidadMedida: `${baseUrl}/unidades-medida`,
+        putUnidadMedida: `${baseUrl}/unidades-medida`,
+        patchUnidadMedida: `${baseUrl}/unidades-medida`,
+        deleteUnidadMedida: `${baseUrl}/unidades-medida`,
+        getUnidadMedidaPorId: `${baseUrl}/unidades-medida`,
+        deleteUnidadesMedida: `${baseUrl}/unidades-medida/bulk-delete`,
+        canDeleteUnidadMedida: `${baseUrl}/unidades-medida`,
     },
 };
