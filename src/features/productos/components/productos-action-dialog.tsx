@@ -447,7 +447,7 @@ export function ProductosActionDialog({
                     name="stock"
                     render={({ field }) => (
                         <FormItem>
-                        <FormLabel>Stock Actual</FormLabel>
+                        <FormLabel>Stock actual</FormLabel>
                         <FormControl>
                             <Input
                             type="number"
