@@ -544,7 +544,7 @@ export function ContactoDialog({
                 </PopoverContent>
               </Popover>
             </div>
-            <div className="grid gap-1 my-3">
+            <div className="grid gap-1">
               <Label>Código postal</Label>
               <Input value={codigoPostal} onChange={(e) => setCodigoPostal(e.target.value)} />
             </div>
