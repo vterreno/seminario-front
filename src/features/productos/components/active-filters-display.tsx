@@ -34,9 +34,9 @@ export function ActiveFiltersDisplay({
             const marca = marcas.find(m => m.id === value)
             return `Marca: ${marca?.nombre || 'N/A'}`
         case 'precio_costo_min':
-            return `Precio costo ≥ $${value}`
+            return `Costo unitario ≥ $${value}`
         case 'precio_costo_max':
-            return `Precio costo ≤ $${value}`
+            return `Costo unitario ≤ $${value}`
         case 'precio_venta_min':
             return `Precio venta ≥ $${value}`
         case 'precio_venta_max':

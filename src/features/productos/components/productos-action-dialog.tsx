@@ -312,7 +312,7 @@ export function ProductosActionDialog({
                     name="unidad_medida_id"
                     render={({ field }) => (
                         <FormItem>
-                        <FormLabel>Unidad de Medida</FormLabel>
+                        <FormLabel>Unidad de medida</FormLabel>
                         <Select 
                             onValueChange={(value) => field.onChange(value === "null" ? null : Number(value))} 
                             value={field.value?.toString() || "null"}
@@ -374,7 +374,7 @@ export function ProductosActionDialog({
                     name="precio_costo"
                     render={({ field }) => (
                         <FormItem>
-                        <FormLabel>Precio de Costo *</FormLabel>
+                        <FormLabel>Costo unitario *</FormLabel>
                         <FormControl>
                             <Input
                             type="number"
@@ -396,7 +396,7 @@ export function ProductosActionDialog({
                     name="precio_venta"
                     render={({ field }) => (
                         <FormItem>
-                        <FormLabel>Precio de Venta *</FormLabel>
+                        <FormLabel>Precio de venta *</FormLabel>
                         <FormControl>
                             <Input
                             type="number"
@@ -422,7 +422,7 @@ export function ProductosActionDialog({
                     name="stock_apertura"
                     render={({ field }) => (
                         <FormItem>
-                        <FormLabel>Stock Inicial *</FormLabel>
+                        <FormLabel>Stock inicial *</FormLabel>
                         <FormControl>
                             <Input
                             type="number"

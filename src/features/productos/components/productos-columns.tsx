@@ -177,7 +177,7 @@ export const productosColumns = (options: ProductosColumnsOptions = {}): ColumnD
         {
         accessorKey: 'precio_costo',
         header: ({ column }) => (
-            <DataTableColumnHeader column={column} title='P. Costo' />
+            <DataTableColumnHeader column={column} title='Costo unitario' />
         ),
         cell: ({ row }) => {
             const precio = row.getValue('precio_costo') as number

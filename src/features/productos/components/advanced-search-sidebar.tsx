@@ -305,7 +305,7 @@ export function AdvancedSearchSidebar({
             <SheetHeader>
                 <SheetTitle className="flex items-center gap-2">
                 <Filter className="h-5 w-5" />
-                Búsqueda Avanzada
+                Búsqueda avanzada
                 {getActiveFiltersCount() > 0 && (
                     <Badge variant="secondary" className="ml-2">
                     {getActiveFiltersCount()} configurados
@@ -377,7 +377,7 @@ export function AdvancedSearchSidebar({
                     }
                     disabled={!activeFilters.marca}
                     >
-                    <SelectTrigger>
+                    <SelectTrigger className='w-full'>
                         <SelectValue placeholder="Seleccionar marca..." />
                     </SelectTrigger>
                     <SelectContent>
@@ -423,18 +423,18 @@ export function AdvancedSearchSidebar({
 
                 <Separator />
 
-                {/* Filtro por Precio de Costo */}
+                {/* Filtro por Costo unitario */}
                 <FilterSection 
-                    title="Precio de Costo" 
+                    title="Costo unitario" 
                     isActive={activeFilters.precio_costo}
                     onToggle={togglePrecioCosto}
                 >
                 <div className="space-y-2">
-                    <Label>Rango de Precio de Costo</Label>
+                    <Label>Rango de costo unitario</Label>
                     <div className="grid grid-cols-2 gap-3">
                     <Input
                         type="number"
-                        placeholder="Precio mínimo"
+                        placeholder="Costo mínimo"
                         value={filters.precio_costo_min || ''}
                         onChange={(e) => 
                         handleFilterChange('precio_costo_min', e.target.value ? parseFloat(e.target.value) : undefined)
@@ -443,7 +443,7 @@ export function AdvancedSearchSidebar({
                     />
                     <Input
                         type="number"
-                        placeholder="Precio máximo"
+                        placeholder="Costo máximo"
                         value={filters.precio_costo_max || ''}
                         onChange={(e) => 
                         handleFilterChange('precio_costo_max', e.target.value ? parseFloat(e.target.value) : undefined)
@@ -456,14 +456,14 @@ export function AdvancedSearchSidebar({
 
                 <Separator />
 
-                {/* Filtro por Precio de Venta */}
+                {/* Filtro por Precio de venta */}
                 <FilterSection 
-                    title="Precio de Venta" 
+                    title="Precio de venta" 
                     isActive={activeFilters.precio_venta}
                     onToggle={togglePrecioVenta}
                 >
                 <div className="space-y-2">
-                    <Label>Rango de Precio de Venta</Label>
+                    <Label>Rango de precio de venta</Label>
                     <div className="grid grid-cols-2 gap-3">
                     <Input
                         type="number"
@@ -491,12 +491,12 @@ export function AdvancedSearchSidebar({
 
                 {/* Filtro por Stock */}
                 <FilterSection 
-                    title="Stock Disponible" 
+                    title="Stock disponible" 
                     isActive={activeFilters.stock}
                     onToggle={toggleStock}
                 >
                 <div className="space-y-2">
-                    <Label>Rango de Stock</Label>
+                    <Label>Rango de stock</Label>
                     <div className="grid grid-cols-2 gap-3">
                     <Input
                         type="number"
