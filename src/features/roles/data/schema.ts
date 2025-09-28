@@ -158,7 +158,7 @@ export const permissionGroups = [
     id: 'producto',
     name: 'Producto',
     permissions: [
-      { key: 'producto_ver', label: 'Ver el producto' },
+      { key: 'producto_ver', label: 'Ver producto' },
       { key: 'producto_agregar', label: 'Agregar producto' },
       { key: 'producto_modificar', label: 'Modificar producto' },
       { key: 'producto_eliminar', label: 'Eliminar producto' },
@@ -211,7 +211,7 @@ export const permissionGroups = [
     permissions: [
       { key: 'categoria_ver', label: 'Ver categoría' },
       { key: 'categoria_agregar', label: 'Agregar categoría' },
-      { key: 'categoria_modificar', label: 'Modificar categoria' },
+      { key: 'categoria_modificar', label: 'Modificar categoría' },
       { key: 'categoria_eliminar', label: 'Eliminar categoría' },
     ]
   },

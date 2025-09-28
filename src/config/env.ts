@@ -74,5 +74,16 @@ export const rutasBack = {
         getProductosByEmpresa: `${baseUrl}/productos/empresa`,
         bulkDeleteProductos: `${baseUrl}/productos/bulk/delete`,
         bulkUpdateStatus: `${baseUrl}/productos/bulk/status`,
+    },
+     unidadesMedida: {
+        getUnidadesMedida: `${baseUrl}/unidades-medida`,
+        getUnidadesMedidaPaginated: `${baseUrl}/unidades-medida`,
+        postUnidadMedida: `${baseUrl}/unidades-medida`,
+        putUnidadMedida: `${baseUrl}/unidades-medida`,
+        patchUnidadMedida: `${baseUrl}/unidades-medida`,
+        deleteUnidadMedida: `${baseUrl}/unidades-medida`,
+        getUnidadMedidaPorId: `${baseUrl}/unidades-medida`,
+        deleteUnidadesMedida: `${baseUrl}/unidades-medida/bulk-delete`,
+        canDeleteUnidadMedida: `${baseUrl}/unidades-medida`,
     }
 };
