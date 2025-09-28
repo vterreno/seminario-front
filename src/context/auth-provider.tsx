@@ -13,7 +13,7 @@ export const AuthContext = createContext<DatosUsuariosContextType>({
     crearUsuario: async (_usuario: any) => {return {};},
     login: async (_email: string, _password: string) => {return {};},
     register: async(_empresa: string, _nombre: string, _apellido: string, _email: string, _password: string) => {return {};},
-    logout: () => { console.log("Logout function not implemented yet.");}
+    logout: () => { console.log("Logout function not implemented yet.");},
     cambiarContrasena: async (_email: string, _nuevaContrasena: string) => {return {};}
 })
 
