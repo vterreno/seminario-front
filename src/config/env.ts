@@ -79,5 +79,16 @@ export const rutasBack = {
         getMovimientosStock: `${baseUrl}/movimientos-stock`,
         getMovimientosByProducto: `${baseUrl}/movimientos-stock/producto`,
         ajusteStock: `${baseUrl}/movimientos-stock/ajuste-stock`,
+    },
+    unidadesMedida: {
+        getUnidadesMedida: `${baseUrl}/unidades-medida`,
+        getUnidadesMedidaPaginated: `${baseUrl}/unidades-medida`,
+        postUnidadMedida: `${baseUrl}/unidades-medida`,
+        putUnidadMedida: `${baseUrl}/unidades-medida`,
+        patchUnidadMedida: `${baseUrl}/unidades-medida`,
+        deleteUnidadMedida: `${baseUrl}/unidades-medida`,
+        getUnidadMedidaPorId: `${baseUrl}/unidades-medida`,
+        deleteUnidadesMedida: `${baseUrl}/unidades-medida/bulk-delete`,
+        canDeleteUnidadMedida: `${baseUrl}/unidades-medida`,
     }
 };
