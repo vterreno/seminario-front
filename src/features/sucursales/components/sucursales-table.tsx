@@ -24,7 +24,9 @@ import {
 import { DataTablePagination, DataTableToolbar } from '@/components/data-table'
 import { Sucursal } from '../data/schema'
 import { DataTableBulkActions } from './data-table-bulk-actions'
-import { sucursalesColumns as columns } from './sucursales-columns'
+import { sucursalesColumns as columns, sucursalesColumns } from './sucursales-columns'
+import { STORAGE_KEYS } from '@/lib/constants'
+import { getStorageItem } from '@/hooks/use-local-storage'
 
 
 type DataTableProps = {
@@ -32,9 +34,19 @@ type DataTableProps = {
   search: Record<string, unknown>
   navigate: NavigateFn
   onSuccess?: () => void
+  canBulkAction: boolean
 }
 
-export function SucursalesTable({ data, search, navigate, onSuccess }: DataTableProps) {
+export function SucursalesTable({ data, search, navigate, onSuccess, canBulkAction }: DataTableProps) {
+  const userData = getStorageItem(STORAGE_KEYS.USER_DATA, null) as any
+  const isSuperAdmin = !userData?.empresa?.id
+
+  // Configurar columnas con los permisos y opciones
+  const columns = sucursalesColumns({
+    showEmpresaColumn: isSuperAdmin, // Solo mostrar columna empresa para superadmin
+    canBulkAction: canBulkAction // Pasar el control de bulk actions
+  })
+
   // Local UI-only states
   const [rowSelection, setRowSelection] = useState({})
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
@@ -175,7 +187,7 @@ export function SucursalesTable({ data, search, navigate, onSuccess }: DataTable
         </Table>
       </div>
       <DataTablePagination table={table} />
-      <DataTableBulkActions table={table} onSuccess={onSuccess} />
+      {canBulkAction && <DataTableBulkActions table={table} onSuccess={onSuccess} />}
     </div>
   )
 }

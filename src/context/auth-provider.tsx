@@ -14,6 +14,7 @@ export const AuthContext = createContext<DatosUsuariosContextType>({
     login: async (_email: string, _password: string) => {return {};},
     register: async(_empresa: string, _nombre: string, _apellido: string, _email: string, _password: string) => {return {};},
     logout: () => { console.log("Logout function not implemented yet.");}
+    cambiarContrasena: async (_email: string, _nuevaContrasena: string) => {return {};}
 })
 
 interface DatosUsuariosProviderProps {
@@ -100,6 +101,28 @@ export const DatosUsuariosProvider = ({ children }: DatosUsuariosProviderProps) 
         // Resetear la sesión para forzar nueva validación en el próximo acceso
         resetSession();
     }
+
+    const cambiarContrasena = async (email: string, nuevaContrasena: string) => {
+        try {
+            const response = await apiUserService.cambiarContraseña(email, nuevaContrasena);
+            
+            // Obtener datos completos del usuario después del cambio de contraseña
+            const userDataResponse = await axiosService.get(rutasBack.usuarios.me);
+            const userData = userDataResponse.data;
+            auth.setUser({
+                name: userData.name,
+                email: userData.email,
+                empresa: userData.empresa,
+                roles: userData.roles,
+            });
+
+            setAuthenticated(true);
+            return response;
+        } catch (error: any) {
+            throw new Error('Error al cambiar la contraseña');
+        }
+    };
+
     
     return(
         <AuthContext.Provider value={{
@@ -109,7 +132,8 @@ export const DatosUsuariosProvider = ({ children }: DatosUsuariosProviderProps) 
             crearUsuario: async (_usuario: any) => {return {};},
             login,
             register,
-            logout
+            logout,
+            cambiarContrasena
         }}>
             {children}
         </AuthContext.Provider>

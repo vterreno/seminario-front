@@ -53,7 +53,7 @@ export function Otp() {
               className="hover:text-primary underline underline-offset-4 bg-transparent border-0 p-0 m-0 text-inherit"
               disabled={isResending}
             >
-              {isResending ? 'Reenviando...' : 'Reenviar un nuevo código.'}
+              {isResending ? 'Reenviando...' : 'Reenviar un nuevo código'}
             </button>
             .
           </p>

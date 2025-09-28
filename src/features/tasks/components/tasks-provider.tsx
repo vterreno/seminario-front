@@ -18,9 +18,9 @@ export function TasksProvider({ children }: { children: React.ReactNode }) {
   const [currentRow, setCurrentRow] = useState<Task | null>(null)
 
   return (
-    <TasksContext value={{ open, setOpen, currentRow, setCurrentRow }}>
+    <TasksContext.Provider value={{ open, setOpen, currentRow, setCurrentRow }}>
       {children}
-    </TasksContext>
+    </TasksContext.Provider>
   )
 }
 

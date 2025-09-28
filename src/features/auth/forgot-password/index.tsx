@@ -25,11 +25,14 @@ export function ForgotPassword() {
         <CardContent>
           <ForgotPasswordForm />
         </CardContent>
-        <CardFooter>
-          <p className='text-muted-foreground mx-auto px-8 text-center text-sm text-balance'>
-            ¿Recuerdas tu contraseña?{' '}
-            <Link to='/sign-in' className='hover:text-primary underline underline-offset-4'>
-              Iniciar sesión
+        <CardFooter className='flex justify-center'>
+          <p className='text-sm text-muted-foreground'>
+            ¿Recordaste tu contraseña?{' '}
+            <Link 
+              to='/sign-in' 
+              className='text-primary hover:underline font-medium'
+            >
+              Volver al login
             </Link>
           </p>
         </CardFooter>

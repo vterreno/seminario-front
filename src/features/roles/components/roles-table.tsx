@@ -12,7 +12,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import { cn } from '@/lib/utils'
-import { type NavigateFn, useTableUrlState } from '@/hooks/use-table-url-state'
+import { useTableUrlState } from '@/hooks/use-table-url-state'
 import {
   Table,
   TableBody,
@@ -22,34 +22,42 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { DataTablePagination, DataTableToolbar } from '@/components/data-table'
-import { Role } from '../data/schema'
+import { type Role } from '../data/schema'
 import { DataTableBulkActions } from './data-table-bulk-actions'
-import { rolesColumns, getRolesColumns } from './roles-columns'
+import { rolesColumns } from './roles-columns'
 import { getStorageItem } from '@/hooks/use-local-storage'
 import { STORAGE_KEYS } from '@/lib/constants'
 
+declare module '@tanstack/react-table' {
+  interface ColumnMeta<TData, TValue> {
+    className?: string
+  }
+}
 
 type DataTableProps = {
   data: Role[]
   search: Record<string, unknown>
-  navigate: NavigateFn
+  navigate: any // Tipo flexible para evitar conflictos
   onSuccess?: () => void
+  canBulkAction: boolean // Nueva prop para controlar bulk actions
 }
 
-export function RolesTable({ data, search, navigate, onSuccess }: DataTableProps) {
+export function RolesTable({ data, search, navigate, onSuccess, canBulkAction }: DataTableProps) {
   // Check if user is superadmin (no empresa.id)
   const userData = getStorageItem(STORAGE_KEYS.USER_DATA, null) as any
   const isSuperAdmin = !userData?.empresa?.id
   
-  // Get columns based on user type
-  const columns = getRolesColumns(isSuperAdmin)
+  // Get columns based on user type and permissions
+  const columns = rolesColumns({
+    showEmpresaColumn: isSuperAdmin, // Solo mostrar columna empresa para superadmin
+    canBulkAction: canBulkAction // Pasar el control de bulk actions
+  })
   
-  // Local UI-only states
   const [rowSelection, setRowSelection] = useState({})
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [sorting, setSorting] = useState<SortingState>([])
 
-  // Synced with URL states (keys/defaults mirror role route search schema)
+  // Synced with URL states (keys/defaults mirror roles route search schema)
   const {
     columnFilters,
     onColumnFiltersChange,
@@ -78,7 +86,7 @@ export function RolesTable({ data, search, navigate, onSuccess }: DataTableProps
       columnFilters,
       columnVisibility,
     },
-    enableRowSelection: true,
+    enableRowSelection: canBulkAction, // Usar canBulkAction para habilitar/deshabilitar la selección de filas
     onPaginationChange,
     onColumnFiltersChange,
     onRowSelectionChange: setRowSelection,
@@ -97,12 +105,8 @@ export function RolesTable({ data, search, navigate, onSuccess }: DataTableProps
   }, [table, ensurePageInRange])
 
   return (
-    <div
-      className={
-        'w-full space-y-2.5 overflow-auto'
-      }
-    >
-      <DataTableToolbar 
+    <div className='space-y-4 max-sm:has-[div[role="toolbar"]]:mb-16'>
+      <DataTableToolbar
         table={table}
         searchPlaceholder='Buscar roles...'
         searchKey='nombre'
@@ -117,18 +121,18 @@ export function RolesTable({ data, search, navigate, onSuccess }: DataTableProps
           },
         ]}
       />
-      <div className='rounded-md border'>
+      <div className='overflow-hidden rounded-md border'>
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
+              <TableRow key={headerGroup.id} className='group/row'>
                 {headerGroup.headers.map((header) => {
                   return (
                     <TableHead
                       key={header.id}
                       colSpan={header.colSpan}
                       className={cn(
-                        'bg-muted/50',
+                        'bg-background group-hover/row:bg-muted group-data-[state=selected]/row:bg-muted',
                         header.column.columnDef.meta?.className ?? ''
                       )}
                     >
@@ -182,7 +186,8 @@ export function RolesTable({ data, search, navigate, onSuccess }: DataTableProps
         </Table>
       </div>
       <DataTablePagination table={table} />
-      <DataTableBulkActions table={table} onSuccess={onSuccess} />
+      {/* Solo mostrar bulk actions si tiene permisos */}
+      {canBulkAction && <DataTableBulkActions table={table} onSuccess={onSuccess} />}
     </div>
   )
 }

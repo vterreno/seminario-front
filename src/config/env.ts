@@ -36,6 +36,7 @@ export const rutasBack = {
         deleteEmpresa: `${baseUrl}/empresa`,
         getEmpresaPorId: `${baseUrl}/empresa`,
         deleteEmpresas: `${baseUrl}/empresa/bulk/delete`,
+        updateMyCompany: `${baseUrl}/empresa/mi-empresa`,
     },
     correo: {
         sendMail: `${baseUrl}/mail-service/send`,
@@ -53,5 +54,26 @@ export const rutasBack = {
     },
     permisos: {
         getPermisos: `${baseUrl}/permisos/all`,
-    }
+    },
+    marcas: {
+        getMarcas: `${baseUrl}/marcas`,
+        postMarca: `${baseUrl}/marcas`,
+        putMarca: `${baseUrl}/marcas`,
+        deleteMarca: `${baseUrl}/marcas`,
+        getMarcaPorId: `${baseUrl}/marcas`,
+        getMarcasByEmpresa: `${baseUrl}/marcas/empresa`,
+        bulkDeleteMarcas: `${baseUrl}/marcas/bulk/delete`,
+        bulkUpdateStatus: `${baseUrl}/marcas/bulk/status`,
+    },
+    unidadesMedida: {
+        getUnidadesMedida: `${baseUrl}/unidades-medida`,
+        getUnidadesMedidaPaginated: `${baseUrl}/unidades-medida`,
+        postUnidadMedida: `${baseUrl}/unidades-medida`,
+        putUnidadMedida: `${baseUrl}/unidades-medida`,
+        patchUnidadMedida: `${baseUrl}/unidades-medida`,
+        deleteUnidadMedida: `${baseUrl}/unidades-medida`,
+        getUnidadMedidaPorId: `${baseUrl}/unidades-medida`,
+        deleteUnidadesMedida: `${baseUrl}/unidades-medida/bulk-delete`,
+        canDeleteUnidadMedida: `${baseUrl}/unidades-medida`,
+    },
 };

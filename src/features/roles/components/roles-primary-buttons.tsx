@@ -1,9 +1,17 @@
 import { Button } from '@/components/ui/button'
 import { Plus } from 'lucide-react'
 import { useRoles } from './roles-provider'
+import { usePermissions } from '@/hooks/use-permissions'
 
 export function RolesPrimaryButtons() {
   const { setOpen } = useRoles()
+  const { hasPermission } = usePermissions()
+
+  const canAdd = hasPermission('roles_agregar')
+
+  if (!canAdd) {
+    return null
+  }
 
   return (
     <div className='flex items-center space-x-2'>

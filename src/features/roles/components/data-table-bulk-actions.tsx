@@ -12,6 +12,7 @@ import { DataTableBulkActions as BulkActionsToolbar } from '@/components/data-ta
 import { type Role } from '../data/schema'
 import { RolesMultiDeleteDialog } from './roles-multi-delete-dialog'
 import apiRolesService from '@/service/apiRoles.service'
+import { usePermissions } from '@/hooks/use-permissions'
 
 type DataTableBulkActionsProps<TData> = {
   table: Table<TData>
@@ -23,10 +24,15 @@ export function DataTableBulkActions<TData>({
   onSuccess,
 }: DataTableBulkActionsProps<TData>) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const { hasPermission } = usePermissions()
   const selectedRows = table.getFilteredSelectedRowModel().rows
 
+  const selectedRoles = selectedRows.map((row) => row.original as Role)
+
+  const canModify = hasPermission('roles_modificar')
+  const canDelete = hasPermission('roles_eliminar')
+
   const handleBulkStatusChange = async (status: 'active' | 'inactive') => {
-    const selectedRoles = selectedRows.map((row) => row.original as Role)
     const roleIds = selectedRoles.map(role => role.id!).filter(id => id !== undefined)
     
     try {
@@ -44,62 +50,68 @@ export function DataTableBulkActions<TData>({
   return (
     <>
       <BulkActionsToolbar table={table} entityName='rol' entityNamePlural='roles' isFeminine={false}>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant='outline'
-              size='icon'
-              onClick={() => handleBulkStatusChange('active')}
-              className='size-8'
-              aria-label='Activar roles seleccionados'
-              title='Activar roles seleccionados'
-            >
-              <Shield />
-              <span className='sr-only'>Activar roles seleccionados</span>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Activar roles seleccionados</p>
-          </TooltipContent>
-        </Tooltip>
+        {canModify && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant='outline'
+                size='icon'
+                onClick={() => handleBulkStatusChange('active')}
+                className='size-8'
+                aria-label='Activar roles seleccionados'
+                title='Activar roles seleccionados'
+              >
+                <Shield />
+                <span className='sr-only'>Activar roles seleccionados</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Activar roles seleccionados</p>
+            </TooltipContent>
+          </Tooltip>
+        )}
 
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant='outline'
-              size='icon'
-              onClick={() => handleBulkStatusChange('inactive')}
-              className='size-8'
-              aria-label='Desactivar roles seleccionados'
-              title='Desactivar roles seleccionados'
-            >
-              <ShieldOff />
-              <span className='sr-only'>Desactivar roles seleccionados</span>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Desactivar roles seleccionados</p>
-          </TooltipContent>
-        </Tooltip>
+        {canModify && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant='outline'
+                size='icon'
+                onClick={() => handleBulkStatusChange('inactive')}
+                className='size-8'
+                aria-label='Desactivar roles seleccionados'
+                title='Desactivar roles seleccionados'
+              >
+                <ShieldOff />
+                <span className='sr-only'>Desactivar roles seleccionados</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Desactivar roles seleccionados</p>
+            </TooltipContent>
+          </Tooltip>
+        )}
 
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant='destructive'
-              size='icon'
-              onClick={() => setShowDeleteConfirm(true)}
-              className='size-8'
-              aria-label='Eliminar roles seleccionados'
-              title='Eliminar roles seleccionados'
-            >
-              <Trash2 />
-              <span className='sr-only'>Eliminar roles seleccionados</span>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Eliminar roles seleccionados</p>
-          </TooltipContent>
-        </Tooltip>
+        {canDelete && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant='destructive'
+                size='icon'
+                onClick={() => setShowDeleteConfirm(true)}
+                className='size-8'
+                aria-label='Eliminar roles seleccionados'
+                title='Eliminar roles seleccionados'
+              >
+                <Trash2 />
+                <span className='sr-only'>Eliminar roles seleccionados</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Eliminar roles seleccionados</p>
+            </TooltipContent>
+          </Tooltip>
+        )}
       </BulkActionsToolbar>
 
       <RolesMultiDeleteDialog

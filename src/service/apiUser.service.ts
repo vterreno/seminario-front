@@ -71,7 +71,6 @@ class ApiUsers {
             setStorageItem(STORAGE_KEYS.REFRESH_TOKEN, response.data.refreshToken);
             return response.data;
         } catch (error) {
-            console.error("Error during change:", error);
             throw new Error("Change failed");
         }
     }
