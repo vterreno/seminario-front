@@ -1,8 +1,9 @@
-import { useSearch } from '@tanstack/react-router'
+import { Link, useSearch } from '@tanstack/react-router'
 import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
@@ -43,6 +44,18 @@ export function SignIn() {
             .
           </p>
         </CardFooter> */}
+        <CardFooter>
+          <p className='text-muted-foreground mx-auto px-8 text-center text-sm text-balance'>
+            ¿No tenes una cuenta?{' '}
+            <Link
+              to='/sign-up'
+              className='hover:text-primary underline underline-offset-4'
+            >
+              Registrarse
+            </Link>
+            .
+          </p>
+        </CardFooter>
       </Card>
     </AuthLayout>
   )
