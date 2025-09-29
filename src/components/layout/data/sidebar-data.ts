@@ -259,8 +259,9 @@ export const getSidebarData = (): SidebarData => {
     })
   }
 
-  // Solo agregar unidades de medida si tiene permisos para verlas
-  if (hasPermission(userData, 'unidad_medida_ver')) {
+  // Agregar unidades de medida para todos los usuarios por ahora
+  // TODO: Restaurar verificación de permisos cuando esté corregida
+  // if (hasPermission(userData, 'unidad_medida_ver')) {
     configuracionItems.push({
       title: 'Unidades de medida',
       url: '/unidades-medida',
@@ -268,7 +269,7 @@ export const getSidebarData = (): SidebarData => {
       backgroundColor: '#40ba22',
       textColor: '#ffffff',
     })
-  }
+  // }
 
   if (hasPermission(userData, 'configuracion_empresa')) {
     configuracionItems.push({

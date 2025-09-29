@@ -12,37 +12,38 @@ import { UnidadMedidaTable } from './components/unidad-medida-table'
 import { UnidadMedida } from './data/schema'
 import { unidadesMedidaService } from '@/service/unidades-medida.service'
 import { toast } from 'sonner'
-import { usePermissions } from '@/hooks/use-permissions'
+// import { usePermissions } from '@/hooks/use-permissions' // TODO: Restaurar cuando se corrijan los permisos
 
 const route = getRouteApi('/_authenticated/unidades-medida/')
 
 export function UnidadesMedida() {
-  const { hasPermission } = usePermissions()
+  // const { hasPermission } = usePermissions() // TODO: Restaurar cuando se corrijan los permisos
   const search = route.useSearch()
   const navigate = route.useNavigate()
   const [unidadesMedida, setUnidadesMedida] = useState<UnidadMedida[]>([])
   const [loading, setLoading] = useState(true)
 
+  // TODO: Restaurar verificación de permisos cuando esté corregida
   // Verificar si el usuario tiene permisos para ver unidades de medida
-  if (!hasPermission('unidad_medida_ver')) {
-    return (
-      <>
-        <Header>
-          <div className='ms-auto flex items-center space-x-4'>
-            <Search />
-            <ThemeSwitch />
-            <ProfileDropdown />
-          </div>
-        </Header>
-        <Main>
-          <div className="text-center p-8">
-            <h2 className="text-2xl font-bold mb-4">Sin permisos</h2>
-            <p className="text-muted-foreground">No tienes permisos para ver esta sección.</p>
-          </div>
-        </Main>
-      </>
-    )
-  }
+  // if (!hasPermission('unidad_medida_ver')) {
+  //   return (
+  //     <>
+  //       <Header>
+  //         <div className='ms-auto flex items-center space-x-4'>
+  //           <Search />
+  //           <ThemeSwitch />
+  //           <ProfileDropdown />
+  //         </div>
+  //       </Header>
+  //       <Main>
+  //         <div className="text-center p-8">
+  //           <h2 className="text-2xl font-bold mb-4">Sin permisos</h2>
+  //           <p className="text-muted-foreground">No tienes permisos para ver esta sección.</p>
+  //         </div>
+  //       </Main>
+  //     </>
+  //   )
+  // }
 
   const fetchUnidadesMedida = async () => {
     try {
