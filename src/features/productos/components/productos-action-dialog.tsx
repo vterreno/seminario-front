@@ -41,6 +41,7 @@ import apiEmpresaService, { type Empresa } from '@/service/apiEmpresa.service'
 import apiProductosService from '@/service/apiProductos.service'
 import apiMarcasService from '@/service/apiMarcas.service'
 import { type Marca } from '@/features/marcas/data/schema'
+import { formatCurrency, formatCurrencyInput, parseCurrency } from './format-money'
 
 interface UserData {
     id: number
@@ -66,7 +67,9 @@ type ProductosActionDialogProps = {
     onOpenChange: (open: boolean) => void
     onSuccess?: () => void
 }
-
+export type ProductoFormUnified = Omit<ProductoFormSuperAdmin, 'empresa_id'> & {
+    empresa_id?: number
+}
 export function ProductosActionDialog({
     currentRow,
     open,
@@ -76,6 +79,8 @@ export function ProductosActionDialog({
     const [loading, setLoading] = useState(false)
     const [empresas, setEmpresas] = useState<Empresa[]>([])
     const [marcas, setMarcas] = useState<Marca[]>([])
+    const [precioCostoDisplay, setPrecioCostoDisplay] = useState('')
+    const [precioVentaDisplay, setPrecioVentaDisplay] = useState('')
     const isEdit = !!currentRow
 
     // Detectar si el usuario es superadmin
@@ -86,7 +91,7 @@ export function ProductosActionDialog({
     // Usar diferentes schemas según el tipo de usuario
     const formSchema = isSuperAdmin ? productoFormSuperAdminSchema : productoFormSchema
 
-    const form = useForm<ProductoForm | ProductoFormSuperAdmin>({
+    const form = useForm<any>({
         resolver: zodResolver(formSchema),
         defaultValues: isEdit && currentRow
         ? {
@@ -116,7 +121,15 @@ export function ProductosActionDialog({
             estado: true,
             },
     })
-
+    useEffect(() => {
+        if (open) {
+            const precioCosto = form.getValues('precio_costo')
+            const precioVenta = form.getValues('precio_venta')
+            
+            setPrecioCostoDisplay(precioCosto ? formatCurrency(precioCosto) : '')
+            setPrecioVentaDisplay(precioVenta ? formatCurrency(precioVenta) : '')
+        }
+    }, [open, form])
     // Cargar empresas si es superadmin y marcas
     useEffect(() => {
         if (open) {
@@ -171,6 +184,8 @@ export function ProductosActionDialog({
         onOpenChange(false)
         onSuccess?.()
         form.reset()
+        setPrecioCostoDisplay('')
+        setPrecioVentaDisplay('')
 
         } catch (error: any) {
             form.reset()
@@ -377,12 +392,21 @@ export function ProductosActionDialog({
                         <FormLabel>Costo unitario *</FormLabel>
                         <FormControl>
                             <Input
-                            type="number"
-                            step="0.01"
-                            min="0"
-                            placeholder="0.00"
-                            {...field}
-                            onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                            placeholder="0,00"
+                            value={precioCostoDisplay}
+                            onChange={(e) => {
+                                const formatted = formatCurrencyInput(e.target.value, precioCostoDisplay)
+                                setPrecioCostoDisplay(formatted)
+                                const numericValue = parseCurrency(formatted)
+                                field.onChange(numericValue)
+                            }}
+                            onBlur={() => {
+                                // Reformatear al perder el foco
+                                const numericValue = parseCurrency(precioCostoDisplay)
+                                const formatted = numericValue > 0 ? formatCurrency(numericValue) : ''
+                                setPrecioCostoDisplay(formatted)
+                                field.onChange(numericValue)
+                            }}
                             disabled={loading}
                             />
                         </FormControl>
@@ -399,12 +423,21 @@ export function ProductosActionDialog({
                         <FormLabel>Precio de venta *</FormLabel>
                         <FormControl>
                             <Input
-                            type="number"
-                            step="0.01"
-                            min="0"
-                            placeholder="0.00"
-                            {...field}
-                            onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                            placeholder="0,00"
+                            value={precioVentaDisplay}
+                            onChange={(e) => {
+                                const formatted = formatCurrencyInput(e.target.value, precioVentaDisplay)
+                                setPrecioVentaDisplay(formatted)
+                                const numericValue = parseCurrency(formatted)
+                                field.onChange(numericValue)
+                            }}
+                            onBlur={() => {
+                                // Reformatear al perder el foco
+                                const numericValue = parseCurrency(precioVentaDisplay)
+                                const formatted = numericValue > 0 ? formatCurrency(numericValue) : ''
+                                setPrecioVentaDisplay(formatted)
+                                field.onChange(numericValue)
+                            }}
                             disabled={loading}
                             />
                         </FormControl>

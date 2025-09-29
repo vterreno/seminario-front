@@ -1,229 +1,160 @@
 import { z } from 'zod'
 
-// Schema para Producto del backend (para mapeo desde API)
+// 🔹 Schema que refleja exactamente lo que envía el backend
 export const productoBackendSchema = z.object({
-    id: z.number(),
-    codigo: z.string(),
-    nombre: z.string(),
-    empresa_id: z.number(),
-    empresa: z.object({
-        id: z.number(),
-        name: z.string()
-    }).optional(),
-    marca_id: z.number().nullable().optional(),
-    marca: z.object({
-        id: z.number(),
-        nombre: z.string()
-    }).nullable().optional(),
-    // Preparado para futuro
-    categoria_id: z.number().nullable().optional(),
-    categoria: z.object({
-        id: z.number(),
-        nombre: z.string()
-    }).nullable().optional(),
-    unidad_medida_id: z.number().nullable().optional(),
-    unidadMedida: z.object({
-        id: z.number(),
-        nombre: z.string(),
-        sigla: z.string()
-    }).nullable().optional(),
-    precio_costo: z.number(),
-    precio_venta: z.number(),
-    stock_apertura: z.number(),
-    stock: z.number(),
-    estado: z.boolean(),
-    created_at: z.string(),
-    updated_at: z.string(),
-    deleted_at: z.string().optional().nullable(),
+  id: z.number(),
+  codigo: z.string(),
+  nombre: z.string(),
+  empresa_id: z.number(),
+  empresa: z
+    .object({
+      id: z.number(),
+      name: z.string(),
+    })
+    .optional(),
+  marca_id: z.number().nullable().optional(),
+  marca: z
+    .object({
+      id: z.number(),
+      nombre: z.string(),
+    })
+    .nullable()
+    .optional(),
+  categoria_id: z.number().nullable().optional(),
+  categoria: z
+    .object({
+      id: z.number(),
+      nombre: z.string(),
+    })
+    .nullable()
+    .optional(),
+  unidad_medida_id: z.number().nullable().optional(),
+  unidadMedida: z
+    .object({
+      id: z.number(),
+      nombre: z.string(),
+      sigla: z.string(),
+    })
+    .nullable()
+    .optional(),
+  precio_costo: z.number(),
+  precio_venta: z.number(),
+  stock_apertura: z.number(),
+  stock: z.number(),
+  estado: z.boolean(),
+  created_at: z.string(),
+  updated_at: z.string(),
+  deleted_at: z.string().optional().nullable(),
 })
-
 export type ProductoBackend = z.infer<typeof productoBackendSchema>
 
-// Schema principal de la producto (para frontend)
-export const productoSchema = z.object({
-    id: z.number(),
-    codigo: z.string(),
-    nombre: z.string(),
-    empresa_id: z.number(),
-    empresa: z.object({
-        id: z.number(),
-        name: z.string()
-    }).optional(),
-    marca_id: z.number().nullable().optional(),
-    marca: z.object({
-        id: z.number(),
-        nombre: z.string()
-    }).nullable().optional(),
-    // Preparado para futuro
-    categoria_id: z.number().nullable().optional(),
-    categoria: z.object({
-        id: z.number(),
-        nombre: z.string()
-    }).nullable().optional(),
-    unidad_medida_id: z.number().nullable().optional(),
-    unidadMedida: z.object({
-        id: z.number(),
-        nombre: z.string(),
-        sigla: z.string()
-    }).nullable().optional(),
-    precio_costo: z.number(),
-    precio_venta: z.number(),
-    stock_apertura: z.number(),
-    stock: z.number(),
-    estado: z.boolean(),
-    created_at: z.string(),
-    updated_at: z.string(),
-    deleted_at: z.string().optional().nullable(),
-})
-
+// 🔹 Schema principal para frontend
+export const productoSchema = productoBackendSchema
 export type Producto = z.infer<typeof productoSchema>
 
-// Schema para el formulario
+// 🔹 Schema específico para formularios CON coerce - SIN empresa_id
 export const productoFormSchema = z.object({
-    codigo: z.string().min(1, 'El código es requerido').max(50, 'El código no puede exceder 50 caracteres'),
-    nombre: z.string().min(2, 'El nombre debe tener al menos 2 caracteres').max(100, 'El nombre no puede exceder 100 caracteres'),
-    marca_id: z.number().nullable().optional(),
-    categoria_id: z.number().nullable().optional(),
-    unidad_medida_id: z.number().nullable().optional(),
-    precio_costo: z.number().min(0, 'El precio de costo debe ser mayor o igual a 0'),
-    precio_venta: z.number().min(0, 'El precio de venta debe ser mayor o igual a 0'),
-    stock_apertura: z.number().min(0, 'El stock de apertura debe ser mayor o igual a 0'),
-    stock: z.number().min(0, 'El stock debe ser mayor o igual a 0'),
-    estado: z.boolean(),
+  codigo: z.string().min(1, 'El código es requerido').max(50),
+  nombre: z.string().min(2, 'El nombre debe tener al menos 2 caracteres').max(100),
+  marca_id: z.number().nullable().optional(),
+  categoria_id: z.number().nullable().optional(),
+  unidad_medida_id: z.number().nullable().optional(),
+  precio_costo: z.coerce.number().min(0, 'Debe ser >= 0'),
+  precio_venta: z.coerce.number().min(0, 'Debe ser >= 0'),
+  stock_apertura: z.coerce.number().min(0, 'Debe ser >= 0'),
+  stock: z.coerce.number().min(0, 'Debe ser >= 0'),
+  estado: z.boolean(),
 })
-
 export type ProductoForm = z.infer<typeof productoFormSchema>
 
-// Schema para el formulario cuando es superadmin (incluye empresa_id)
+// 🔹 Schema para formulario de superadmin (CON empresa_id requerido)
 export const productoFormSuperAdminSchema = z.object({
-    codigo: z.string().min(1, 'El código es requerido').max(50, 'El código no puede exceder 50 caracteres'),
-    nombre: z.string().min(2, 'El nombre debe tener al menos 2 caracteres').max(100, 'El nombre no puede exceder 100 caracteres'),
-    marca_id: z.number().nullable().optional(),
-    categoria_id: z.number().nullable().optional(),
-    unidad_medida_id: z.number().nullable().optional(),
-    precio_costo: z.number().min(0, 'El precio de costo debe ser mayor o igual a 0'),
-    precio_venta: z.number().min(0, 'El precio de venta debe ser mayor o igual a 0'),
-    stock_apertura: z.number().min(0, 'El stock de apertura debe ser mayor o igual a 0'),
-    stock: z.number().min(0, 'El stock debe ser mayor o igual a 0'),
-    empresa_id: z.number().min(1, 'Debe seleccionar una empresa'),
-    estado: z.boolean(),
+  codigo: z.string().min(1, 'El código es requerido').max(50),
+  nombre: z.string().min(2, 'El nombre debe tener al menos 2 caracteres').max(100),
+  marca_id: z.number().nullable().optional(),
+  categoria_id: z.number().nullable().optional(),
+  unidad_medida_id: z.number().nullable().optional(),
+  precio_costo: z.coerce.number().min(0, 'Debe ser >= 0'),
+  precio_venta: z.coerce.number().min(0, 'Debe ser >= 0'),
+  stock_apertura: z.coerce.number().min(0, 'Debe ser >= 0'),
+  stock: z.coerce.number().min(0, 'Debe ser >= 0'),
+  estado: z.boolean(),
+  empresa_id: z.coerce.number().min(1, 'Debe seleccionar una empresa'),
 })
-
 export type ProductoFormSuperAdmin = z.infer<typeof productoFormSuperAdminSchema>
 
-// Definición para crear producto
-export const createProductoSchema = z.object({
-    codigo: z.string().min(1, 'El código es requerido').max(50, 'El código no puede exceder 50 caracteres'),
-    nombre: z.string().min(2, 'El nombre debe tener al menos 2 caracteres').max(100, 'El nombre no puede exceder 100 caracteres'),
-    marca_id: z.number().nullable().optional(),
-    precio_costo: z.number().min(0, 'El precio de costo debe ser mayor o igual a 0'),
-    precio_venta: z.number().min(0, 'El precio de venta debe ser mayor o igual a 0'),
-    stock_apertura: z.number().min(0, 'El stock de apertura debe ser mayor o igual a 0'),
-    stock: z.number().min(0, 'El stock debe ser mayor o igual a 0'),
+// 🔹 Schema unificado para el formulario
+export const productoFormUnifiedSchema = z.object({
+  codigo: z.string().min(1, 'El código es requerido').max(50),
+  nombre: z.string().min(2, 'El nombre debe tener al menos 2 caracteres').max(100),
+  marca_id: z.number().nullable().optional(),
+  categoria_id: z.number().nullable().optional(),
+  unidad_medida_id: z.number().nullable().optional(),
+  precio_costo: z.coerce.number().min(0, 'Debe ser >= 0'),
+  precio_venta: z.coerce.number().min(0, 'Debe ser >= 0'),
+  stock_apertura: z.coerce.number().min(0, 'Debe ser >= 0'),
+  stock: z.coerce.number().min(0, 'Debe ser >= 0'),
+  estado: z.boolean(),
+  empresa_id: z.coerce.number().min(1, 'Debe seleccionar una empresa').optional(),
 })
+export type ProductoFormUnified = z.infer<typeof productoFormUnifiedSchema>
 
+// 🔹 Schemas para crear/actualizar desde API (SIN coerce)
+export const createProductoSchema = z.object({
+  codigo: z.string().min(1, 'El código es requerido').max(50),
+  nombre: z.string().min(2, 'El nombre debe tener al menos 2 caracteres').max(100),
+  marca_id: z.number().nullable().optional(),
+  categoria_id: z.number().nullable().optional(),
+  unidad_medida_id: z.number().nullable().optional(),
+  precio_costo: z.number().min(0, 'Debe ser >= 0'),
+  precio_venta: z.number().min(0, 'Debe ser >= 0'),
+  stock_apertura: z.number().min(0, 'Debe ser >= 0'),
+  stock: z.number().min(0, 'Debe ser >= 0'),
+  estado: z.boolean(),
+  empresa_id: z.number().min(1, 'Debe seleccionar una empresa'),
+})
 export type CreateProducto = z.infer<typeof createProductoSchema>
 
-// Definición para actualizar producto
 export const updateProductoSchema = z.object({
-    id: z.number(),
-    codigo: z.string().min(1, 'El código es requerido').max(50, 'El código no puede exceder 50 caracteres'),
-    nombre: z.string().min(2, 'El nombre debe tener al menos 2 caracteres').max(100, 'El nombre no puede exceder 100 caracteres'),
-    marca_id: z.number().nullable().optional(),
-    precio_costo: z.number().min(0, 'El precio de costo debe ser mayor o igual a 0'),
-    precio_venta: z.number().min(0, 'El precio de venta debe ser mayor o igual a 0'),
-    stock_apertura: z.number().min(0, 'El stock de apertura debe ser mayor o igual a 0'),
-    stock: z.number().min(0, 'El stock debe ser mayor o igual a 0'),
-    estado: z.boolean(),
+  id: z.number(),
+  nombre: z.string().min(2, 'El nombre debe tener al menos 2 caracteres').max(100),
+  marca_id: z.number().nullable().optional(),
+  categoria_id: z.number().nullable().optional(),
+  unidad_medida_id: z.number().nullable().optional(),
+  precio_costo: z.number().min(0, 'Debe ser >= 0'),
+  precio_venta: z.number().min(0, 'Debe ser >= 0'),
+  estado: z.boolean(),
+  empresa_id: z.number().min(1, 'Debe seleccionar una empresa'),
 })
-
 export type UpdateProducto = z.infer<typeof updateProductoSchema>
 
-// Funciones de utilidad para validación y transformación
-export const validateProducto = (data: unknown): Producto => {
-    return productoSchema.parse(data)
-}
+// ✅ Validadores
+export const validateProducto = (data: unknown): Producto => productoSchema.parse(data)
+export const validateProductoBackend = (data: unknown): ProductoBackend =>
+  productoBackendSchema.parse(data)
+export const validateProductoForm = (data: unknown): ProductoForm =>
+  productoFormSchema.parse(data)
+export const validateCreateProducto = (data: unknown): CreateProducto =>
+  createProductoSchema.parse(data)
+export const validateUpdateProducto = (data: unknown): UpdateProducto =>
+  updateProductoSchema.parse(data)
 
-export const validateProductoBackend = (data: unknown): ProductoBackend => {
-    return productoBackendSchema.parse(data)
-}
+// ✅ Mapeos
+export const mapBackendProductoToFrontend = (b: ProductoBackend): Producto => ({
+  ...b,
+  empresa: b.empresa
+    ? { id: b.empresa.id, name: b.empresa.name }
+    : undefined,
+})
 
-export const validateProductoForm = (data: unknown): ProductoForm => {
-    return productoFormSchema.parse(data)
-}
+export const mapFrontendProductoToBackend = (f: Producto): ProductoBackend => ({ ...f })
 
-export const validateCreateProducto = (data: unknown): CreateProducto => {
-    return createProductoSchema.parse(data)
-}
+// ✅ Utilidades
+export const isProductoActivo = (p: Producto): boolean =>
+  p.estado && !p.deleted_at
 
-export const validateUpdateProducto = (data: unknown): UpdateProducto => {
-    return updateProductoSchema.parse(data)
-}
+export const formatProductoCreationDate = (p: Producto): string =>
+  new Date(p.created_at).toLocaleDateString('es-ES')
 
-// Función de transformación de backend a frontend
-export const mapBackendProductoToFrontend = (backendProducto: ProductoBackend): Producto => {
-    const empresaInfo = backendProducto.empresa ? {
-        id: backendProducto.empresa.id,
-        name: backendProducto.empresa.name
-    } : undefined;
-
-    return {
-        id: backendProducto.id,
-        codigo: backendProducto.codigo,
-        nombre: backendProducto.nombre,
-        empresa_id: backendProducto.empresa_id,
-        empresa: empresaInfo,
-        marca_id: backendProducto.marca_id,
-        marca: backendProducto.marca,
-        categoria_id: backendProducto.categoria_id,
-        categoria: backendProducto.categoria,
-        unidad_medida_id: backendProducto.unidad_medida_id,
-        unidadMedida: backendProducto.unidadMedida,
-        precio_costo: backendProducto.precio_costo,
-        precio_venta: backendProducto.precio_venta,
-        stock_apertura: backendProducto.stock_apertura,
-        stock: backendProducto.stock,
-        estado: backendProducto.estado,
-        created_at: backendProducto.created_at,
-        updated_at: backendProducto.updated_at,
-        deleted_at: backendProducto.deleted_at
-    };
-}
-
-// Función de transformación de frontend a backend (si es necesaria)
-export const mapFrontendProductoToBackend = (frontendProducto: Producto): ProductoBackend => {
-    return {
-        id: frontendProducto.id,
-        codigo: frontendProducto.codigo,
-        nombre: frontendProducto.nombre,
-        empresa_id: frontendProducto.empresa_id,
-        empresa: frontendProducto.empresa,
-        marca_id: frontendProducto.marca_id,
-        marca: frontendProducto.marca,
-        categoria_id: frontendProducto.categoria_id,
-        categoria: frontendProducto.categoria,
-        unidad_medida_id: frontendProducto.unidad_medida_id,
-        unidadMedida: frontendProducto.unidadMedida,
-        precio_costo: frontendProducto.precio_costo,
-        precio_venta: frontendProducto.precio_venta,
-        stock_apertura: frontendProducto.stock_apertura,
-        stock: frontendProducto.stock,
-        estado: frontendProducto.estado,
-        created_at: frontendProducto.created_at,
-        updated_at: frontendProducto.updated_at,
-        deleted_at: frontendProducto.deleted_at
-    };
-}
-
-// Funciones de utilidad para operaciones comunes
-export const isProductoActivo = (producto: Producto): boolean => {
-    return producto.estado && !producto.deleted_at
-}
-
-export const formatProductoCreationDate = (producto: Producto): string => {
-    return new Date(producto.created_at).toLocaleDateString('es-ES')
-}
-
-export const formatProductoUpdateDate = (producto: Producto): string => {
-    return new Date(producto.updated_at).toLocaleDateString('es-ES')
-}
+export const formatProductoUpdateDate = (p: Producto): string =>
+  new Date(p.updated_at).toLocaleDateString('es-ES')
