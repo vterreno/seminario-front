@@ -14,7 +14,7 @@ import {
   Building2,
   Scale
 } from 'lucide-react'
-import { type SidebarData } from '../types'
+import { type SidebarData, type BaseNavItem } from '../types'
 import { getStorageItem } from '@/hooks/use-local-storage'
 import { STORAGE_KEYS } from '@/lib/constants'
 
@@ -184,7 +184,7 @@ export const getSidebarData = (): SidebarData => {
     })
   }
   
-  const productosSubItems: SidebarItem[] = []
+  const productosSubItems: (BaseNavItem & { url: string })[] = []
   
   // Solo agregar si tiene permisos para ver productos
   if (hasPermission(userData, 'producto_ver')) {
