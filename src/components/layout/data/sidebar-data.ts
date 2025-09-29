@@ -261,16 +261,14 @@ export const getSidebarData = (): SidebarData => {
     })
   }
 
-  // Solo agregar unidades de medida si tiene permisos para verlas
-  if (hasPermission(userData, 'unidad_medida_ver')) {
-    configuracionItems.push({
-      title: 'Unidades de medida',
-      url: '/unidades-medida',
-      icon: Scale,
-      backgroundColor: '#40ba22',
-      textColor: '#ffffff',
-    })
-  }
+  // Unidades de medida disponible para todos los usuarios
+  configuracionItems.push({
+    title: 'Unidades de medida',
+    url: '/unidades-medida',
+    icon: Scale,
+    backgroundColor: '#40ba22',
+    textColor: '#ffffff',
+  })
 
   if (hasPermission(userData, 'configuracion_empresa')) {
     configuracionItems.push({

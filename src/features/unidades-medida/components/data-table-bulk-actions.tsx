@@ -9,7 +9,6 @@ import {
 } from '@/components/ui/tooltip'
 import { DataTableBulkActions as BulkActionsToolbar } from '@/components/data-table'
 import { UnidadMedidaMultiDeleteDialog } from './unidad-medida-multi-delete-dialog'
-import { usePermissions } from '@/hooks/use-permissions'
 
 type DataTableBulkActionsProps<TData> = {
   table: Table<TData>
@@ -21,33 +20,30 @@ export function DataTableBulkActions<TData>({
   onSuccess,
 }: DataTableBulkActionsProps<TData>) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
-  const { hasPermission } = usePermissions()
 
-  const canDelete = hasPermission('unidad_medida_eliminar')
+  // Removido: Verificación de permisos - accesible para todos
 
   return (
     <>
       <BulkActionsToolbar table={table} entityName='unidad de medida' entityNamePlural='unidades de medida' isFeminine={true}>
-        {canDelete && (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant='destructive'
-                size='icon'
-                onClick={() => setShowDeleteConfirm(true)}
-                className='size-8'
-                aria-label='Eliminar unidades de medida seleccionadas'
-                title='Eliminar unidades de medida seleccionadas'
-              >
-                <Trash2 />
-                <span className='sr-only'>Eliminar unidades de medida seleccionadas</span>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Eliminar unidades de medida seleccionadas</p>
-            </TooltipContent>
-          </Tooltip>
-        )}
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant='destructive'
+              size='icon'
+              onClick={() => setShowDeleteConfirm(true)}
+              className='size-8'
+              aria-label='Eliminar unidades de medida seleccionadas'
+              title='Eliminar unidades de medida seleccionadas'
+            >
+              <Trash2 />
+              <span className='sr-only'>Eliminar unidades de medida seleccionadas</span>
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Eliminar unidades de medida seleccionadas</p>
+          </TooltipContent>
+        </Tooltip>
       </BulkActionsToolbar>
 
       <UnidadMedidaMultiDeleteDialog

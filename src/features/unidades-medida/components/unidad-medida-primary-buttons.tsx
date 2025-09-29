@@ -1,17 +1,11 @@
 import { Button } from '@/components/ui/button'
 import { Plus } from 'lucide-react'
 import { useUnidadMedida } from './unidad-medida-provider'
-import { usePermissions } from '@/hooks/use-permissions'
 
 export function UnidadMedidaPrimaryButtons() {
   const { setOpen } = useUnidadMedida()
-  const { hasPermission } = usePermissions()
 
-  const canAdd = hasPermission('unidad_medida_agregar')
-
-  if (!canAdd) {
-    return null
-  }
+  // Removido: Verificación de permisos - accesible para todos
 
   return (
     <div className='flex items-center space-x-2'>
