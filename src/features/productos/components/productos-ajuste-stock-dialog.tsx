@@ -126,7 +126,7 @@ export function ProductosAjusteStockDialog({
                                     <FormLabel className="text-sm font-semibold">Tipo de ajuste *</FormLabel>
                                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                                         <FormControl>
-                                            <SelectTrigger className="h-11">
+                                            <SelectTrigger className="h-11 w-full">
                                                 <SelectValue placeholder="Seleccione el tipo de ajuste" />
                                             </SelectTrigger>
                                         </FormControl>

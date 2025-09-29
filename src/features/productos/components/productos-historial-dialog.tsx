@@ -309,7 +309,7 @@ export function ProductosHistorialDialog({
                                     <div>
                                         <Label className="text-xs">Tipo de movimiento</Label>
                                         <Select value={selectedTipo} onValueChange={setSelectedTipo}>
-                                            <SelectTrigger className="h-9">
+                                            <SelectTrigger className="h-9 w-full">
                                                 <SelectValue />
                                             </SelectTrigger>
                                             <SelectContent>
