@@ -8,6 +8,7 @@ import { DataTableRowActions } from './data-table-row-actions'
 import { Badge } from '@/components/ui/badge'
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
+import { formatCurrency } from './format-money'
 
 declare module '@tanstack/react-table' {
     interface ColumnMeta<TData, TValue> {
@@ -177,17 +178,14 @@ export const productosColumns = (options: ProductosColumnsOptions = {}): ColumnD
         {
         accessorKey: 'precio_costo',
         header: ({ column }) => (
-            <DataTableColumnHeader column={column} title='P. Costo' />
+            <DataTableColumnHeader column={column} title='Costo unitario' />
         ),
         cell: ({ row }) => {
             const precio = row.getValue('precio_costo') as number
             return (
             <div className="text-right">
                 <span className="font-medium">
-                ${precio.toLocaleString('es-AR', { 
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2 
-                })}
+                ${formatCurrency(precio)}
                 </span>
             </div>
             )
@@ -207,10 +205,7 @@ export const productosColumns = (options: ProductosColumnsOptions = {}): ColumnD
             return (
             <div className="text-right">
                 <span className="font-medium">
-                ${precio.toLocaleString('es-AR', { 
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2 
-                })}
+                ${formatCurrency(precio)}
                 </span>
             </div>
             )

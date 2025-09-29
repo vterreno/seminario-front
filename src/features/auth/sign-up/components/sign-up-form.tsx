@@ -1,8 +1,7 @@
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { IconFacebook, IconGithub } from '@/assets/brand-icons'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import {
@@ -15,21 +14,36 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { PasswordInput } from '@/components/password-input'
+import { useNavigate } from '@tanstack/react-router'
 
-const formSchema = z
-  .object({
-    email: z.email({
-      error: (iss) =>
-        iss.input === '' ? 'Please enter your email' : undefined,
-    }),
+import { AuthContext } from '@/context/auth-provider'
+import { toast } from 'sonner'
+
+const formSchema = z.object({
+    nombre: z
+    .string()
+        .min(1, { message: 'Por favor ingrese su nombre' })
+        .max(50, { message: 'El nombre no puede superar los 50 caracteres' }),
+    apellido: z
+    .string()
+        .min(1, { message: 'Por favor ingrese su apellido' })
+        .max(50, { message: 'El apellido no puede superar los 50 caracteres' }),
+    empresa: z
+    .string()
+        .min(1, { message: 'Por favor ingrese su empresa' })
+        .max(100, { message: 'El nombre de la empresa no puede superar los 100 caracteres' }),
+    email: z
+    .string()
+        .min(1, { message: 'Por favor ingrese su correo electrónico' })
+        .email({ message: 'Correo electrónico inválido' }),    
     password: z
       .string()
-      .min(1, 'Please enter your password')
-      .min(7, 'Password must be at least 7 characters long'),
-    confirmPassword: z.string().min(1, 'Please confirm your password'),
+      .min(1, 'Por favor ingrese su contraseña')
+      .min(7, 'La contraseña debe tener al menos 7 caracteres.'),
+    confirmPassword: z.string().min(1, 'Por favor confirma tu contraseña'),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords don't match.",
+    message: "Las contraseñas no coinciden.",
     path: ['confirmPassword'],
   })
 
@@ -38,24 +52,38 @@ export function SignUpForm({
   ...props
 }: React.HTMLAttributes<HTMLFormElement>) {
   const [isLoading, setIsLoading] = useState(false)
-
+  const navigate = useNavigate()
+  const { register } = useContext(AuthContext);
+  
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      empresa: '',
+      nombre: '',
+      apellido: '',
       email: '',
       password: '',
       confirmPassword: '',
     },
   })
 
-  function onSubmit(data: z.infer<typeof formSchema>) {
+  async function onSubmit(data: z.infer<typeof formSchema>) {
     setIsLoading(true)
-    // eslint-disable-next-line no-console
-    console.log(data)
+    try {
+      await register(data.empresa, data.nombre, data.apellido, data.email, data.password);
+      
+      // Registro exitoso - redirigir al dashboard ya que será administrador
+      navigate({ to: '/', replace: true });
+      toast.success(`¡Cuenta creada exitosamente! Bienvenido, ${data.nombre}!`);
 
-    setTimeout(() => {
-      setIsLoading(false)
-    }, 3000)
+    } catch (error: any) {
+      // Mostrar mensaje de error específico
+      const errorMessage = error?.message || "Error al crear la cuenta. Intente nuevamente.";
+      toast.error(errorMessage);
+      
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
@@ -65,6 +93,49 @@ export function SignUpForm({
         className={cn('grid gap-3', className)}
         {...props}
       >
+      <FormField
+          control={form.control}
+          name='empresa'
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Empresa</FormLabel>
+              <FormControl>
+                <Input placeholder='EmpresaMatePymes' {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        
+        <FormField
+          control={form.control}
+          name='nombre'
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Nombre</FormLabel>
+              <FormControl>
+                <Input placeholder='Nombre' {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name='apellido'
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Apellido</FormLabel>
+              <FormControl>
+                <Input placeholder='Apellido' {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+
         <FormField
           control={form.control}
           name='email'
@@ -72,18 +143,19 @@ export function SignUpForm({
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input placeholder='name@example.com' {...field} />
+                <Input placeholder='nombre@ejemplo.com' {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
+        
         <FormField
           control={form.control}
           name='password'
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Password</FormLabel>
+              <FormLabel>Contraseña</FormLabel>
               <FormControl>
                 <PasswordInput placeholder='********' {...field} />
               </FormControl>
@@ -96,7 +168,7 @@ export function SignUpForm({
           name='confirmPassword'
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Confirm Password</FormLabel>
+              <FormLabel>Confirmar contraseña</FormLabel>
               <FormControl>
                 <PasswordInput placeholder='********' {...field} />
               </FormControl>
@@ -105,38 +177,8 @@ export function SignUpForm({
           )}
         />
         <Button className='mt-2' disabled={isLoading}>
-          Create Account
+          Registrarme
         </Button>
-
-        <div className='relative my-2'>
-          <div className='absolute inset-0 flex items-center'>
-            <span className='w-full border-t' />
-          </div>
-          <div className='relative flex justify-center text-xs uppercase'>
-            <span className='bg-background text-muted-foreground px-2'>
-              Or continue with
-            </span>
-          </div>
-        </div>
-
-        <div className='grid grid-cols-2 gap-2'>
-          <Button
-            variant='outline'
-            className='w-full'
-            type='button'
-            disabled={isLoading}
-          >
-            <IconGithub className='h-4 w-4' /> GitHub
-          </Button>
-          <Button
-            variant='outline'
-            className='w-full'
-            type='button'
-            disabled={isLoading}
-          >
-            <IconFacebook className='h-4 w-4' /> Facebook
-          </Button>
-        </div>
       </form>
     </Form>
   )

@@ -67,10 +67,9 @@ export const permissionsSchema = z.object({
   configuracion_empresa: z.boolean().default(false),
   
   // Sucursales
-  sucursal_ver: z.boolean().default(false),
-  sucursal_agregar: z.boolean().default(false),
-  sucursal_modificar: z.boolean().default(false),
-  sucursal_eliminar: z.boolean().default(false),
+  sucursal_todas: z.boolean().default(false),
+  sucursal_1: z.boolean().default(false),
+  sucursal_2: z.boolean().default(false),
   
   // Listas de precios
   lista_precios_predeterminada: z.boolean().default(false),
@@ -158,7 +157,7 @@ export const permissionGroups = [
     id: 'producto',
     name: 'Producto',
     permissions: [
-      { key: 'producto_ver', label: 'Ver el producto' },
+      { key: 'producto_ver', label: 'Ver producto' },
       { key: 'producto_agregar', label: 'Agregar producto' },
       { key: 'producto_modificar', label: 'Modificar producto' },
       { key: 'producto_eliminar', label: 'Eliminar producto' },
@@ -211,7 +210,7 @@ export const permissionGroups = [
     permissions: [
       { key: 'categoria_ver', label: 'Ver categoría' },
       { key: 'categoria_agregar', label: 'Agregar categoría' },
-      { key: 'categoria_modificar', label: 'Modificar categoria' },
+      { key: 'categoria_modificar', label: 'Modificar categoría' },
       { key: 'categoria_eliminar', label: 'Eliminar categoría' },
     ]
   },
@@ -224,12 +223,11 @@ export const permissionGroups = [
   },
   {
     id: 'sucursales',
-    name: 'Sucursales',
+    name: 'Sucursales Habilitadas',
     permissions: [
-      { key: 'sucursal_ver', label: 'Ver sucursales' },
-      { key: 'sucursal_agregar', label: 'Agregar sucursal' },
-      { key: 'sucursal_modificar', label: 'Modificar sucursal' },
-      { key: 'sucursal_eliminar', label: 'Eliminar sucursal' },
+      { key: 'sucursal_todas', label: 'Todas las sucursales' },
+      { key: 'sucursal_1', label: 'Sucursal 1' },
+      { key: 'sucursal_2', label: 'Sucursal 2' },
     ]
   },
   {

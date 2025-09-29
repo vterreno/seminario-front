@@ -1,6 +1,22 @@
 let baseUrl = 'http://localhost:3001';
 
 export const rutasBack = {
+    contactos: {
+        clientes: {
+            getAll: `${baseUrl}/clientes/all`,
+            post: `${baseUrl}/clientes`,
+            put: `${baseUrl}/clientes`,
+            patch: `${baseUrl}/clientes`,
+            bulkStatus: `${baseUrl}/clientes/bulk/status`,
+        },
+        proveedores: {
+            getAll: `${baseUrl}/proveedores/all`,
+            post: `${baseUrl}/proveedores`,
+            put: `${baseUrl}/proveedores`,
+            patch: `${baseUrl}/proveedores`,
+            bulkStatus: `${baseUrl}/proveedores/bulk/status`,
+        },
+    },
     sucursales: {
         getSucursales: `${baseUrl}/sucursales/all`,
         getSucursalesByEmpresa: `${baseUrl}/sucursales/empresa`,
@@ -55,6 +71,10 @@ export const rutasBack = {
     permisos: {
         getPermisos: `${baseUrl}/permisos/all`,
     },
+    ubicaciones: {
+        provincias: `${baseUrl}/ubicaciones/provincias`,
+        ciudadesByProvincia: `${baseUrl}/ubicaciones/ciudades`,
+     },
     marcas: {
         getMarcas: `${baseUrl}/marcas`,
         postMarca: `${baseUrl}/marcas`,
@@ -79,5 +99,16 @@ export const rutasBack = {
         getMovimientosStock: `${baseUrl}/movimientos-stock`,
         getMovimientosByProducto: `${baseUrl}/movimientos-stock/producto`,
         ajusteStock: `${baseUrl}/movimientos-stock/ajuste-stock`,
+    },
+    unidadesMedida: {
+        getUnidadesMedida: `${baseUrl}/unidades-medida`,
+        getUnidadesMedidaPaginated: `${baseUrl}/unidades-medida`,
+        postUnidadMedida: `${baseUrl}/unidades-medida`,
+        putUnidadMedida: `${baseUrl}/unidades-medida`,
+        patchUnidadMedida: `${baseUrl}/unidades-medida`,
+        deleteUnidadMedida: `${baseUrl}/unidades-medida`,
+        getUnidadMedidaPorId: `${baseUrl}/unidades-medida`,
+        deleteUnidadesMedida: `${baseUrl}/unidades-medida/bulk-delete`,
+        canDeleteUnidadMedida: `${baseUrl}/unidades-medida`,
     }
 };

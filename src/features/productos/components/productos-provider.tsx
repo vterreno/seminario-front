@@ -26,7 +26,7 @@ export function ProductosProvider({ children }: { children: React.ReactNode }) {
 export const useProductos = () => {
     const context = useContext(ProductoContext)
     if (!context) {
-        throw new Error('useMarcas debe ser usado dentro de MarcasProvider')
+        throw new Error('useProductos debe ser usado dentro de ProductosProvider')
     }
     return context
 }

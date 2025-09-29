@@ -27,7 +27,7 @@ export function ProductosPrimaryButtons({ onAdvancedSearchOpen, activeFiltersCou
                     className='h-8 relative'
                 >
                     <Filter className='mr-2 h-4 w-4' />
-                    Búsqueda Avanzada
+                    Búsqueda avanzada
                     {activeFiltersCount > 0 && (
                         <Badge 
                             variant="secondary" 
