@@ -15,17 +15,27 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { Input } from '@/components/ui/input'
 import { Checkbox } from '@/components/ui/checkbox'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import { usePermissions } from '@/hooks/use-permissions'
+import apiUnidadesMedida from '@/service/apiUnidadesMedida.service'
 
 const formSchema = z.object({
   nombre: z.string().min(1, 'El nombre es requerido'),
   abreviatura: z.string().min(1, 'La abreviatura es requerida'),
   aceptaDecimales: z.boolean(),
+  empresa_id: z.number().optional(),
 })
 
 type FormValues = z.infer<typeof formSchema>
@@ -35,6 +45,12 @@ interface UnidadMedida {
   nombre: string
   abreviatura: string
   aceptaDecimales: boolean
+  empresa_id?: number
+}
+
+interface Empresa {
+  id: number
+  name: string
 }
 
 interface UnidadMedidaFormDialogProps {
@@ -52,14 +68,33 @@ export function UnidadMedidaFormDialog({
   onSubmit,
   isLoading = false,
 }: UnidadMedidaFormDialogProps) {
+  const { isSuperAdmin } = usePermissions()
+  const [empresas, setEmpresas] = useState<Empresa[]>([])
+  
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       nombre: '',
       abreviatura: '',
       aceptaDecimales: false,
+      empresa_id: undefined,
     },
   })
+
+  // Cargar empresas solo si es superadmin
+  useEffect(() => {
+    if (isSuperAdmin && open) {
+      const loadEmpresas = async () => {
+        try {
+          const empresasData = await apiUnidadesMedida.getEmpresas()
+          setEmpresas(empresasData)
+        } catch (error) {
+          console.error('Error loading empresas:', error)
+        }
+      }
+      loadEmpresas()
+    }
+  }, [isSuperAdmin, open])
 
   useEffect(() => {
     if (unidadMedida) {
@@ -67,12 +102,14 @@ export function UnidadMedidaFormDialog({
         nombre: unidadMedida.nombre,
         abreviatura: unidadMedida.abreviatura,
         aceptaDecimales: unidadMedida.aceptaDecimales,
+        empresa_id: unidadMedida.empresa_id,
       })
     } else {
       form.reset({
         nombre: '',
         abreviatura: '',
         aceptaDecimales: false,
+        empresa_id: undefined,
       })
     }
   }, [unidadMedida, form])
@@ -150,6 +187,36 @@ export function UnidadMedidaFormDialog({
                 </FormItem>
               )}
             />
+
+            {isSuperAdmin && (
+              <FormField
+                control={form.control}
+                name="empresa_id"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Empresa</FormLabel>
+                    <Select 
+                      onValueChange={(value) => field.onChange(value ? parseInt(value) : undefined)}
+                      value={field.value?.toString() || ''}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Seleccionar empresa" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {empresas.map((empresa) => (
+                          <SelectItem key={empresa.id} value={empresa.id.toString()}>
+                            {empresa.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
             
             <DialogFooter>
               <Button

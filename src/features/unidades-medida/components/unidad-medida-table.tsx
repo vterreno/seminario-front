@@ -24,7 +24,8 @@ import {
 import { DataTablePagination, DataTableToolbar } from '@/components/data-table'
 import { UnidadMedida } from '../data/schema'
 import { DataTableBulkActions } from './data-table-bulk-actions'
-import { unidadMedidaColumns as columns } from './unidad-medida-columns'
+import { createUnidadMedidaColumns } from './unidad-medida-columns'
+import { usePermissions } from '@/hooks/use-permissions'
 
 
 type DataTableProps = {
@@ -35,6 +36,12 @@ type DataTableProps = {
 }
 
 export function UnidadMedidaTable({ data, search, navigate, onSuccess }: DataTableProps) {
+  // Get permissions
+  const { isSuperAdmin } = usePermissions()
+  
+  // Get columns based on user permissions
+  const columns = createUnidadMedidaColumns(isSuperAdmin)
+  
   // Local UI-only states
   const [rowSelection, setRowSelection] = useState({})
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})

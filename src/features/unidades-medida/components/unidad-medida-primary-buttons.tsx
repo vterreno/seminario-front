@@ -1,14 +1,13 @@
 import { Button } from '@/components/ui/button'
 import { Plus } from 'lucide-react'
 import { useUnidadMedida } from './unidad-medida-provider'
-// import { usePermissions } from '@/hooks/use-permissions' // TODO: Restaurar cuando se corrijan los permisos
+import { usePermissions } from '@/hooks/use-permissions'
 
 export function UnidadMedidaPrimaryButtons() {
   const { setOpen } = useUnidadMedida()
-  // const { hasPermission } = usePermissions() // TODO: Restaurar cuando se corrijan los permisos
+  const { hasPermission } = usePermissions()
 
-  // const canAdd = hasPermission('unidad_medida_agregar') // TODO: Restaurar cuando se corrijan los permisos
-  const canAdd = true // Temporal: permitir agregar a todos los usuarios
+  const canAdd = hasPermission('unidad_medida_agregar')
 
   if (!canAdd) {
     return null

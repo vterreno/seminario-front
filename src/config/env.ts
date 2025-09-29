@@ -54,5 +54,14 @@ export const rutasBack = {
     },
     permisos: {
         getPermisos: `${baseUrl}/permisos/all`,
+    },
+    unidadesMedida: {
+        getAll: `${baseUrl}/unidades-medida`,
+        getById: `${baseUrl}/unidades-medida/`,
+        create: `${baseUrl}/unidades-medida`,
+        update: `${baseUrl}/unidades-medida/`,
+        delete: `${baseUrl}/unidades-medida/`,
+        bulkDelete: `${baseUrl}/unidades-medida/bulk-delete`,
+        canDelete: `${baseUrl}/unidades-medida/`,
     }
 };

@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/dialog'
 import { UnidadMedida } from '../data/schema'
 import { toast } from 'sonner'
-import { unidadesMedidaService } from '@/service/unidades-medida.service'
+import apiUnidadesMedida from '@/service/apiUnidadesMedida.service'
 
 type UnidadMedidaDeleteDialogProps = {
   open: boolean
@@ -28,21 +28,26 @@ export function UnidadMedidaDeleteDialog({
     try {
       if (currentRow.id) {
         // Verificar si se puede eliminar
-        const canDeleteResponse = await unidadesMedidaService.canDelete(currentRow.id)
+        const canDeleteResponse = await apiUnidadesMedida.canDelete(currentRow.id)
         
         if (!canDeleteResponse.canDelete) {
           toast.error(canDeleteResponse.message || 'Esta unidad de medida está siendo utilizada por al menos un producto y no se puede eliminar')
           return
         }
 
-        await unidadesMedidaService.delete(currentRow.id)
+        await apiUnidadesMedida.delete(currentRow.id)
         toast.success(`Unidad de medida "${currentRow.nombre}" eliminada exitosamente`)
         onOpenChange(false)
         onSuccess?.()
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error deleting unidad de medida:', error)
-      toast.error('Error al eliminar la unidad de medida')
+      // Manejar error de empresa requerida
+      if (error.message && error.message.includes('pertenecer a una empresa')) {
+        toast.error('Debe pertenecer a una empresa para gestionar unidades de medida. Solo el superadministrador no puede realizar esta acción.')
+      } else {
+        toast.error('Error al eliminar la unidad de medida')
+      }
     }
   }
 

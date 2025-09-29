@@ -1,5 +1,6 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -21,7 +22,7 @@ import { Input } from '@/components/ui/input'
 import { Switch } from '@/components/ui/switch'
 import { UnidadMedida, UnidadMedidaForm, unidadMedidaFormSchema } from '../data/schema'
 import { toast } from 'sonner'
-import { unidadesMedidaService } from '@/service/unidades-medida.service'
+import apiUnidadesMedida from '@/service/apiUnidadesMedida.service'
 
 type UnidadMedidaActionDialogProps = {
   currentRow?: UnidadMedida
@@ -37,49 +38,68 @@ export function UnidadMedidaActionDialog({
   onSuccess,
 }: UnidadMedidaActionDialogProps) {
   const isEdit = !!currentRow
+  
+  const getDefaultValues = (): UnidadMedidaForm => {
+    if (isEdit && currentRow) {
+      return {
+        nombre: currentRow.nombre,
+        abreviatura: currentRow.abreviatura,
+        aceptaDecimales: currentRow.aceptaDecimales,
+        isEdit: true,
+      }
+    }
+    return {
+      nombre: '',
+      abreviatura: '',
+      aceptaDecimales: false,
+      isEdit: false,
+    }
+  }
+
   const form = useForm<UnidadMedidaForm>({
     resolver: zodResolver(unidadMedidaFormSchema),
-    defaultValues: isEdit
-      ? {
-          nombre: currentRow.nombre,
-          abreviatura: currentRow.abreviatura,
-          aceptaDecimales: currentRow.aceptaDecimales,
-          isEdit,
-        }
-      : {
-          nombre: '',
-          abreviatura: '',
-          aceptaDecimales: false,
-          isEdit,
-        },
+    defaultValues: getDefaultValues(),
   })
+
+  // Actualizar el formulario cuando cambie currentRow
+  useEffect(() => {
+    form.reset(getDefaultValues())
+  }, [currentRow, open])
 
   const onSubmit = async (values: UnidadMedidaForm) => {
     try {
       if (isEdit && currentRow?.id) {
-        await unidadesMedidaService.update(currentRow.id, {
+        await apiUnidadesMedida.update(currentRow.id, {
           nombre: values.nombre,
           abreviatura: values.abreviatura,
           aceptaDecimales: values.aceptaDecimales
         })
         toast.success('Unidad de medida actualizada exitosamente')
       } else {
-        await unidadesMedidaService.create({
+        await apiUnidadesMedida.create({
           nombre: values.nombre,
           abreviatura: values.abreviatura,
           aceptaDecimales: values.aceptaDecimales
         })
         toast.success('Unidad de medida creada exitosamente')
       }
-      form.reset()
+      
+      // Reset del formulario con valores por defecto
+      form.reset(getDefaultValues())
       onOpenChange(false)
       onSuccess?.()
     } catch (error: any) {
       console.error('Error saving unidad de medida:', error)
+      // Manejar error de empresa requerida
+      if (error.message && error.message.includes('pertenecer a una empresa')) {
+        toast.error('Debe pertenecer a una empresa para gestionar unidades de medida. Solo el superadministrador no puede realizar esta acción.')
+      }
       // Manejar errores de unicidad
-      if (error.message && error.message.includes('unique') || error.message.includes('ya existe')) {
+      else if (error.message && (error.message.includes('unique') || error.message.includes('ya existe'))) {
         toast.error('Ya existe una unidad de medida con ese nombre o abreviatura para esta empresa')
-      } else {
+      }
+      // Error genérico
+      else {
         toast.error(isEdit ? 'Error al actualizar la unidad de medida' : 'Error al crear la unidad de medida')
       }
     }
@@ -90,7 +110,7 @@ export function UnidadMedidaActionDialog({
       open={open}
       onOpenChange={(state) => {
         if (!state) {
-          form.reset()
+          form.reset(getDefaultValues())
         }
         onOpenChange(state)
       }}

@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { UnidadMedida } from '../data/schema'
 import { useUnidadMedida } from './unidad-medida-provider'
-// import { usePermissions } from '@/hooks/use-permissions' // TODO: Restaurar cuando se corrijan los permisos
+import { usePermissions } from '@/hooks/use-permissions'
 
 type DataTableRowActionsProps = {
   row: Row<UnidadMedida>
@@ -19,15 +19,12 @@ type DataTableRowActionsProps = {
 
 export function DataTableRowActions({ row }: DataTableRowActionsProps) {
   const { setOpen, setCurrentRow } = useUnidadMedida()
-  // const { hasPermission } = usePermissions() // TODO: Restaurar cuando se corrijan los permisos
+  const { hasPermission } = usePermissions()
   const unidadMedida = row.original
 
-  // TODO: Restaurar verificación de permisos cuando esté corregida
   // Verificar permisos
-  // const canEdit = hasPermission('unidad_medida_modificar')
-  // const canDelete = hasPermission('unidad_medida_eliminar')
-  const canEdit = true // Temporal: permitir editar a todos los usuarios
-  const canDelete = true // Temporal: permitir eliminar a todos los usuarios
+  const canEdit = hasPermission('unidad_medida_modificar')
+  const canDelete = hasPermission('unidad_medida_eliminar')
 
   // Si no tiene ningún permiso, no mostrar el menú
   if (!canEdit && !canDelete) {

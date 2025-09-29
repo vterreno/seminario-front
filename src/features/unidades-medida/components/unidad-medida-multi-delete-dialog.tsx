@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/dialog'
 import { toast } from 'sonner'
 import { type UnidadMedida } from '../data/schema'
-import { unidadesMedidaService } from '@/service/unidades-medida.service'
+import apiUnidadesMedida from '@/service/apiUnidadesMedida.service'
 
 type UnidadMedidaMultiDeleteDialogProps<TData> = {
   open: boolean
@@ -31,7 +31,7 @@ export function UnidadMedidaMultiDeleteDialog<TData>({
   const handleDelete = async () => {
     try {
       const ids = selectedUnidades.map((unidad) => unidad.id!).filter(Boolean)
-      const response = await unidadesMedidaService.deleteMultiple(ids)
+      const response = await apiUnidadesMedida.deleteMultiple(ids)
       
       if (response.message && response.message.includes('en uso')) {
         toast.error('Algunas unidades de medida están siendo utilizadas por productos y no se pueden eliminar')
@@ -42,9 +42,14 @@ export function UnidadMedidaMultiDeleteDialog<TData>({
       onOpenChange(false)
       toast.success(`${selectedUnidades.length} unidad${selectedUnidades.length > 1 ? 'es' : ''} de medida eliminada${selectedUnidades.length > 1 ? 's' : ''} exitosamente`)
       onSuccess?.()
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error deleting unidades de medida:', error)
-      toast.error('Error al eliminar las unidades de medida')
+      // Manejar error de empresa requerida
+      if (error.message && error.message.includes('pertenecer a una empresa')) {
+        toast.error('Debe pertenecer a una empresa para gestionar unidades de medida. Solo el superadministrador no puede realizar esta acción.')
+      } else {
+        toast.error('Error al eliminar las unidades de medida')
+      }
     }
   }
 
