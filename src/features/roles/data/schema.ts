@@ -31,7 +31,11 @@ export const permissionsSchema = z.object({
   producto_agregar: z.boolean().default(false),
   producto_modificar: z.boolean().default(false),
   producto_eliminar: z.boolean().default(false),
-  
+
+  // Movimiento stock
+  movimiento_stock_historial: z.boolean().default(false),
+  movimiento_stock_ajustar: z.boolean().default(false),
+
   // Compras
   compras_ver: z.boolean().default(false),
   compras_agregar: z.boolean().default(false),
@@ -75,6 +79,7 @@ export const permissionsSchema = z.object({
   lista_precios_predeterminada: z.boolean().default(false),
   lista_precios_1: z.boolean().default(false),
   lista_precios_2: z.boolean().default(false),
+  
 })
 
 export type Permissions = z.infer<typeof permissionsSchema>
@@ -161,6 +166,8 @@ export const permissionGroups = [
       { key: 'producto_agregar', label: 'Agregar producto' },
       { key: 'producto_modificar', label: 'Modificar producto' },
       { key: 'producto_eliminar', label: 'Eliminar producto' },
+      { key: 'movimiento_stock_historial' , label: 'Ver movimientos de stock' },
+      { key: 'movimiento_stock_ajustar' , label: 'Ajustar stock' },
     ]
   },
   {

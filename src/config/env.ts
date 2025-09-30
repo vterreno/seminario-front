@@ -85,6 +85,21 @@ export const rutasBack = {
         bulkDeleteMarcas: `${baseUrl}/marcas/bulk/delete`,
         bulkUpdateStatus: `${baseUrl}/marcas/bulk/status`,
     },
+    productos: {
+        getProductos: `${baseUrl}/productos`,
+        postProducto: `${baseUrl}/productos`,
+        putProducto: `${baseUrl}/productos`,
+        deleteProducto: `${baseUrl}/productos`,
+        getProductoPorId: `${baseUrl}/productos`,
+        getProductosByEmpresa: `${baseUrl}/productos/empresa`,
+        bulkDeleteProductos: `${baseUrl}/productos/bulk/delete`,
+        bulkUpdateStatus: `${baseUrl}/productos/bulk/status`,
+    },
+    movimientosStock: {
+        getMovimientosStock: `${baseUrl}/movimientos-stock`,
+        getMovimientosByProducto: `${baseUrl}/movimientos-stock/producto`,
+        ajusteStock: `${baseUrl}/movimientos-stock/ajuste-stock`,
+    },
     unidadesMedida: {
         getUnidadesMedida: `${baseUrl}/unidades-medida`,
         getUnidadesMedidaPaginated: `${baseUrl}/unidades-medida`,
@@ -95,5 +110,5 @@ export const rutasBack = {
         getUnidadMedidaPorId: `${baseUrl}/unidades-medida`,
         deleteUnidadesMedida: `${baseUrl}/unidades-medida/bulk-delete`,
         canDeleteUnidadMedida: `${baseUrl}/unidades-medida`,
-    },
+    }
 };
