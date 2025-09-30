@@ -1,11 +1,17 @@
 import { Button } from '@/components/ui/button'
 import { Plus } from 'lucide-react'
-import { useUnidadMedida } from './unidad-medida-provider'
+import { useCategorias } from './categorias-provider'
+import { usePermissions } from '@/hooks/use-permissions'
 
-export function UnidadMedidaPrimaryButtons() {
-  const { setOpen } = useUnidadMedida()
+export function CategoriasPrimaryButtons() {
+  const { setOpen } = useCategorias()
+  const { hasPermission } = usePermissions()
 
-  // Removido: Verificación de permisos - accesible para todos
+  const canAdd = hasPermission('categoria_agregar')
+
+  if (!canAdd) {
+    return null
+  }
 
   return (
     <div className='flex items-center space-x-2'>
@@ -15,7 +21,7 @@ export function UnidadMedidaPrimaryButtons() {
         className='h-8'
       >
         <Plus className='mr-2 h-4 w-4' />
-        Agregar unidad de medida
+        Agregar categoría
       </Button>
     </div>
   )
