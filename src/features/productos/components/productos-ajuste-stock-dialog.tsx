@@ -28,13 +28,15 @@ import { Textarea } from '@/components/ui/textarea'
 import { Loader2, TrendingUp, TrendingDown, AlertTriangle } from 'lucide-react'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { 
-    Producto, 
     AjusteStockForm,
-    ajusteStockFormSchema
+    ajusteStockFormSchema,
+    Producto, 
 } from '../data/schema'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import apiMovimientoStockService from '@/service/apiMovimientoStock.service'
+import { useProductos } from './productos-provider'
+import apiProductosService from '@/service/apiProductos.service'
 
 type ProductosAjusteStockDialogProps = {
     open: boolean
@@ -50,6 +52,8 @@ export function ProductosAjusteStockDialog({
     onSuccess
 }: ProductosAjusteStockDialogProps) {
     const [isSubmitting, setIsSubmitting] = useState(false)
+    const { setCurrentRow } = useProductos() 
+
 
     const form = useForm<AjusteStockForm>({
         resolver: zodResolver(ajusteStockFormSchema),
@@ -66,6 +70,8 @@ export function ProductosAjusteStockDialog({
         setIsSubmitting(true)
         try {
             await apiMovimientoStockService.realizarAjusteStock(currentRow.id, data)
+            const productoActualizado = await apiProductosService.getProductoById(currentRow.id)
+            setCurrentRow(productoActualizado)
             toast.success('Ajuste de stock realizado correctamente')
             handleClose()
             onSuccess?.()

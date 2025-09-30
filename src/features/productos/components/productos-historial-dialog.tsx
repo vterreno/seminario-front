@@ -99,12 +99,12 @@ export function ProductosHistorialDialog({
         // Filtro por fecha
         if (dateFrom) {
             const fromDate = startOfDay(new Date(dateFrom))
-            filtered = filtered.filter(mov => new Date(mov.fecha || mov.created_at) >= fromDate)
+            filtered = filtered.filter(mov => new Date(mov.fecha ?? mov.created_at ?? '') >= fromDate)
         }
         
         if (dateTo) {
             const toDate = endOfDay(new Date(dateTo))
-            filtered = filtered.filter(mov => new Date(mov.fecha || mov.created_at) <= toDate)
+            filtered = filtered.filter(mov => new Date(mov.fecha ?? mov.created_at ?? '') <= toDate)
         }
 
         // Ordenamiento
@@ -113,8 +113,8 @@ export function ProductosHistorialDialog({
             
             switch (sortBy) {
                 case 'fecha':
-                    valueA = new Date(a.fecha || a.created_at)
-                    valueB = new Date(b.fecha || b.created_at)
+                    valueA = new Date(a.fecha ?? a.created_at ?? '')
+                    valueB = new Date(b.fecha ?? b.created_at ?? '')
                     break
                 case 'cantidad':
                     valueA = Math.abs(a.cantidad)
@@ -226,6 +226,7 @@ export function ProductosHistorialDialog({
                     </div>
                 </DialogHeader>
 
+                
                 <div className="flex-1 overflow-hidden flex flex-col space-y-4">
                     {/* Estadísticas resumidas */}
                     {!loading && movimientos.length > 0 && (
@@ -446,7 +447,9 @@ export function ProductosHistorialDialog({
                                             {paginatedMovimientos.map((movimiento) => (
                                                 <TableRow key={movimiento.id}>
                                                     <TableCell className="font-mono text-sm">
-                                                        {format(new Date(movimiento.fecha || movimiento.created_at), 'dd/MM/yyyy HH:mm', { locale: es })}
+                                                        {movimiento.fecha || movimiento.created_at
+                                                            ? format(new Date(movimiento.fecha ?? movimiento.created_at!), 'dd/MM/yyyy HH:mm', { locale: es })
+                                                            : 'Sin fecha'}
                                                     </TableCell>
                                                     <TableCell>
                                                         <Badge 

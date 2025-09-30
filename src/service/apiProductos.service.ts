@@ -1,4 +1,4 @@
-import { mapBackendProductoToFrontend, Producto, ProductoBackend, ProductoForm, MovimientoStock, AjusteStockForm } from '@/features/productos/data/schema';
+import { mapBackendProductoToFrontend, Producto, ProductoBackend, ProductoForm } from '@/features/productos/data/schema';
 import axiosService from '../api/apiClient';
 import { rutasBack } from '../config/env';
 

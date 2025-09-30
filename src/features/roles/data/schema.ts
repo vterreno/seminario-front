@@ -75,6 +75,7 @@ export const permissionsSchema = z.object({
   lista_precios_predeterminada: z.boolean().default(false),
   lista_precios_1: z.boolean().default(false),
   lista_precios_2: z.boolean().default(false),
+  
 })
 
 export type Permissions = z.infer<typeof permissionsSchema>
