@@ -156,5 +156,56 @@ export const isProductoActivo = (p: Producto): boolean =>
 export const formatProductoCreationDate = (p: Producto): string =>
   new Date(p.created_at).toLocaleDateString('es-ES')
 
-export const formatProductoUpdateDate = (p: Producto): string =>
-  new Date(p.updated_at).toLocaleDateString('es-ES')
+export const ajusteStockFormSchema = z.object({
+    tipo_ajuste: z.enum(['aumento', 'disminucion']),
+    cantidad: z.number(),
+    motivo: z.string(),
+})
+export type AjusteStockForm = z.infer<typeof ajusteStockFormSchema>
+
+// 🔹 Tipo para movimientos de stock
+export type MovimientoStock = {
+  id: number
+  tipo_movimiento: 'STOCK_APERTURA' | 'VENTA' | 'COMPRA' | 'AJUSTE_MANUAL'
+  descripcion: string
+  cantidad: number
+  stock_resultante: number
+  fecha?: string
+  created_at?: string
+}
+
+// 🔹 Helpers visuales
+export const formatTipoMovimiento = (tipo: MovimientoStock['tipo_movimiento']): string => {
+  switch (tipo) {
+    case 'STOCK_APERTURA':
+      return 'Stock de apertura'
+    case 'VENTA':
+      return 'Venta'
+    case 'COMPRA':
+      return 'Compra'
+    case 'AJUSTE_MANUAL':
+      return 'Ajuste manual'
+    default:
+      return tipo
+  }
+}
+
+// 🔹 Para formatear el signo y valor de la cantidad
+export const formatCantidadMovimiento = (cantidad: number): string => {
+  if (cantidad < 0) return `-${Math.abs(cantidad)}`
+  return `+${cantidad}`
+}
+export const getMovimientoStockColor = (tipo: MovimientoStock['tipo_movimiento']): string => {
+  switch (tipo) {
+    case 'STOCK_APERTURA':
+      return 'text-purple-600 dark:text-purple-400'
+    case 'VENTA':
+      return 'text-red-600 dark:text-red-400'
+    case 'COMPRA':
+      return 'text-green-600 dark:text-green-400'
+    case 'AJUSTE_MANUAL':
+      return 'text-blue-600 dark:text-blue-400'
+    default:
+      return 'text-gray-600 dark:text-gray-400'
+  }
+}

@@ -1,5 +1,7 @@
 import { ProductosActionDialog } from './productos-action-dialog'
 import { ProductosDeleteDialog } from './productos-delete-dialog'
+import { ProductosHistorialDialog } from './productos-historial-dialog'
+import { ProductosAjusteStockDialog } from './productos-ajuste-stock-dialog'
 import { useProductos } from './productos-provider'
 
 type ProductosDialogsProps = {
@@ -8,6 +10,13 @@ type ProductosDialogsProps = {
 
 export function ProductosDialogs({ onSuccess }: ProductosDialogsProps) {
     const { open, setOpen, currentRow, setCurrentRow } = useProductos()
+    
+    // Función para refrescar el historial cuando se realiza un ajuste
+    const handleAjusteSuccess = () => {
+        onSuccess?.()
+        // Cerrar el modal de ajuste y volver al historial
+        setOpen('historial')
+    }
     
     return (
         <>
@@ -48,6 +57,32 @@ export function ProductosDialogs({ onSuccess }: ProductosDialogsProps) {
                 }}
                 currentRow={currentRow}
                 onSuccess={onSuccess}
+            />
+
+            <ProductosHistorialDialog
+                key={`productos-historial-${currentRow.id}`}
+                open={open === 'historial'}
+                onOpenChange={(state: boolean) => {
+                if (!state) {
+                    setOpen(null)
+                    setTimeout(() => {
+                    setCurrentRow(null)
+                    }, 500)
+                }
+                }}
+                currentRow={currentRow}
+            />
+
+            <ProductosAjusteStockDialog
+                key={`productos-ajuste-${currentRow.id}`}
+                open={open === 'ajuste'}
+                onOpenChange={(state: boolean) => {
+                if (!state) {
+                    setOpen('historial') // Volver al historial cuando se cierra el ajuste
+                }
+                }}
+                currentRow={currentRow}
+                onSuccess={handleAjusteSuccess}
             />
             </>
         )}

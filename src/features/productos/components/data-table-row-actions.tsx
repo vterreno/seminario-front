@@ -1,5 +1,5 @@
 import { Row } from '@tanstack/react-table'
-import { MoreHorizontal, Pencil, Trash2 } from 'lucide-react'
+import { MoreHorizontal, Pencil, Trash2, History } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -25,9 +25,10 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
     // Verificar permisos
     const canEdit = hasPermission('producto_modificar')
     const canDelete = hasPermission('producto_eliminar')
+    const canViewHistory = hasPermission('producto_ver') || canEdit // Si puede ver productos o editar, puede ver historial
 
     // Si no tiene ningún permiso, no mostrar el menú
-    if (!canEdit && !canDelete) {
+    if (!canEdit && !canDelete && !canViewHistory) {
         return null
     }
 
@@ -43,6 +44,18 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
             </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align='end' className='w-[160px]'>
+            {canViewHistory && (
+            <DropdownMenuItem
+                onClick={() => {
+                setCurrentRow(producto)
+                setOpen('historial')
+                }}
+            >
+                <History size={16} />
+                Ver movimientos
+            </DropdownMenuItem>
+            )}
+            {canViewHistory && (canEdit || canDelete) && <DropdownMenuSeparator />}
             {canEdit && (
             <DropdownMenuItem
                 onClick={() => {

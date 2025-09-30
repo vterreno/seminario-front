@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState } from 'react'
 import { Producto } from '../data/schema'
 
-type ProductoDialogType = 'add' | 'edit' | 'delete'
+type ProductoDialogType = 'add' | 'edit' | 'delete' | 'historial' | 'ajuste'
 
 type ProductoContextType = {
     open: ProductoDialogType | null

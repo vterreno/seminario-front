@@ -95,7 +95,12 @@ export const rutasBack = {
         bulkDeleteProductos: `${baseUrl}/productos/bulk/delete`,
         bulkUpdateStatus: `${baseUrl}/productos/bulk/status`,
     },
-     unidadesMedida: {
+    movimientosStock: {
+        getMovimientosStock: `${baseUrl}/movimientos-stock`,
+        getMovimientosByProducto: `${baseUrl}/movimientos-stock/producto`,
+        ajusteStock: `${baseUrl}/movimientos-stock/ajuste-stock`,
+    },
+    unidadesMedida: {
         getUnidadesMedida: `${baseUrl}/unidades-medida`,
         getUnidadesMedidaPaginated: `${baseUrl}/unidades-medida`,
         postUnidadMedida: `${baseUrl}/unidades-medida`,
