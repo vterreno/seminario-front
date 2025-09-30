@@ -183,7 +183,7 @@ export function Productos() {
     // Cargar marcas para el display de filtros activos
     const fetchMarcas = async () => {
         try {
-            const apiMarcasService = await import('@/service/apiMarcas.service')
+            const apiMarcasService = await import('../../service/apiMarcas.service')
             const data = await apiMarcasService.default.getAllMarcas()
             setMarcas(data)
         } catch (error) {

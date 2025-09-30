@@ -51,6 +51,7 @@ import { Route as AuthenticatedSettingsAccountRouteImport } from './routes/_auth
 import { Route as AuthenticatedErrorsErrorRouteImport } from './routes/_authenticated/errors/$error'
 import { Route as AuthenticatedContactoContactoRouteImport } from './routes/_authenticated/contacto/contacto'
 import { Route as AuthenticatedProductosProductosIndexRouteImport } from './routes/_authenticated/productos/productos/index'
+import { Route as AuthenticatedProductosMarcasIndexRouteImport } from './routes/_authenticated/productos/marcas/index'
 import { Route as AuthenticatedProductosCategoriasIndexRouteImport } from './routes/_authenticated/productos/categorias/index'
 
 const ClerkRouteRoute = ClerkRouteRouteImport.update({
@@ -276,6 +277,12 @@ const AuthenticatedProductosProductosIndexRoute =
     path: '/productos/',
     getParentRoute: () => AuthenticatedProductosRouteRoute,
   } as any)
+const AuthenticatedProductosMarcasIndexRoute =
+  AuthenticatedProductosMarcasIndexRouteImport.update({
+    id: '/marcas/',
+    path: '/marcas/',
+    getParentRoute: () => AuthenticatedProductosRouteRoute,
+  } as any)
 const AuthenticatedProductosCategoriasIndexRoute =
   AuthenticatedProductosCategoriasIndexRouteImport.update({
     id: '/categorias/',
@@ -324,6 +331,7 @@ export interface FileRoutesByFullPath {
   '/tasks': typeof AuthenticatedTasksIndexRoute
   '/users': typeof AuthenticatedUsersIndexRoute
   '/productos/categorias': typeof AuthenticatedProductosCategoriasIndexRoute
+  '/productos/marcas': typeof AuthenticatedProductosMarcasIndexRoute
   '/productos/productos': typeof AuthenticatedProductosProductosIndexRoute
 }
 export interface FileRoutesByTo {
@@ -365,6 +373,7 @@ export interface FileRoutesByTo {
   '/tasks': typeof AuthenticatedTasksIndexRoute
   '/users': typeof AuthenticatedUsersIndexRoute
   '/productos/categorias': typeof AuthenticatedProductosCategoriasIndexRoute
+  '/productos/marcas': typeof AuthenticatedProductosMarcasIndexRoute
   '/productos/productos': typeof AuthenticatedProductosProductosIndexRoute
 }
 export interface FileRoutesById {
@@ -411,6 +420,7 @@ export interface FileRoutesById {
   '/_authenticated/tasks/': typeof AuthenticatedTasksIndexRoute
   '/_authenticated/users/': typeof AuthenticatedUsersIndexRoute
   '/_authenticated/productos/categorias/': typeof AuthenticatedProductosCategoriasIndexRoute
+  '/_authenticated/productos/marcas/': typeof AuthenticatedProductosMarcasIndexRoute
   '/_authenticated/productos/productos/': typeof AuthenticatedProductosProductosIndexRoute
 }
 export interface FileRouteTypes {
@@ -456,6 +466,7 @@ export interface FileRouteTypes {
     | '/tasks'
     | '/users'
     | '/productos/categorias'
+    | '/productos/marcas'
     | '/productos/productos'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -497,6 +508,7 @@ export interface FileRouteTypes {
     | '/tasks'
     | '/users'
     | '/productos/categorias'
+    | '/productos/marcas'
     | '/productos/productos'
   id:
     | '__root__'
@@ -542,6 +554,7 @@ export interface FileRouteTypes {
     | '/_authenticated/tasks/'
     | '/_authenticated/users/'
     | '/_authenticated/productos/categorias/'
+    | '/_authenticated/productos/marcas/'
     | '/_authenticated/productos/productos/'
   fileRoutesById: FileRoutesById
 }
@@ -857,6 +870,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProductosProductosIndexRouteImport
       parentRoute: typeof AuthenticatedProductosRouteRoute
     }
+    '/_authenticated/productos/marcas/': {
+      id: '/_authenticated/productos/marcas/'
+      path: '/marcas'
+      fullPath: '/productos/marcas'
+      preLoaderRoute: typeof AuthenticatedProductosMarcasIndexRouteImport
+      parentRoute: typeof AuthenticatedProductosRouteRoute
+    }
     '/_authenticated/productos/categorias/': {
       id: '/_authenticated/productos/categorias/'
       path: '/categorias'
@@ -869,6 +889,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedProductosRouteRouteChildren {
   AuthenticatedProductosCategoriasIndexRoute: typeof AuthenticatedProductosCategoriasIndexRoute
+  AuthenticatedProductosMarcasIndexRoute: typeof AuthenticatedProductosMarcasIndexRoute
   AuthenticatedProductosProductosIndexRoute: typeof AuthenticatedProductosProductosIndexRoute
 }
 
@@ -876,6 +897,8 @@ const AuthenticatedProductosRouteRouteChildren: AuthenticatedProductosRouteRoute
   {
     AuthenticatedProductosCategoriasIndexRoute:
       AuthenticatedProductosCategoriasIndexRoute,
+    AuthenticatedProductosMarcasIndexRoute:
+      AuthenticatedProductosMarcasIndexRoute,
     AuthenticatedProductosProductosIndexRoute:
       AuthenticatedProductosProductosIndexRoute,
   }
