@@ -29,7 +29,8 @@ axiosService.interceptors.response.use(
         return response;
     },
     (error) => {
-        if (error.response?.status === 401 ) {
+        // Manejo específico de errores HTTP
+        if (error.response?.status === 401) {
             // Token expirado o inválido
             clearAuthData();
             // Resetear sesión para forzar nueva validación
@@ -38,7 +39,23 @@ axiosService.interceptors.response.use(
             if (window.location.pathname !== '/sign-in') {
                 window.location.href = '/sign-in';
             }
+        } else if (error.response?.status === 403) {
+            // Error de permisos - el mensaje del backend ya debería ser descriptivo
+            console.error('Access forbidden:', error.response.data?.message || 'No tiene permisos para realizar esta acción');
+        } else if (error.response?.status === 404) {
+            // Recurso no encontrado - el mensaje del backend ya debería ser descriptivo
+            console.error('Resource not found:', error.response.data?.message || 'Recurso no encontrado');
+        } else if (error.response?.status === 409) {
+            // Conflicto - el mensaje del backend ya debería ser descriptivo
+            console.error('Conflict error:', error.response.data?.message || 'Conflicto en la operación');
+        } else if (error.response?.status >= 500) {
+            // Errores del servidor
+            console.error('Server error:', error.response.data?.message || 'Error interno del servidor');
+        } else if (!error.response) {
+            // Error de red o conexión
+            console.error('Network error:', 'No se pudo conectar con el servidor');
         }
+        
         return Promise.reject(error);
     }
 );

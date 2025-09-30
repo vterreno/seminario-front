@@ -12,9 +12,13 @@ import {
   UserCheck,
   MapPin,
   Building2,
-  Scale
+  Layers,
+  LucideShoppingCart,
+  Box,
+  Tag,
+  Scale,
 } from 'lucide-react'
-import { type SidebarData } from '../types'
+import { type SidebarData, type BaseNavItem } from '../types'
 import { getStorageItem } from '@/hooks/use-local-storage'
 import { STORAGE_KEYS } from '@/lib/constants'
 
@@ -182,16 +186,26 @@ export const getSidebarData = (): SidebarData => {
       textColor: '#ffffff',
     })
   }
-  const productosSubItems: { title: string; url: string; icon: React.ElementType; backgroundColor: string; textColor: string; }[] = []
+  
+  const productosSubItems: (BaseNavItem & { url: string })[] = []
   
   // Solo agregar si tiene permisos para ver productos
   if (hasPermission(userData, 'producto_ver')) {
-    // Agregar subitems si tiene los permisos correspondientes
+    
+    if (hasPermission(userData, 'producto_ver')) {
+      productosSubItems.push({
+        title: 'Productos',
+        url: '/productos/productos/',
+        icon: Package,
+        backgroundColor: '#f7c33b',
+        textColor: '#ffffff',
+      })
+    }
     if (hasPermission(userData, 'marca_ver')) {
       productosSubItems.push({
         title: 'Marcas',
         url: '/productos/marcas',
-        icon: Package,
+        icon: Tag,
         backgroundColor: '#f7c33b',
         textColor: '#ffffff',
       })
@@ -201,7 +215,7 @@ export const getSidebarData = (): SidebarData => {
       productosSubItems.push({
         title: 'Categorías',
         url: '/productos/categorias',
-        icon: Package,
+        icon: Layers,
         backgroundColor: '#f7c33b',
         textColor: '#ffffff',
       })
@@ -209,7 +223,7 @@ export const getSidebarData = (): SidebarData => {
 
     generalItems.push({
       title: 'Productos',
-      icon: Package,
+      icon: Box,
       backgroundColor: '#f7c33b',
       textColor: '#ffffff',
       items: productosSubItems,
@@ -259,7 +273,7 @@ export const getSidebarData = (): SidebarData => {
     })
   }
 
-  // Unidades de medida - visible para todos los usuarios
+  // Unidades de medida disponible para todos los usuarios
   configuracionItems.push({
     title: 'Unidades de medida',
     url: '/unidades-medida',

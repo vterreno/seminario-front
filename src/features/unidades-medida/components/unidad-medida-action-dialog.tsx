@@ -1,6 +1,5 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -22,6 +21,7 @@ import { Input } from '@/components/ui/input'
 import { Switch } from '@/components/ui/switch'
 import { UnidadMedida, UnidadMedidaForm, unidadMedidaFormSchema } from '../data/schema'
 import { toast } from 'sonner'
+import { ErrorHandler } from '@/utils/error-handler'
 import apiUnidadesMedida from '@/service/apiUnidadesMedida.service'
 
 type UnidadMedidaActionDialogProps = {
@@ -38,70 +38,51 @@ export function UnidadMedidaActionDialog({
   onSuccess,
 }: UnidadMedidaActionDialogProps) {
   const isEdit = !!currentRow
-  
-  const getDefaultValues = (): UnidadMedidaForm => {
-    if (isEdit && currentRow) {
-      return {
-        nombre: currentRow.nombre,
-        abreviatura: currentRow.abreviatura,
-        aceptaDecimales: currentRow.aceptaDecimales,
-        isEdit: true,
-      }
-    }
-    return {
-      nombre: '',
-      abreviatura: '',
-      aceptaDecimales: false,
-      isEdit: false,
-    }
-  }
-
   const form = useForm<UnidadMedidaForm>({
     resolver: zodResolver(unidadMedidaFormSchema),
-    defaultValues: getDefaultValues(),
+    defaultValues: isEdit
+      ? {
+          nombre: currentRow.nombre,
+          abreviatura: currentRow.abreviatura,
+          aceptaDecimales: currentRow.aceptaDecimales ?? false,
+          isEdit: true,
+        }
+      : {
+          nombre: '',
+          abreviatura: '',
+          aceptaDecimales: false,
+          isEdit: false,
+        },
   })
-
-  // Actualizar el formulario cuando cambie currentRow
-  useEffect(() => {
-    form.reset(getDefaultValues())
-  }, [currentRow, open])
 
   const onSubmit = async (values: UnidadMedidaForm) => {
     try {
       if (isEdit && currentRow?.id) {
-        await apiUnidadesMedida.update(currentRow.id, {
+        await apiUnidadesMedida.updateUnidadMedidaPartial(currentRow.id, {
           nombre: values.nombre,
           abreviatura: values.abreviatura,
           aceptaDecimales: values.aceptaDecimales
         })
         toast.success('Unidad de medida actualizada exitosamente')
       } else {
-        await apiUnidadesMedida.create({
+        await apiUnidadesMedida.createUnidadMedida({
           nombre: values.nombre,
           abreviatura: values.abreviatura,
           aceptaDecimales: values.aceptaDecimales
         })
         toast.success('Unidad de medida creada exitosamente')
       }
-      
-      // Reset del formulario con valores por defecto
-      form.reset(getDefaultValues())
+      form.reset()
       onOpenChange(false)
       onSuccess?.()
     } catch (error: any) {
       console.error('Error saving unidad de medida:', error)
-      // Manejar error de empresa requerida
-      if (error.message && error.message.includes('pertenecer a una empresa')) {
-        toast.error('Debe pertenecer a una empresa para gestionar unidades de medida. Solo el superadministrador no puede realizar esta acción.')
-      }
-      // Manejar errores de unicidad
-      else if (error.message && (error.message.includes('unique') || error.message.includes('ya existe'))) {
-        toast.error('Ya existe una unidad de medida con ese nombre o abreviatura para esta empresa')
-      }
-      // Error genérico
-      else {
-        toast.error(isEdit ? 'Error al actualizar la unidad de medida' : 'Error al crear la unidad de medida')
-      }
+      
+      // Usar el manejador de errores para obtener un mensaje apropiado
+      const context = isEdit ? 'actualizar la unidad de medida' : 'crear la unidad de medida'
+      const errorMessage = ErrorHandler.formatErrorMessage(error, context)
+      
+      toast.error(errorMessage)
     }
   }
 
@@ -110,7 +91,7 @@ export function UnidadMedidaActionDialog({
       open={open}
       onOpenChange={(state) => {
         if (!state) {
-          form.reset(getDefaultValues())
+          form.reset()
         }
         onOpenChange(state)
       }}
@@ -181,8 +162,8 @@ export function UnidadMedidaActionDialog({
                   <div className='space-y-0.5'>
                     <FormLabel className='text-base'>Acepta decimales</FormLabel>
                     <div className='text-sm text-muted-foreground'>
-                      {field.value 
-                        ? 'Permite cantidades con decimales (ej. 2.5 kg)' 
+                      {field.value
+                        ? 'Permite cantidades con decimales (ej. 2,5 kg)' 
                         : 'Solo permite cantidades enteras (ej. 5 unidades)'
                       }
                     </div>

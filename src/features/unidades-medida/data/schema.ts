@@ -9,10 +9,6 @@ export const unidadMedidaSchema = z.object({
   abreviatura: z.string(),
   aceptaDecimales: z.boolean(),
   empresa_id: z.number().optional(),
-  empresa: z.object({
-    id: z.number(),
-    name: z.string(),
-  }).optional(),
   created_at: z.string().optional(),
   updated_at: z.string().optional(),
   deleted_at: z.string().optional().nullable(),
@@ -29,16 +25,11 @@ export const unidadMedidaFormSchema = z.object({
     .max(10, 'La abreviatura no puede exceder 10 caracteres'),
   aceptaDecimales: z.boolean(),
   isEdit: z.boolean(),
-  empresa_id: z.number().optional(), // Para superadmin
 })
 
-export type UnidadMedidaForm = z.infer<typeof unidadMedidaFormSchema>
-
-// Esquema para empresa
-export const empresaSchema = z.object({
-  id: z.number(),
-  name: z.string(),
-  estado: z.boolean(),
-})
-
-export type Empresa = z.infer<typeof empresaSchema>
+export type UnidadMedidaForm = {
+  nombre: string;
+  abreviatura: string;
+  aceptaDecimales: boolean;
+  isEdit: boolean;
+}
