@@ -4,7 +4,7 @@ import { z } from 'zod'
 export const CategoriaSchema = z.object({
   id: z.number().optional(),
   nombre: z.string(),
-  descripcion: z.string(),
+  descripcion: z.string().optional(),
   estado: z.boolean(),
   empresa_id: z.number(),
   empresa: z.object({
@@ -21,7 +21,7 @@ export type Categoria = z.infer<typeof CategoriaSchema>
 // Schema para el formulario
 export const CategoriaFormSchema = z.object({
   nombre: z.string().min(2, 'El nombre debe tener al menos 2 caracteres').max(100, 'El nombre no puede exceder 100 caracteres'),
-  descripcion: z.string().min(5, 'La descripción debe tener al menos 5 caracteres').max(200, 'La descripción no puede exceder 200 caracteres'),
+  descripcion: z.string().max(200, 'La descripción no puede exceder 200 caracteres').optional(),
   estado: z.boolean().optional().default(true),
   empresa_id: z.number().optional(),
   isEdit: z.boolean(),

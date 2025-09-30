@@ -50,7 +50,6 @@ export function CategoriasActionDialog({
   onSuccess,
 }: CategoriasActionDialogProps) {
   const isEdit = !!currentRow
-  const [categorias, setCategorias] = useState<Categoria[]>([])
   const [empresas, setEmpresas] = useState<Empresa[]>([])
   const [loading, setLoading] = useState(false)
 
@@ -64,7 +63,7 @@ export function CategoriasActionDialog({
     defaultValues: isEdit && currentRow
       ? {
           nombre: currentRow.nombre,
-          descripcion: currentRow.descripcion,
+          descripcion: currentRow.descripcion || '',
           estado: currentRow.estado,
           empresa_id: currentRow.empresa_id,
           isEdit,
@@ -81,23 +80,9 @@ export function CategoriasActionDialog({
   // Cargar empresas si es superadmin
   useEffect(() => {
     if (isSuperAdmin && open) {
-      fetchCategorias()
       fetchEmpresas()
     }
   }, [isSuperAdmin, open])
-
-  const fetchCategorias = async () => {
-    try {
-      setLoading(true)
-      const data = await apiCategoriasService.getAllCategorias()
-      setCategorias(data.filter((categoria: Categoria) => categoria.estado))
-    } catch (error) {
-      console.error('Error fetching categorias:', error)
-      toast.error('Error al cargar las categorias')
-    } finally {
-      setLoading(false)
-    }
-  }
 
   const fetchEmpresas = async () => {
     try {
@@ -121,7 +106,6 @@ export function CategoriasActionDialog({
             ...values, 
             empresa_id: values.empresa_id || userEmpresaId
       };
-      console.log(dataToSend.empresa_id)
 
       if (isEdit && currentRow?.id) {
         await apiCategoriasService.updateCategoria(currentRow.id, dataToSend)
@@ -149,8 +133,16 @@ export function CategoriasActionDialog({
         onOpenChange(state)
       }}
     >
-      <DialogContent className='sm:max-w-lg max-h-[90vh] overflow-hidden flex flex-col'>
-        <DialogHeader>
+      <DialogContent
+        resizable={true}
+        minWidth={300}
+        minHeight={200}
+        maxWidth={window.innerWidth * 0.9}
+        maxHeight={window.innerHeight * 0.9}
+        defaultWidth={512}
+        defaultHeight={450} 
+        className='sm:max-w-lg'>
+        <DialogHeader className='text-start'>
           <DialogTitle>
             {isEdit ? 'Editar categoría' : 'Crear nueva categoría'}
           </DialogTitle>
@@ -161,9 +153,9 @@ export function CategoriasActionDialog({
           </DialogDescription>
         </DialogHeader>
         
-        <div className="flex-1 overflow-y-auto">
+        <div className="mb-5 overflow-y-auto py-1 pe-3">
           <Form {...form}>
-            <form id='categoria-form' onSubmit={form.handleSubmit(onSubmit as any)} className='space-y-6 my-4'>
+            <form id='categoria-form' onSubmit={form.handleSubmit(onSubmit as any)} className='space-y-4 mt-4 px-0.5'>
               <div className="grid gap-4">
                 <FormField
                   control={form.control}
@@ -188,10 +180,10 @@ export function CategoriasActionDialog({
                   name='descripcion'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Descripción</FormLabel>
+                      <FormLabel>Descripción (opcional)</FormLabel>
                       <FormControl>
                         <Textarea 
-                          placeholder='Ingrese una descripción para la categoría' 
+                          placeholder='Ingrese una descripción para la categoría (opcional)' 
                           {...field} 
                           className='resize-none'
                           rows={4}
@@ -259,20 +251,13 @@ export function CategoriasActionDialog({
           </Form>
         </div>
 
-        <DialogFooter className="gap-2 mt-4">
-          <Button
-            type='button'
-            variant='outline'
-            onClick={() => onOpenChange(false)}
-          >
-            Cancelar
-          </Button>
+        <DialogFooter>
           <Button 
             type='submit'
             form='categoria-form'
-            onClick={form.handleSubmit(onSubmit as any)}
+            disabled={loading}
           >
-            {isEdit ? 'Actualizar' : 'Crear'} categoría
+            {loading ? 'Guardando...' : (isEdit ? 'Actualizar' : 'Crear')} categoría
           </Button>
         </DialogFooter>
       </DialogContent>

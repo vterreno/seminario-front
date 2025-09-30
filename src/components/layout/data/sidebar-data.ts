@@ -11,7 +11,11 @@ import {
   Briefcase,
   UserCheck,
   MapPin,
-  Building2
+  Building2,
+  Layers,
+  LucideShoppingCart,
+  Box,
+  Tag,
 } from 'lucide-react'
 import { type SidebarData } from '../types'
 import { getStorageItem } from '@/hooks/use-local-storage'
@@ -191,7 +195,7 @@ export const getSidebarData = (): SidebarData => {
       productosSubItems.push({
         title: 'Marcas',
         url: '/productos/marcas',
-        icon: Package,
+        icon: Tag,
         backgroundColor: '#f7c33b',
         textColor: '#ffffff',
       })
@@ -201,7 +205,7 @@ export const getSidebarData = (): SidebarData => {
       productosSubItems.push({
         title: 'Categorías',
         url: '/productos/categorias',
-        icon: Package,
+        icon: Layers,
         backgroundColor: '#f7c33b',
         textColor: '#ffffff',
       })
@@ -209,7 +213,7 @@ export const getSidebarData = (): SidebarData => {
 
     generalItems.push({
       title: 'Productos',
-      icon: Package,
+      icon: Box,
       backgroundColor: '#f7c33b',
       textColor: '#ffffff',
       items: productosSubItems,

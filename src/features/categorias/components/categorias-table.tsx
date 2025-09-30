@@ -25,6 +25,7 @@ import { DataTablePagination, DataTableToolbar } from '@/components/data-table'
 import { DataTableBulkActions } from './data-table-bulk-actions'
 import { Categoria } from '../data/schema'
 import { categoriasColumns } from './categorias-columns'
+import { usePermissions } from '@/hooks/use-permissions'
 
 
 type DataTableProps = {
@@ -36,9 +37,12 @@ type DataTableProps = {
 }
 
 export function CategoriasTable({ data, search, navigate, onSuccess, canBulkAction }: DataTableProps) {
+  const { isSuperAdmin } = usePermissions()
+  
   // Configurar columnas con las opciones
   const columns = categoriasColumns({
-    canBulkAction: canBulkAction // Pasar el control de bulk actions
+    canBulkAction: canBulkAction, // Pasar el control de bulk actions
+    isSuperAdmin: isSuperAdmin // Pasar si es superadmin para mostrar columna empresa
   })
 
   // Local UI-only states
@@ -65,8 +69,8 @@ export function CategoriasTable({ data, search, navigate, onSuccess, canBulkActi
       { columnId: 'nombre', searchKey: 'nombre', type: 'string' },
       // estado filter
       { columnId: 'estado', searchKey: 'estado', type: 'array' },
-      // empresa filter
-      { columnId: 'empresa', searchKey: 'empresa', type: 'array' },
+      // empresa filter - solo si es superadmin
+      ...(isSuperAdmin ? [{ columnId: 'empresa', searchKey: 'empresa', type: 'array' as const }] : []),
 
     ],
   })
@@ -118,7 +122,8 @@ export function CategoriasTable({ data, search, navigate, onSuccess, canBulkActi
               { label: 'Inactivo', value: 'false' },
             ],
           },
-          {
+          // Solo mostrar filtro de empresa si el usuario es superadmin
+          ...(isSuperAdmin ? [{
             columnId: 'empresa',
             title: 'Empresa',
             options: Array.from(
@@ -142,7 +147,7 @@ export function CategoriasTable({ data, search, navigate, onSuccess, canBulkActi
             .map(item => JSON.parse(item))
             // Ordenar alfabéticamente por nombre
             .sort((a, b) => a.label.localeCompare(b.label)),
-          }
+          }] : [])
         ]}
       />
       <div className='rounded-md border'>

@@ -18,10 +18,11 @@ declare module '@tanstack/react-table' {
 
 interface CategoriasColumnsOptions {
   canBulkAction?: boolean // Opción para controlar bulk actions
+  isSuperAdmin?: boolean // Opción para controlar si mostrar columna empresa
 }
 
 export const categoriasColumns = (options: CategoriasColumnsOptions = {}): ColumnDef<Categoria>[] => {
-  const { canBulkAction = true } = options
+  const { canBulkAction = true, isSuperAdmin = false } = options
   
   const baseColumns: ColumnDef<Categoria>[] = []
 
@@ -110,6 +111,34 @@ export const categoriasColumns = (options: CategoriasColumnsOptions = {}): Colum
       },
     },
     {
+      accessorKey: 'estado',
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title='Estado' />
+      ),
+      cell: ({ row }) => {
+        const estado = row.getValue('estado') as boolean
+        return (
+          <Badge variant={estado ? 'green' : 'secondary'}>
+            {estado ? 'Activo' : 'Inactivo'}
+          </Badge>
+        )
+      },
+      filterFn: (row, id, value) => {
+        const estado = row.getValue(id) as boolean
+        return value.includes(estado.toString())
+      },
+      enableSorting: true,
+      meta: {
+        displayName: 'Estado'
+      },
+    }
+  )
+
+  // Solo agregar la columna empresa si el usuario es superadmin
+  if (isSuperAdmin) {
+    // Insertar la columna empresa después de descripción y antes de estado
+    const estadoColumnIndex = baseColumns.findIndex(col => 'accessorKey' in col && col.accessorKey === 'estado')
+    baseColumns.splice(estadoColumnIndex, 0, {
       accessorKey: 'empresa.name',
       id: 'empresa', // ID específico para filtrado
       header: ({ column }) => (
@@ -139,30 +168,8 @@ export const categoriasColumns = (options: CategoriasColumnsOptions = {}): Colum
         displayName: 'Empresa',
         className: 'w-60'
       },
-    },
-    {
-      accessorKey: 'estado',
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='Estado' />
-      ),
-      cell: ({ row }) => {
-        const estado = row.getValue('estado') as boolean
-        return (
-          <Badge variant={estado ? 'green' : 'secondary'}>
-            {estado ? 'Activo' : 'Inactivo'}
-          </Badge>
-        )
-      },
-      filterFn: (row, id, value) => {
-        const estado = row.getValue(id) as boolean
-        return value.includes(estado.toString())
-      },
-      enableSorting: true,
-      meta: {
-        displayName: 'Estado'
-      },
-    }
-  )
+    })
+  }
 
   // Agregar columna de fecha de creación
   baseColumns.push({
