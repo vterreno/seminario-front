@@ -207,7 +207,7 @@ export function CategoriasActionDialog({
                             onValueChange={(value) => field.onChange(parseInt(value))}
                             disabled={isEdit}
                           >
-                            <SelectTrigger>
+                            <SelectTrigger className='w-full'>
                               <SelectValue placeholder="Seleccione una empresa" />
                             </SelectTrigger>
                             <SelectContent>
