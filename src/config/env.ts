@@ -104,5 +104,21 @@ export const rutasBack = {
         getUnidadMedidaPorId: `${baseUrl}/unidades-medida`,
         deleteUnidadesMedida: `${baseUrl}/unidades-medida/bulk-delete`,
         canDeleteUnidadMedida: `${baseUrl}/unidades-medida`,
-    }
+    },
+    contactos: {
+        clientes: {
+            getAll: `${baseUrl}/clientes/all`,
+            post: `${baseUrl}/clientes`,
+            put: `${baseUrl}/clientes`,
+            patch: `${baseUrl}/clientes`,
+            bulkStatus: `${baseUrl}/clientes/bulk/status`,
+        },
+        proveedores: {
+            getAll: `${baseUrl}/proveedores/all`,
+            post: `${baseUrl}/proveedores`,
+            put: `${baseUrl}/proveedores`,
+            patch: `${baseUrl}/proveedores`,
+            bulkStatus: `${baseUrl}/proveedores/bulk/status`,
+        },
+    },
 };
