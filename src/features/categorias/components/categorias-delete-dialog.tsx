@@ -7,42 +7,34 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { Empresa } from '../data/schema'
+import { Categoria } from '../data/schema'
 import { toast } from 'sonner'
-import apiEmpresaService from '@/service/apiEmpresa.service'
+import apiCategoriasService from '@/service/apiCategorias.service'
 
-type EmpresaDeleteDialogProps = {
+type CategoriasDeleteDialogProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
-  currentRow: Empresa
+  currentRow: Categoria
   onSuccess?: () => void
 }
 
-export function EmpresaDeleteDialog({
+export function CategoriasDeleteDialog({
   open,
   onOpenChange,
   currentRow,
   onSuccess,
-}: EmpresaDeleteDialogProps) {
+}: CategoriasDeleteDialogProps) {
   const handleDelete = async () => {
     try {
       if (currentRow.id) {
-        const response = await apiEmpresaService.deleteEmpresa(currentRow.id)
-        if (response.message === "Empresa con sucursales, no se puede eliminar") {
-          toast.error('Empresa con sucursales, no se puede eliminar')
-          return
-        }
-        if (response.message === "Empresa con usuarios, no se puede eliminar") {
-          toast.error('Empresa con usuarios, no se puede eliminar')
-          return
-        }
-        toast.success(`Empresa "${currentRow.name}" eliminada exitosamente`)
+        await apiCategoriasService.deleteCategoria(currentRow.id)
+        toast.success(`Categoría "${currentRow.nombre}" eliminada exitosamente`)
         onOpenChange(false)
         onSuccess?.()
       }
     } catch (error) {
-      console.error('Error deleting empresa:', error)
-      toast.error('Error al eliminar la empresa')
+      console.error('Error deleting categoria:', error)
+      toast.error('Error al eliminar la categoría')
     }
   }
 
@@ -52,8 +44,8 @@ export function EmpresaDeleteDialog({
         <DialogHeader>
           <DialogTitle>¿Estás seguro?</DialogTitle>
           <DialogDescription>
-            Esta acción no se puede deshacer. La empresa{' '}
-            <span className='font-medium'>{currentRow.name}</span> será eliminada
+            Esta acción no se puede deshacer. La categoría{' '}
+            <span className='font-medium'>{currentRow.nombre}</span> será eliminada
             permanentemente del sistema.
           </DialogDescription>
         </DialogHeader>
@@ -62,7 +54,7 @@ export function EmpresaDeleteDialog({
             Cancelar
           </Button>
           <Button variant='destructive' onClick={handleDelete}>
-            Eliminar empresa
+            Eliminar categoría
           </Button>
         </DialogFooter>
       </DialogContent>

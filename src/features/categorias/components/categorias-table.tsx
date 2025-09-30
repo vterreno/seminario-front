@@ -12,7 +12,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import { cn } from '@/lib/utils'
-import { useTableUrlState } from '@/hooks/use-table-url-state'
+import { type NavigateFn, useTableUrlState } from '@/hooks/use-table-url-state'
 import {
   Table,
   TableBody,
@@ -22,25 +22,37 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { DataTablePagination, DataTableToolbar } from '@/components/data-table'
-import { UnidadMedida } from '../data/schema'
 import { DataTableBulkActions } from './data-table-bulk-actions'
-import { unidadMedidaColumns as columns } from './unidad-medida-columns'
+import { Categoria } from '../data/schema'
+import { categoriasColumns } from './categorias-columns'
+import { usePermissions } from '@/hooks/use-permissions'
 
 
 type DataTableProps = {
-  data: UnidadMedida[]
+  data: Categoria[]
   search: Record<string, unknown>
-  navigate: any
+  navigate: NavigateFn
   onSuccess?: () => void
+  canBulkAction: boolean
 }
 
-export function UnidadMedidaTable({ data, search, navigate, onSuccess }: DataTableProps) {
+export function CategoriasTable({ data, search, navigate, onSuccess, canBulkAction }: DataTableProps) {
+  const { isSuperAdmin } = usePermissions()
+  
+  // Configurar columnas con las opciones
+  const columns = categoriasColumns({
+    canBulkAction: canBulkAction, // Pasar el control de bulk actions
+    isSuperAdmin: isSuperAdmin // Pasar si es superadmin para mostrar columna empresa
+  })
+
   // Local UI-only states
   const [rowSelection, setRowSelection] = useState({})
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
-  const [sorting, setSorting] = useState<SortingState>([])
+  const [sorting, setSorting] = useState<SortingState>([
+    { id: 'nombre', desc: false } // Ordenamiento por defecto: nombre ascendente
+  ])
 
-  // Synced with URL states (keys/defaults mirror unidades-medida route search schema)
+  // Synced with URL states (keys/defaults mirror categoría route search schema)
   const {
     columnFilters,
     onColumnFiltersChange,
@@ -55,8 +67,11 @@ export function UnidadMedidaTable({ data, search, navigate, onSuccess }: DataTab
     columnFilters: [
       // name per-column text filter
       { columnId: 'nombre', searchKey: 'nombre', type: 'string' },
-      { columnId: 'abreviatura', searchKey: 'abreviatura', type: 'string' },
-      { columnId: 'aceptaDecimales', searchKey: 'aceptaDecimales', type: 'array' },
+      // estado filter
+      { columnId: 'estado', searchKey: 'estado', type: 'array' },
+      // empresa filter - solo si es superadmin
+      ...(isSuperAdmin ? [{ columnId: 'empresa', searchKey: 'empresa', type: 'array' as const }] : []),
+
     ],
   })
 
@@ -96,17 +111,43 @@ export function UnidadMedidaTable({ data, search, navigate, onSuccess }: DataTab
     >
       <DataTableToolbar 
         table={table}
-        searchPlaceholder='Buscar unidades de medida...'
+        searchPlaceholder='Buscar categorías...'
         searchKey='nombre'
         filters={[
           {
-            columnId: 'aceptaDecimales',
-            title: 'Acepta decimales',
+            columnId: 'estado',
+            title: 'Estado',
             options: [
-              { label: 'Sí', value: 'true' },
-              { label: 'No', value: 'false' },
+              { label: 'Activo', value: 'true' },
+              { label: 'Inactivo', value: 'false' },
             ],
           },
+          // Solo mostrar filtro de empresa si el usuario es superadmin
+          ...(isSuperAdmin ? [{
+            columnId: 'empresa',
+            title: 'Empresa',
+            options: Array.from(
+              // Usar un Set para eliminar duplicados
+              new Set(
+                data
+                  // Filtrar categorías con empresa definida
+                  .filter(item => item.empresa?.id)
+                  // Extraer información de empresa para el filtro
+                  .map(item => ({ 
+                    label: item.empresa?.name || '', 
+                    value: item.empresa?.id?.toString() || '' 
+                  }))
+                  // Filtrar opciones inválidas
+                  .filter(option => option.label && option.value)
+                  // Convertir a JSON para que el Set elimine duplicados
+                  .map(item => JSON.stringify(item))
+              )
+            )
+            // Convertir de nuevo a objetos
+            .map(item => JSON.parse(item))
+            // Ordenar alfabéticamente por nombre
+            .sort((a, b) => a.label.localeCompare(b.label)),
+          }] : [])
         ]}
       />
       <div className='rounded-md border'>
@@ -174,7 +215,7 @@ export function UnidadMedidaTable({ data, search, navigate, onSuccess }: DataTab
         </Table>
       </div>
       <DataTablePagination table={table} />
-      <DataTableBulkActions table={table} onSuccess={onSuccess} />
+      {canBulkAction && <DataTableBulkActions table={table} onSuccess={onSuccess} />}
     </div>
   )
 }

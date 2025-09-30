@@ -1,22 +1,6 @@
 let baseUrl = 'http://localhost:3001';
 
 export const rutasBack = {
-    contactos: {
-        clientes: {
-            getAll: `${baseUrl}/clientes/all`,
-            post: `${baseUrl}/clientes`,
-            put: `${baseUrl}/clientes`,
-            patch: `${baseUrl}/clientes`,
-            bulkStatus: `${baseUrl}/clientes/bulk/status`,
-        },
-        proveedores: {
-            getAll: `${baseUrl}/proveedores/all`,
-            post: `${baseUrl}/proveedores`,
-            put: `${baseUrl}/proveedores`,
-            patch: `${baseUrl}/proveedores`,
-            bulkStatus: `${baseUrl}/proveedores/bulk/status`,
-        },
-    },
     sucursales: {
         getSucursales: `${baseUrl}/sucursales/all`,
         getSucursalesByEmpresa: `${baseUrl}/sucursales/empresa`,
@@ -84,6 +68,16 @@ export const rutasBack = {
         getMarcasByEmpresa: `${baseUrl}/marcas/empresa`,
         bulkDeleteMarcas: `${baseUrl}/marcas/bulk/delete`,
         bulkUpdateStatus: `${baseUrl}/marcas/bulk/status`,
+    },
+    categorias: {
+        getCategorias: `${baseUrl}/categorias`,
+        getCategoriasByEmpresa: `${baseUrl}/categorias/empresa`,
+        postCategoria: `${baseUrl}/categorias`,
+        putCategoria: `${baseUrl}/categorias`,
+        deleteCategoria: `${baseUrl}/categorias`,
+        getCategoriaPorId: `${baseUrl}/categorias`,
+        bulkDeleteCategorias: `${baseUrl}/categorias/bulk/delete`,
+        bulkUpdateStatus: `${baseUrl}/categorias/bulk/status`,
     },
     productos: {
         getProductos: `${baseUrl}/productos`,

@@ -1,18 +1,18 @@
-import { UnidadMedidaActionDialog } from './unidad-medida-action-dialog'
-import { UnidadMedidaDeleteDialog } from './unidad-medida-delete-dialog'
-import { useUnidadMedida } from './unidad-medida-provider'
+import { CategoriasActionDialog } from './categorias-action-dialog'
+import { CategoriasDeleteDialog } from './categorias-delete-dialog'
+import { useCategorias } from './categorias-provider'
 
-type UnidadMedidaDialogsProps = {
+type CategoriasDialogsProps = {
   onSuccess?: () => void
 }
 
-export function UnidadMedidaDialogs({ onSuccess }: UnidadMedidaDialogsProps) {
-  const { open, setOpen, currentRow, setCurrentRow } = useUnidadMedida()
+export function CategoriasDialogs({ onSuccess }: CategoriasDialogsProps) {
+  const { open, setOpen, currentRow, setCurrentRow } = useCategorias()
   
   return (
     <>
-      <UnidadMedidaActionDialog
-        key='unidad-medida-add'
+      <CategoriasActionDialog
+        key='categorias-add'
         open={open === 'add'}
         onOpenChange={(state) => setOpen(state ? 'add' : null)}
         onSuccess={onSuccess}
@@ -20,8 +20,8 @@ export function UnidadMedidaDialogs({ onSuccess }: UnidadMedidaDialogsProps) {
 
       {currentRow && (
         <>
-          <UnidadMedidaActionDialog
-            key={`unidad-medida-edit-${currentRow.id}`}
+          <CategoriasActionDialog
+            key={`categorias-edit-${currentRow.id}`}
             open={open === 'edit'}
             onOpenChange={(state) => {
               if (!state) {
@@ -35,8 +35,8 @@ export function UnidadMedidaDialogs({ onSuccess }: UnidadMedidaDialogsProps) {
             onSuccess={onSuccess}
           />
 
-          <UnidadMedidaDeleteDialog
-            key={`unidad-medida-delete-${currentRow.id}`}
+          <CategoriasDeleteDialog
+            key={`categorias-delete-${currentRow.id}`}
             open={open === 'delete'}
             onOpenChange={(state) => {
               if (!state) {

@@ -1,54 +1,94 @@
-import { useMemo, useState } from 'react'
-import { ColumnDef } from '@tanstack/react-table'
-import { DataTableToolbar, DataTablePagination } from '@/components/data-table'
-import { getContactosColumns } from './contactos-columns'
-import { Contacto } from '@/service/apiContactos.service'
-import { DataTableRowActions } from './data-table-row-actions'
-import { ContactosBulkActions } from './data-table-bulk-actions'
-import { useReactTable, getCoreRowModel, getFilteredRowModel, getSortedRowModel, getPaginationRowModel, getFacetedRowModel, getFacetedUniqueValues, type SortingState, type VisibilityState, flexRender } from '@tanstack/react-table'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { useEffect, useState } from 'react'
+import {
+  type SortingState,
+  type VisibilityState,
+  flexRender,
+  getCoreRowModel,
+  getFacetedRowModel,
+  getFacetedUniqueValues,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from '@tanstack/react-table'
 import { cn } from '@/lib/utils'
+import { useTableUrlState } from '@/hooks/use-table-url-state'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
+import { DataTablePagination, DataTableToolbar } from '@/components/data-table'
+import { type Role } from '../data/schema'
+import { DataTableBulkActions } from './data-table-bulk-actions'
+import { rolesColumns } from './roles-columns'
+import { getStorageItem } from '@/hooks/use-local-storage'
+import { STORAGE_KEYS } from '@/lib/constants'
 
-export function ContactosTable({ 
-  data, 
-  onEdit, 
-  onDelete, 
-  canBulkAction, 
-  tipo = 'cliente', 
-  onSuccess,
-  isSuperAdmin = false,
-  canEdit = true,
-  canDelete = true
-}: { 
-  data: Contacto[], 
-  onEdit: (c: Contacto) => void, 
-  onDelete: (c: Contacto) => void, 
-  canBulkAction?: boolean, 
-  tipo?: 'cliente' | 'proveedor', 
-  onSuccess?: () => void,
-  isSuperAdmin?: boolean,
-  canEdit?: boolean,
-  canDelete?: boolean
-}) {
-  const columns: ColumnDef<Contacto>[] = useMemo(() => {
-    return [
-      ...getContactosColumns(isSuperAdmin),
-      {
-        id: 'actions',
-        cell: ({ row }) => <DataTableRowActions row={row} onEdit={onEdit} onDelete={onDelete} canEdit={canEdit} canDelete={canDelete} />,
-      },
-    ]
-  }, [onEdit, onDelete, isSuperAdmin, canEdit, canDelete])
+declare module '@tanstack/react-table' {
+  interface ColumnMeta<TData, TValue> {
+    className?: string
+  }
+}
 
+type DataTableProps = {
+  data: Role[]
+  search: Record<string, unknown>
+  navigate: any // Tipo flexible para evitar conflictos
+  onSuccess?: () => void
+  canBulkAction: boolean // Nueva prop para controlar bulk actions
+}
+
+export function RolesTable({ data, search, navigate, onSuccess, canBulkAction }: DataTableProps) {
+  // Check if user is superadmin (no empresa.id)
+  const userData = getStorageItem(STORAGE_KEYS.USER_DATA, null) as any
+  const isSuperAdmin = !userData?.empresa?.id
+  
+  // Get columns based on user type and permissions
+  const columns = rolesColumns({
+    showEmpresaColumn: isSuperAdmin, // Solo mostrar columna empresa para superadmin
+    canBulkAction: canBulkAction // Pasar el control de bulk actions
+  })
+  
   const [rowSelection, setRowSelection] = useState({})
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [sorting, setSorting] = useState<SortingState>([])
 
+  // Synced with URL states (keys/defaults mirror roles route search schema)
+  const {
+    columnFilters,
+    onColumnFiltersChange,
+    pagination,
+    onPaginationChange,
+    ensurePageInRange,
+  } = useTableUrlState({
+    search,
+    navigate,
+    pagination: { defaultPage: 1, defaultPageSize: 10 },
+    globalFilter: { enabled: false },
+    columnFilters: [
+      // name per-column text filter
+      { columnId: 'nombre', searchKey: 'nombre', type: 'string' },
+      { columnId: 'estado', searchKey: 'estado', type: 'array' },
+    ],
+  })
+
   const table = useReactTable({
     data,
     columns,
-    state: { sorting, rowSelection, columnVisibility },
-    enableRowSelection: canBulkAction,
+    state: {
+      sorting,
+      pagination,
+      rowSelection,
+      columnFilters,
+      columnVisibility,
+    },
+    enableRowSelection: canBulkAction, // Usar canBulkAction para habilitar/deshabilitar la selección de filas
+    onPaginationChange,
+    onColumnFiltersChange,
     onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
     onColumnVisibilityChange: setColumnVisibility,
@@ -60,19 +100,23 @@ export function ContactosTable({
     getFacetedUniqueValues: getFacetedUniqueValues(),
   })
 
+  useEffect(() => {
+    ensurePageInRange(table.getPageCount())
+  }, [table, ensurePageInRange])
+
   return (
     <div className='space-y-4 max-sm:has-[div[role="toolbar"]]:mb-16'>
       <DataTableToolbar
         table={table}
-        searchPlaceholder='Buscar contactos...'
-        searchKey='nombre_razon_social'
+        searchPlaceholder='Buscar roles...'
+        searchKey='nombre'
         filters={[
           {
             columnId: 'estado',
             title: 'Estado',
             options: [
-              { label: 'Activos', value: 'true' },
-              { label: 'Inactivos', value: 'false' },
+              { label: 'Activo', value: 'true' },
+              { label: 'Inactivo', value: 'false' },
             ],
           },
         ]}
@@ -130,8 +174,11 @@ export function ContactosTable({
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className='h-24 text-center'>
-                  Sin resultados.
+                <TableCell
+                  colSpan={columns.length}
+                  className='h-24 text-center'
+                >
+                  No hay resultados.
                 </TableCell>
               </TableRow>
             )}
@@ -139,9 +186,8 @@ export function ContactosTable({
         </Table>
       </div>
       <DataTablePagination table={table} />
-      {canBulkAction && <ContactosBulkActions table={table} tipo={tipo} onSuccess={onSuccess} />}
+      {/* Solo mostrar bulk actions si tiene permisos */}
+      {canBulkAction && <DataTableBulkActions table={table} onSuccess={onSuccess} />}
     </div>
   )
 }
-
-

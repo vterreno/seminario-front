@@ -12,7 +12,11 @@ import {
   UserCheck,
   MapPin,
   Building2,
-  Scale
+  Layers,
+  LucideShoppingCart,
+  Box,
+  Tag,
+  Scale,
 } from 'lucide-react'
 import { type SidebarData, type BaseNavItem } from '../types'
 import { getStorageItem } from '@/hooks/use-local-storage'
@@ -86,7 +90,6 @@ export const getFirstAvailableRoute = (userData: UserData | null): string => {
     { permiso: 'ventas_ver', ruta: '/ventas' },
     { permiso: 'compras_ver', ruta: '/compras' },
     { permiso: 'cliente_ver', ruta: '/contactos' },
-    { permiso: 'proveedor_ver', ruta: '/contactos' },
     { permiso: 'roles_ver', ruta: '/roles' },
     { permiso: 'sucursal_ver', ruta: '/settings/sucursales' },
   ]
@@ -173,8 +176,8 @@ export const getSidebarData = (): SidebarData => {
   // Sección General - basada en permisos específicos
   const generalItems = []
 
-  // Solo agregar si tiene permisos para ver clientes o proveedores
-  if (hasPermission(userData, 'cliente_ver') || hasPermission(userData, 'proveedor_ver')) {
+  // Solo agregar si tiene permisos para ver clientes
+  if (hasPermission(userData, 'cliente_ver')) {
     generalItems.push({
       title: 'Contactos',
       url: '/contactos',
@@ -201,8 +204,8 @@ export const getSidebarData = (): SidebarData => {
     if (hasPermission(userData, 'marca_ver')) {
       productosSubItems.push({
         title: 'Marcas',
-        url: '/productos/marcas/',
-        icon: Package,
+        url: '/productos/marcas',
+        icon: Tag,
         backgroundColor: '#f7c33b',
         textColor: '#ffffff',
       })
@@ -212,7 +215,7 @@ export const getSidebarData = (): SidebarData => {
       productosSubItems.push({
         title: 'Categorías',
         url: '/productos/categorias',
-        icon: Package,
+        icon: Layers,
         backgroundColor: '#f7c33b',
         textColor: '#ffffff',
       })
@@ -220,7 +223,7 @@ export const getSidebarData = (): SidebarData => {
 
     generalItems.push({
       title: 'Productos',
-      icon: Package,
+      icon: Box,
       backgroundColor: '#f7c33b',
       textColor: '#ffffff',
       items: productosSubItems,
