@@ -4,122 +4,123 @@ import { Trash2, Shield, ShieldOff } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
+    Tooltip,
+    TooltipContent,
+    TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { DataTableBulkActions as BulkActionsToolbar } from '@/components/data-table'
-import { type Role } from '../data/schema'
-import { RolesMultiDeleteDialog } from './roles-multi-delete-dialog'
-import apiRolesService from '@/service/apiRoles.service'
+import { type Producto } from '../data/schema'
+import { ProductosMultiDeleteDialog } from './productos-multi-delete-dialog'
+import apiProductosService from '@/service/apiProductos.service'
 import { usePermissions } from '@/hooks/use-permissions'
 
 type DataTableBulkActionsProps<TData> = {
-  table: Table<TData>
-  onSuccess?: () => void
+    table: Table<TData>
+    onSuccess?: () => void
 }
 
 export function DataTableBulkActions<TData>({
-  table,
-  onSuccess,
+    table,
+    onSuccess,
 }: DataTableBulkActionsProps<TData>) {
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
-  const { hasPermission } = usePermissions()
-  const selectedRows = table.getFilteredSelectedRowModel().rows
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+    const { hasPermission } = usePermissions()
+    const selectedRows = table.getFilteredSelectedRowModel().rows
 
-  const selectedRoles = selectedRows.map((row) => row.original as Role)
+    const selectedProductos = selectedRows.map((row) => row.original as Producto)
 
-  const canModify = hasPermission('roles_modificar')
-  const canDelete = hasPermission('roles_eliminar')
+    const canModify = hasPermission('producto_modificar')
+    const canDelete = hasPermission('producto_eliminar')
 
-  const handleBulkStatusChange = async (status: 'active' | 'inactive') => {
-    const roleIds = selectedRoles.map(role => role.id!).filter(id => id !== undefined)
-    
-    try {
-      await apiRolesService.bulkUpdateRoleStatus(roleIds, status === 'active')
-      
-      table.resetRowSelection()
-      toast.success(`${status === 'active' ? 'Activados' : 'Desactivados'} ${selectedRoles.length} rol${selectedRoles.length > 1 ? 'es' : ''}`)
-      onSuccess?.()
-    } catch (error) {
-      console.error('Error updating roles:', error)
-      toast.error(`Error al ${status === 'active' ? 'activar' : 'desactivar'} roles`)
+    const handleBulkStatusChange = async (status: 'active' | 'inactive') => {
+        const productoIds = selectedProductos.filter(producto => producto.id !== undefined).map(producto => producto.id)
+
+        try {
+        await apiProductosService.bulkUpdateProductoStatus(productoIds, status === 'active')
+
+            table.resetRowSelection()
+            toast.success(`${status === 'active' ? 'Activadas' : 'Desactivadas'} ${selectedProductos.length} producto${selectedProductos.length > 1 ? 's' : ''}`)
+            onSuccess?.()
+        } catch (error: any) {
+            // Mostrar el mensaje específico del backend si está disponible
+            const errorMessage = error?.message || `Error al ${status === 'active' ? 'activar' : 'desactivar'} productos`
+            toast.error(errorMessage)
+        }
     }
-  }
 
-  return (
-    <>
-      <BulkActionsToolbar table={table} entityName='rol' entityNamePlural='roles' isFeminine={false}>
-        {canModify && (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant='outline'
-                size='icon'
-                onClick={() => handleBulkStatusChange('active')}
-                className='size-8'
-                aria-label='Activar roles seleccionados'
-                title='Activar roles seleccionados'
-              >
-                <Shield />
-                <span className='sr-only'>Activar roles seleccionados</span>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Activar roles seleccionados</p>
-            </TooltipContent>
-          </Tooltip>
-        )}
+    return (
+        <>
+        <BulkActionsToolbar table={table} entityName='producto' entityNamePlural='productos' isFeminine={true}>
+            {canModify && (
+            <Tooltip>
+                <TooltipTrigger asChild>
+                <Button
+                    variant='outline'
+                    size='icon'
+                    onClick={() => handleBulkStatusChange('active')}
+                    className='size-8'
+                    aria-label='Activar productos seleccionados'
+                    title='Activar productos seleccionados'
+                >
+                    <Shield />
+                    <span className='sr-only'>Activar productos seleccionados</span>
+                </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                <p>Activar productos seleccionados</p>
+                </TooltipContent>
+            </Tooltip>
+            )}
 
-        {canModify && (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant='outline'
-                size='icon'
-                onClick={() => handleBulkStatusChange('inactive')}
-                className='size-8'
-                aria-label='Desactivar roles seleccionados'
-                title='Desactivar roles seleccionados'
-              >
-                <ShieldOff />
-                <span className='sr-only'>Desactivar roles seleccionados</span>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Desactivar roles seleccionados</p>
-            </TooltipContent>
-          </Tooltip>
-        )}
+            {canModify && (
+            <Tooltip>
+                <TooltipTrigger asChild>
+                <Button
+                    variant='outline'
+                    size='icon'
+                    onClick={() => handleBulkStatusChange('inactive')}
+                    className='size-8'
+                    aria-label='Desactivar productos seleccionados'
+                    title='Desactivar productos seleccionados'
+                >
+                    <ShieldOff />
+                    <span className='sr-only'>Desactivar productos seleccionados</span>
+                </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                <p>Desactivar productos seleccionados</p>
+                </TooltipContent>
+            </Tooltip>
+            )}
 
-        {canDelete && (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant='destructive'
-                size='icon'
-                onClick={() => setShowDeleteConfirm(true)}
-                className='size-8'
-                aria-label='Eliminar roles seleccionados'
-                title='Eliminar roles seleccionados'
-              >
-                <Trash2 />
-                <span className='sr-only'>Eliminar roles seleccionados</span>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Eliminar roles seleccionados</p>
-            </TooltipContent>
-          </Tooltip>
-        )}
-      </BulkActionsToolbar>
+            {canDelete && (
+            <Tooltip>
+                <TooltipTrigger asChild>
+                <Button
+                    variant='destructive'
+                    size='icon'
+                    onClick={() => setShowDeleteConfirm(true)}
+                    className='size-8'
+                    aria-label='Eliminar productos seleccionados'
+                    title='Eliminar productos seleccionados'
+                >
+                    <Trash2 />
+                    <span className='sr-only'>Eliminar productos seleccionados</span>
+                </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                <p>Eliminar productos seleccionados</p>
+                </TooltipContent>
+            </Tooltip>
+            )}
+        </BulkActionsToolbar>
 
-      <RolesMultiDeleteDialog
-        table={table}
-        open={showDeleteConfirm}
-        onOpenChange={setShowDeleteConfirm}
-        onSuccess={onSuccess}
-      />
-    </>
-  )
+        <ProductosMultiDeleteDialog
+            table={table}
+            open={showDeleteConfirm}
+            onOpenChange={setShowDeleteConfirm}
+            onSuccess={onSuccess}
+        />
+        </>
+    )
 }

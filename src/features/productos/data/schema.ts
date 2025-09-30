@@ -1,246 +1,211 @@
 import { z } from 'zod'
 
-// Definición de todos los permisos disponibles
-export const permissionsSchema = z.object({
-  // Usuario
-  usuario_ver: z.boolean().default(false),
-  usuario_agregar: z.boolean().default(false),
-  usuario_modificar: z.boolean().default(false),
-  usuario_borrar: z.boolean().default(false),
-  
-  // Roles
-  roles_ver: z.boolean().default(false),
-  roles_agregar: z.boolean().default(false),
-  roles_modificar: z.boolean().default(false),
-  roles_eliminar: z.boolean().default(false),
-  
-  // Proveedor
-  proveedor_ver: z.boolean().default(false),
-  proveedor_agregar: z.boolean().default(false),
-  proveedor_modificar: z.boolean().default(false),
-  proveedor_eliminar: z.boolean().default(false),
-  
-  // Cliente
-  cliente_ver: z.boolean().default(false),
-  cliente_agregar: z.boolean().default(false),
-  cliente_modificar: z.boolean().default(false),
-  cliente_eliminar: z.boolean().default(false),
-  
-  // Producto
-  producto_ver: z.boolean().default(false),
-  producto_agregar: z.boolean().default(false),
-  producto_modificar: z.boolean().default(false),
-  producto_eliminar: z.boolean().default(false),
-  
-  // Compras
-  compras_ver: z.boolean().default(false),
-  compras_agregar: z.boolean().default(false),
-  compras_modificar: z.boolean().default(false),
-  compras_eliminar: z.boolean().default(false),
-  
-  // Ventas
-  ventas_ver: z.boolean().default(false),
-  ventas_agregar: z.boolean().default(false),
-  ventas_modificar: z.boolean().default(false),
-  ventas_eliminar: z.boolean().default(false),
-  ventas_acceso_caja: z.boolean().default(false),
-  
-  // Marca
-  marca_ver: z.boolean().default(false),
-  marca_agregar: z.boolean().default(false),
-  marca_modificar: z.boolean().default(false),
-  marca_eliminar: z.boolean().default(false),
-  
-  // Unidad
-  unidad_ver: z.boolean().default(false),
-  unidad_agregar: z.boolean().default(false),
-  unidad_modificar: z.boolean().default(false),
-  unidad_eliminar: z.boolean().default(false),
-  
-  // Categoría
-  categoria_ver: z.boolean().default(false),
-  categoria_agregar: z.boolean().default(false),
-  categoria_modificar: z.boolean().default(false),
-  categoria_eliminar: z.boolean().default(false),
-  
-  // Configuraciones
-  configuracion_empresa: z.boolean().default(false),
-  
-  // Sucursales
-  sucursal_ver: z.boolean().default(false),
-  sucursal_agregar: z.boolean().default(false),
-  sucursal_modificar: z.boolean().default(false),
-  sucursal_eliminar: z.boolean().default(false),
-  
-  // Listas de precios
-  lista_precios_predeterminada: z.boolean().default(false),
-  lista_precios_1: z.boolean().default(false),
-  lista_precios_2: z.boolean().default(false),
-})
-
-export type Permissions = z.infer<typeof permissionsSchema>
-
-// Schema para la empresa asociada al rol
-export const empresaRoleSchema = z.object({
+// 🔹 Schema que refleja exactamente lo que envía el backend
+export const productoBackendSchema = z.object({
   id: z.number(),
-  nombre: z.string(),
-}).optional()
-
-// Schema principal del rol
-export const roleSchema = z.object({
-  id: z.number().optional(),
+  codigo: z.string(),
   nombre: z.string(),
   empresa_id: z.number(),
-  empresa: empresaRoleSchema,
-  permisos: permissionsSchema,
+  empresa: z
+    .object({
+      id: z.number(),
+      name: z.string(),
+    })
+    .optional(),
+  marca_id: z.number().nullable().optional(),
+  marca: z
+    .object({
+      id: z.number(),
+      nombre: z.string(),
+    })
+    .nullable()
+    .optional(),
+  categoria_id: z.number().nullable().optional(),
+  categoria: z
+    .object({
+      id: z.number(),
+      nombre: z.string(),
+    })
+    .nullable()
+    .optional(),
+  unidad_medida_id: z.number().nullable().optional(),
+  unidadMedida: z
+    .object({
+      id: z.number(),
+      nombre: z.string(),
+      sigla: z.string(),
+    })
+    .nullable()
+    .optional(),
+  precio_costo: z.number(),
+  precio_venta: z.number(),
+  stock_apertura: z.number(),
+  stock: z.number(),
   estado: z.boolean(),
-  created_at: z.string().optional(),
-  updated_at: z.string().optional(),
+  created_at: z.string(),
+  updated_at: z.string(),
   deleted_at: z.string().optional().nullable(),
 })
+export type ProductoBackend = z.infer<typeof productoBackendSchema>
 
-export type Role = z.infer<typeof roleSchema>
+// 🔹 Schema principal para frontend
+export const productoSchema = productoBackendSchema
+export type Producto = z.infer<typeof productoSchema>
 
-// Schema para el formulario
-export const roleFormSchema = z.object({
-  nombre: z.string().min(2, 'El nombre debe tener al menos 2 caracteres').max(100, 'El nombre no puede exceder 100 caracteres'),
+// 🔹 Schema específico para formularios CON coerce - SIN empresa_id
+export const productoFormSchema = z.object({
+  codigo: z.string().min(1, 'El código es requerido').max(50),
+  nombre: z.string().min(2, 'El nombre debe tener al menos 2 caracteres').max(100),
+  marca_id: z.number().nullable().optional(),
+  categoria_id: z.number().nullable().optional(),
+  unidad_medida_id: z.number().nullable().optional(),
+  precio_costo: z.coerce.number().min(0, 'Debe ser >= 0'),
+  precio_venta: z.coerce.number().min(0, 'Debe ser >= 0'),
+  stock_apertura: z.coerce.number().min(0, 'Debe ser >= 0'),
+  stock: z.coerce.number().min(0, 'Debe ser >= 0'),
+  estado: z.boolean(),
+})
+export type ProductoForm = z.infer<typeof productoFormSchema>
+
+// 🔹 Schema para formulario de superadmin (CON empresa_id requerido)
+export const productoFormSuperAdminSchema = z.object({
+  codigo: z.string().min(1, 'El código es requerido').max(50),
+  nombre: z.string().min(2, 'El nombre debe tener al menos 2 caracteres').max(100),
+  marca_id: z.number().nullable().optional(),
+  categoria_id: z.number().nullable().optional(),
+  unidad_medida_id: z.number().nullable().optional(),
+  precio_costo: z.coerce.number().min(0, 'Debe ser >= 0'),
+  precio_venta: z.coerce.number().min(0, 'Debe ser >= 0'),
+  stock_apertura: z.coerce.number().min(0, 'Debe ser >= 0'),
+  stock: z.coerce.number().min(0, 'Debe ser >= 0'),
+  estado: z.boolean(),
+  empresa_id: z.coerce.number().min(1, 'Debe seleccionar una empresa'),
+})
+export type ProductoFormSuperAdmin = z.infer<typeof productoFormSuperAdminSchema>
+
+// 🔹 Schema unificado para el formulario
+export const productoFormUnifiedSchema = z.object({
+  codigo: z.string().min(1, 'El código es requerido').max(50),
+  nombre: z.string().min(2, 'El nombre debe tener al menos 2 caracteres').max(100),
+  marca_id: z.number().nullable().optional(),
+  categoria_id: z.number().nullable().optional(),
+  unidad_medida_id: z.number().nullable().optional(),
+  precio_costo: z.coerce.number().min(0, 'Debe ser >= 0'),
+  precio_venta: z.coerce.number().min(0, 'Debe ser >= 0'),
+  stock_apertura: z.coerce.number().min(0, 'Debe ser >= 0'),
+  stock: z.coerce.number().min(0, 'Debe ser >= 0'),
+  estado: z.boolean(),
+  empresa_id: z.coerce.number().min(1, 'Debe seleccionar una empresa').optional(),
+})
+export type ProductoFormUnified = z.infer<typeof productoFormUnifiedSchema>
+
+// 🔹 Schemas para crear/actualizar desde API (SIN coerce)
+export const createProductoSchema = z.object({
+  codigo: z.string().min(1, 'El código es requerido').max(50),
+  nombre: z.string().min(2, 'El nombre debe tener al menos 2 caracteres').max(100),
+  marca_id: z.number().nullable().optional(),
+  categoria_id: z.number().nullable().optional(),
+  unidad_medida_id: z.number().nullable().optional(),
+  precio_costo: z.number().min(0, 'Debe ser >= 0'),
+  precio_venta: z.number().min(0, 'Debe ser >= 0'),
+  stock_apertura: z.number().min(0, 'Debe ser >= 0'),
+  stock: z.number().min(0, 'Debe ser >= 0'),
+  estado: z.boolean(),
   empresa_id: z.number().min(1, 'Debe seleccionar una empresa'),
-  permisos: permissionsSchema,
-  estado: z.boolean().optional().default(true),
-  isEdit: z.boolean().optional().default(false),
+})
+export type CreateProducto = z.infer<typeof createProductoSchema>
+
+export const updateProductoSchema = z.object({
+  id: z.number(),
+  nombre: z.string().min(2, 'El nombre debe tener al menos 2 caracteres').max(100),
+  marca_id: z.number().nullable().optional(),
+  categoria_id: z.number().nullable().optional(),
+  unidad_medida_id: z.number().nullable().optional(),
+  precio_costo: z.number().min(0, 'Debe ser >= 0'),
+  precio_venta: z.number().min(0, 'Debe ser >= 0'),
+  estado: z.boolean(),
+  empresa_id: z.number().min(1, 'Debe seleccionar una empresa'),
+})
+export type UpdateProducto = z.infer<typeof updateProductoSchema>
+
+// ✅ Validadores
+export const validateProducto = (data: unknown): Producto => productoSchema.parse(data)
+export const validateProductoBackend = (data: unknown): ProductoBackend =>
+  productoBackendSchema.parse(data)
+export const validateProductoForm = (data: unknown): ProductoForm =>
+  productoFormSchema.parse(data)
+export const validateCreateProducto = (data: unknown): CreateProducto =>
+  createProductoSchema.parse(data)
+export const validateUpdateProducto = (data: unknown): UpdateProducto =>
+  updateProductoSchema.parse(data)
+
+// ✅ Mapeos
+export const mapBackendProductoToFrontend = (b: ProductoBackend): Producto => ({
+  ...b,
+  empresa: b.empresa
+    ? { id: b.empresa.id, name: b.empresa.name }
+    : undefined,
 })
 
-export type RoleForm = z.infer<typeof roleFormSchema>
+export const mapFrontendProductoToBackend = (f: Producto): ProductoBackend => ({ ...f })
 
-// Definición de grupos de permisos para la UI
-export const permissionGroups = [
-  {
-    id: 'usuario',
-    name: 'Usuario',
-    permissions: [
-      { key: 'usuario_ver', label: 'Ver usuario' },
-      { key: 'usuario_agregar', label: 'Agregar usuario' },
-      { key: 'usuario_modificar', label: 'Modificar usuario' },
-      { key: 'usuario_borrar', label: 'Borrar usuario' },
-    ]
-  },
-  {
-    id: 'roles',
-    name: 'Roles',
-    permissions: [
-      { key: 'roles_ver', label: 'Ver roles' },
-      { key: 'roles_agregar', label: 'Agregar roles' },
-      { key: 'roles_modificar', label: 'Modificar roles' },
-      { key: 'roles_eliminar', label: 'Eliminar roles' },
-    ]
-  },
-  {
-    id: 'proveedor',
-    name: 'Proveedor',
-    permissions: [
-      { key: 'proveedor_ver', label: 'Ver proveedor' },
-      { key: 'proveedor_agregar', label: 'Agregar proveedor' },
-      { key: 'proveedor_modificar', label: 'Modificar proveedor' },
-      { key: 'proveedor_eliminar', label: 'Eliminar proveedor' },
-    ]
-  },
-  {
-    id: 'cliente',
-    name: 'Cliente',
-    permissions: [
-      { key: 'cliente_ver', label: 'Ver cliente' },
-      { key: 'cliente_agregar', label: 'Agregar cliente' },
-      { key: 'cliente_modificar', label: 'Modificar cliente' },
-      { key: 'cliente_eliminar', label: 'Eliminar cliente' },
-    ]
-  },
-  {
-    id: 'producto',
-    name: 'Producto',
-    permissions: [
-      { key: 'producto_ver', label: 'Ver el producto' },
-      { key: 'producto_agregar', label: 'Agregar producto' },
-      { key: 'producto_modificar', label: 'Modificar producto' },
-      { key: 'producto_eliminar', label: 'Eliminar producto' },
-    ]
-  },
-  {
-    id: 'compras',
-    name: 'Compras',
-    permissions: [
-      { key: 'compras_ver', label: 'Ver compras' },
-      { key: 'compras_agregar', label: 'Agregar compra' },
-      { key: 'compras_modificar', label: 'Modificar compra' },
-      { key: 'compras_eliminar', label: 'Eliminar compra' },
-    ]
-  },
-  {
-    id: 'ventas',
-    name: 'Ventas',
-    permissions: [
-      { key: 'ventas_ver', label: 'Ver venta' },
-      { key: 'ventas_agregar', label: 'Agregar venta' },
-      { key: 'ventas_modificar', label: 'Modificar venta' },
-      { key: 'ventas_eliminar', label: 'Eliminar venta' },
-      { key: 'ventas_acceso_caja', label: 'Acceso a caja' },
-    ]
-  },
-  {
-    id: 'marca',
-    name: 'Marca',
-    permissions: [
-      { key: 'marca_ver', label: 'Ver marca' },
-      { key: 'marca_agregar', label: 'Agregar marca' },
-      { key: 'marca_modificar', label: 'Modificar marca' },
-      { key: 'marca_eliminar', label: 'Eliminar marca' },
-    ]
-  },
-  {
-    id: 'unidad',
-    name: 'Unidad',
-    permissions: [
-      { key: 'unidad_ver', label: 'Ver unidad' },
-      { key: 'unidad_agregar', label: 'Agregar unidad' },
-      { key: 'unidad_modificar', label: 'Modificar unidad' },
-      { key: 'unidad_eliminar', label: 'Eliminar unidad' },
-    ]
-  },
-  {
-    id: 'categoria',
-    name: 'Categoría',
-    permissions: [
-      { key: 'categoria_ver', label: 'Ver categoría' },
-      { key: 'categoria_agregar', label: 'Agregar categoría' },
-      { key: 'categoria_modificar', label: 'Modificar categoria' },
-      { key: 'categoria_eliminar', label: 'Eliminar categoría' },
-    ]
-  },
-  {
-    id: 'configuracion',
-    name: 'Configuraciones',
-    permissions: [
-      { key: 'configuracion_empresa', label: 'Acceder a la configuración de empresa' },
-    ]
-  },
-  {
-    id: 'sucursales',
-    name: 'Sucursales',
-    permissions: [
-      { key: 'sucursal_ver', label: 'Ver sucursales' },
-      { key: 'sucursal_agregar', label: 'Agregar sucursal' },
-      { key: 'sucursal_modificar', label: 'Modificar sucursal' },
-      { key: 'sucursal_eliminar', label: 'Eliminar sucursal' },
-    ]
-  },
-  {
-    id: 'listas_precios',
-    name: 'Acceder lista de precios',
-    permissions: [
-      { key: 'lista_precios_predeterminada', label: 'Lista de precios predeterminada' },
-      { key: 'lista_precios_1', label: 'Lista 1' },
-      { key: 'lista_precios_2', label: 'Lista 2' },
-    ]
-  },
-] as const
+// ✅ Utilidades
+export const isProductoActivo = (p: Producto): boolean =>
+  p.estado && !p.deleted_at
 
-export type PermissionKey = keyof Permissions
+export const formatProductoCreationDate = (p: Producto): string =>
+  new Date(p.created_at).toLocaleDateString('es-ES')
+
+export const ajusteStockFormSchema = z.object({
+    tipo_ajuste: z.enum(['aumento', 'disminucion']),
+    cantidad: z.number(),
+    motivo: z.string(),
+})
+export type AjusteStockForm = z.infer<typeof ajusteStockFormSchema>
+
+// 🔹 Tipo para movimientos de stock
+export type MovimientoStock = {
+  id: number
+  tipo_movimiento: 'STOCK_APERTURA' | 'VENTA' | 'COMPRA' | 'AJUSTE_MANUAL'
+  descripcion: string
+  cantidad: number
+  stock_resultante: number
+  fecha?: string
+  created_at?: string
+}
+
+// 🔹 Helpers visuales
+export const formatTipoMovimiento = (tipo: MovimientoStock['tipo_movimiento']): string => {
+  switch (tipo) {
+    case 'STOCK_APERTURA':
+      return 'Stock de apertura'
+    case 'VENTA':
+      return 'Venta'
+    case 'COMPRA':
+      return 'Compra'
+    case 'AJUSTE_MANUAL':
+      return 'Ajuste manual'
+    default:
+      return tipo
+  }
+}
+
+// 🔹 Para formatear el signo y valor de la cantidad
+export const formatCantidadMovimiento = (cantidad: number): string => {
+  if (cantidad < 0) return `-${Math.abs(cantidad)}`
+  return `+${cantidad}`
+}
+export const getMovimientoStockColor = (tipo: MovimientoStock['tipo_movimiento']): string => {
+  switch (tipo) {
+    case 'STOCK_APERTURA':
+      return 'text-purple-600 dark:text-purple-400'
+    case 'VENTA':
+      return 'text-red-600 dark:text-red-400'
+    case 'COMPRA':
+      return 'text-green-600 dark:text-green-400'
+    case 'AJUSTE_MANUAL':
+      return 'text-blue-600 dark:text-blue-400'
+    default:
+      return 'text-gray-600 dark:text-gray-400'
+  }
+}

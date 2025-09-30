@@ -170,6 +170,8 @@ class ApiRolesService {
       producto_eliminar: false,
       compras_ver: false,
       compras_agregar: false,
+      movimiento_stock_historial: false,
+      movimiento_stock_ajustar: false,
       compras_modificar: false,
       compras_eliminar: false,
       ventas_ver: false,

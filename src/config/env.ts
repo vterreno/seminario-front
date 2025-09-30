@@ -55,6 +55,20 @@ export const rutasBack = {
     permisos: {
         getPermisos: `${baseUrl}/permisos/all`,
     },
+    ubicaciones: {
+        provincias: `${baseUrl}/ubicaciones/provincias`,
+        ciudadesByProvincia: `${baseUrl}/ubicaciones/ciudades`,
+     },
+    marcas: {
+        getMarcas: `${baseUrl}/marcas`,
+        postMarca: `${baseUrl}/marcas`,
+        putMarca: `${baseUrl}/marcas`,
+        deleteMarca: `${baseUrl}/marcas`,
+        getMarcaPorId: `${baseUrl}/marcas`,
+        getMarcasByEmpresa: `${baseUrl}/marcas/empresa`,
+        bulkDeleteMarcas: `${baseUrl}/marcas/bulk/delete`,
+        bulkUpdateStatus: `${baseUrl}/marcas/bulk/status`,
+    },
     categorias: {
         getCategorias: `${baseUrl}/categorias`,
         getCategoriasByEmpresa: `${baseUrl}/categorias/empresa`,
@@ -64,5 +78,31 @@ export const rutasBack = {
         getCategoriaPorId: `${baseUrl}/categorias`,
         bulkDeleteCategorias: `${baseUrl}/categorias/bulk/delete`,
         bulkUpdateStatus: `${baseUrl}/categorias/bulk/status`,
+    },
+    productos: {
+        getProductos: `${baseUrl}/productos`,
+        postProducto: `${baseUrl}/productos`,
+        putProducto: `${baseUrl}/productos`,
+        deleteProducto: `${baseUrl}/productos`,
+        getProductoPorId: `${baseUrl}/productos`,
+        getProductosByEmpresa: `${baseUrl}/productos/empresa`,
+        bulkDeleteProductos: `${baseUrl}/productos/bulk/delete`,
+        bulkUpdateStatus: `${baseUrl}/productos/bulk/status`,
+    },
+    movimientosStock: {
+        getMovimientosStock: `${baseUrl}/movimientos-stock`,
+        getMovimientosByProducto: `${baseUrl}/movimientos-stock/producto`,
+        ajusteStock: `${baseUrl}/movimientos-stock/ajuste-stock`,
+    },
+    unidadesMedida: {
+        getUnidadesMedida: `${baseUrl}/unidades-medida`,
+        getUnidadesMedidaPaginated: `${baseUrl}/unidades-medida`,
+        postUnidadMedida: `${baseUrl}/unidades-medida`,
+        putUnidadMedida: `${baseUrl}/unidades-medida`,
+        patchUnidadMedida: `${baseUrl}/unidades-medida`,
+        deleteUnidadMedida: `${baseUrl}/unidades-medida`,
+        getUnidadMedidaPorId: `${baseUrl}/unidades-medida`,
+        deleteUnidadesMedida: `${baseUrl}/unidades-medida/bulk-delete`,
+        canDeleteUnidadMedida: `${baseUrl}/unidades-medida`,
     }
 };
