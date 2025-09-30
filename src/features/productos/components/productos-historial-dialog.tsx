@@ -78,7 +78,7 @@ export function ProductosHistorialDialog({
     const { setOpen } = useProductos()
     const { hasPermission } = usePermissions()
 
-    const canAdjustStock = hasPermission('producto_modificar')
+    const canAdjustStock = hasPermission('movimiento_stock_ajustar')
 
     // Lógica de filtrado y paginación
     const filteredAndSortedMovimientos = useMemo(() => {
