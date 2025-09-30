@@ -33,7 +33,7 @@ export const permissionsSchema = z.object({
   producto_eliminar: z.boolean().default(false),
 
   // Movimiento stock
-  movimiento_stock_ver: z.boolean().default(false),
+  movimiento_stock_historial: z.boolean().default(false),
   movimiento_stock_ajustar: z.boolean().default(false),
 
   // Compras
@@ -166,7 +166,7 @@ export const permissionGroups = [
       { key: 'producto_agregar', label: 'Agregar producto' },
       { key: 'producto_modificar', label: 'Modificar producto' },
       { key: 'producto_eliminar', label: 'Eliminar producto' },
-      { key: 'movimiento_stock_ver' , label: 'Ver movimientos de stock' },
+      { key: 'movimiento_stock_historial' , label: 'Ver movimientos de stock' },
       { key: 'movimiento_stock_ajustar' , label: 'Ajustar stock' },
     ]
   },
