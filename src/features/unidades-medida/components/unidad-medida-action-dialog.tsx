@@ -21,6 +21,7 @@ import { Input } from '@/components/ui/input'
 import { Switch } from '@/components/ui/switch'
 import { UnidadMedida, UnidadMedidaForm, unidadMedidaFormSchema } from '../data/schema'
 import { toast } from 'sonner'
+import { ErrorHandler } from '@/utils/error-handler'
 import apiUnidadesMedida from '@/service/apiUnidadesMedida.service'
 
 type UnidadMedidaActionDialogProps = {
@@ -44,13 +45,13 @@ export function UnidadMedidaActionDialog({
           nombre: currentRow.nombre,
           abreviatura: currentRow.abreviatura,
           aceptaDecimales: currentRow.aceptaDecimales ?? false,
-          isEdit,
+          isEdit: true,
         }
       : {
           nombre: '',
           abreviatura: '',
           aceptaDecimales: false,
-          isEdit,
+          isEdit: false,
         },
   })
 
@@ -60,14 +61,14 @@ export function UnidadMedidaActionDialog({
         await apiUnidadesMedida.updateUnidadMedidaPartial(currentRow.id, {
           nombre: values.nombre,
           abreviatura: values.abreviatura,
-          aceptaDecimales: values.aceptaDecimales ?? false
+          aceptaDecimales: values.aceptaDecimales
         })
         toast.success('Unidad de medida actualizada exitosamente')
       } else {
         await apiUnidadesMedida.createUnidadMedida({
           nombre: values.nombre,
           abreviatura: values.abreviatura,
-          aceptaDecimales: values.aceptaDecimales ?? false
+          aceptaDecimales: values.aceptaDecimales
         })
         toast.success('Unidad de medida creada exitosamente')
       }
@@ -76,12 +77,12 @@ export function UnidadMedidaActionDialog({
       onSuccess?.()
     } catch (error: any) {
       console.error('Error saving unidad de medida:', error)
-      // Manejar errores de unicidad
-      if (error.message && error.message.includes('unique') || error.message.includes('ya existe')) {
-        toast.error('Ya existe una unidad de medida con ese nombre o abreviatura para esta empresa')
-      } else {
-        toast.error(isEdit ? 'Error al actualizar la unidad de medida' : 'Error al crear la unidad de medida')
-      }
+      
+      // Usar el manejador de errores para obtener un mensaje apropiado
+      const context = isEdit ? 'actualizar la unidad de medida' : 'crear la unidad de medida'
+      const errorMessage = ErrorHandler.formatErrorMessage(error, context)
+      
+      toast.error(errorMessage)
     }
   }
 
@@ -161,7 +162,7 @@ export function UnidadMedidaActionDialog({
                   <div className='space-y-0.5'>
                     <FormLabel className='text-base'>Acepta decimales</FormLabel>
                     <div className='text-sm text-muted-foreground'>
-                      {(field.value ?? false)
+                      {field.value
                         ? 'Permite cantidades con decimales (ej. 2,5 kg)' 
                         : 'Solo permite cantidades enteras (ej. 5 unidades)'
                       }
@@ -169,7 +170,7 @@ export function UnidadMedidaActionDialog({
                   </div>
                   <FormControl>
                     <Switch
-                      checked={field.value ?? false}
+                      checked={field.value}
                       onCheckedChange={field.onChange}
                     />
                   </FormControl>

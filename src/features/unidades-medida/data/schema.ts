@@ -23,8 +23,13 @@ export const unidadMedidaFormSchema = z.object({
   abreviatura: z.string()
     .min(1, 'La abreviatura es obligatoria')
     .max(10, 'La abreviatura no puede exceder 10 caracteres'),
-  aceptaDecimales: z.boolean().optional().default(false),
-  isEdit: z.boolean().optional().default(false),
+  aceptaDecimales: z.boolean(),
+  isEdit: z.boolean(),
 })
 
-export type UnidadMedidaForm = z.infer<typeof unidadMedidaFormSchema>
+export type UnidadMedidaForm = {
+  nombre: string;
+  abreviatura: string;
+  aceptaDecimales: boolean;
+  isEdit: boolean;
+}

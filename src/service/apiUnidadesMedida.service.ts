@@ -87,9 +87,11 @@ class ApiUnidadesMedida {
         try {
             const response = await axiosService.post(rutasBack.unidadesMedida.postUnidadMedida, unidadMedidaData);
             return response.data;
-        } catch (error) {
+        } catch (error: any) {
             console.error("Error creating unidad de medida:", error);
-            throw new Error("Failed to create unidad de medida");
+            // Preservar el mensaje específico del backend
+            const backendMessage = error.response?.data?.message || error.message;
+            throw new Error(backendMessage || "Failed to create unidad de medida");
         }
     }
 
@@ -97,9 +99,11 @@ class ApiUnidadesMedida {
         try {
             const response = await axiosService.put(`${rutasBack.unidadesMedida.putUnidadMedida}/${id}`, unidadMedidaData);
             return response.data;
-        } catch (error) {
+        } catch (error: any) {
             console.error(`Error updating unidad de medida with id ${id}:`, error);
-            throw new Error(`Failed to update unidad de medida with id ${id}`);
+            // Preservar el mensaje específico del backend
+            const backendMessage = error.response?.data?.message || error.message;
+            throw new Error(backendMessage || `Failed to update unidad de medida with id ${id}`);
         }
     }
 
@@ -107,9 +111,11 @@ class ApiUnidadesMedida {
         try {
             const response = await axiosService.patch(`${rutasBack.unidadesMedida.patchUnidadMedida}/${id}`, unidadMedidaData);
             return response.data;
-        } catch (error) {
+        } catch (error: any) {
             console.error(`Error partially updating unidad de medida with id ${id}:`, error);
-            throw new Error(`Failed to partially update unidad de medida with id ${id}`);
+            // Preservar el mensaje específico del backend
+            const backendMessage = error.response?.data?.message || error.message;
+            throw new Error(backendMessage || `Failed to partially update unidad de medida with id ${id}`);
         }
     }
 
@@ -117,9 +123,11 @@ class ApiUnidadesMedida {
         try {
             const response = await axiosService.delete(`${rutasBack.unidadesMedida.deleteUnidadMedida}/${id}`);
             return response.data;
-        } catch (error) {
+        } catch (error: any) {
             console.error(`Error deleting unidad de medida with id ${id}:`, error);
-            throw new Error(`Failed to delete unidad de medida with id ${id}`);
+            // Preservar el mensaje específico del backend
+            const backendMessage = error.response?.data?.message || error.message;
+            throw new Error(backendMessage || `Failed to delete unidad de medida with id ${id}`);
         }
     }
 
@@ -129,9 +137,11 @@ class ApiUnidadesMedida {
                 data: { ids: ids }
             });
             return response.data;
-        } catch (error) {
+        } catch (error: any) {
             console.error("Error deleting unidades de medida:", error);
-            throw new Error("Failed to delete unidades de medida");
+            // Preservar el mensaje específico del backend
+            const backendMessage = error.response?.data?.message || error.message;
+            throw new Error(backendMessage || "Failed to delete unidades de medida");
         }
     }
 
