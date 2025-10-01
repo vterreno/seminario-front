@@ -3,12 +3,21 @@ import { z } from 'zod'
 export const unidadMedidaStatusSchema = z.enum(['active', 'inactive'])
 export type UnidadMedidaStatus = z.infer<typeof unidadMedidaStatusSchema>
 
+export const empresaSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  estado: z.boolean(),
+})
+
+export type Empresa = z.infer<typeof empresaSchema>
+
 export const unidadMedidaSchema = z.object({
   id: z.number().optional(),
   nombre: z.string(),
   abreviatura: z.string(),
   aceptaDecimales: z.boolean(),
-  empresa_id: z.number().optional(),
+  empresaId: z.number().optional(),
+  empresa: empresaSchema.optional(),
   created_at: z.string().optional(),
   updated_at: z.string().optional(),
   deleted_at: z.string().optional().nullable(),
@@ -24,6 +33,7 @@ export const unidadMedidaFormSchema = z.object({
     .min(1, 'La abreviatura es obligatoria')
     .max(10, 'La abreviatura no puede exceder 10 caracteres'),
   aceptaDecimales: z.boolean(),
+  empresaId: z.number().min(1, 'Debe seleccionar una empresa'),
   isEdit: z.boolean(),
 })
 
@@ -31,5 +41,6 @@ export type UnidadMedidaForm = {
   nombre: string;
   abreviatura: string;
   aceptaDecimales: boolean;
+  empresaId: number;
   isEdit: boolean;
 }

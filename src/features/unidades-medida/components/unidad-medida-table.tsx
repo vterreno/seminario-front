@@ -52,7 +52,7 @@ export function UnidadMedidaTable({ data, search, navigate, onSuccess, isSuperAd
     
     // Agregar filtro de empresa solo para superadmin
     if (isSuperAdmin) {
-      baseFilters.push({ columnId: 'empresa_id', searchKey: 'empresa', type: 'string' as const })
+      baseFilters.push({ columnId: 'empresa', searchKey: 'empresa', type: 'string' as const })
     }
     
     return baseFilters

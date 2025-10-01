@@ -1,12 +1,19 @@
 import axiosService from '../api/apiClient';
 import { rutasBack } from '../config/env';
 
+export interface Empresa {
+    id: number;
+    name: string;
+    estado: boolean;
+}
+
 export interface UnidadMedida {
     id?: number;
     nombre: string;
     abreviatura: string;
     aceptaDecimales: boolean;
     empresaId?: number;
+    empresa?: Empresa;
     created_at?: string;
     updated_at?: string;
     deleted_at?: string;
@@ -16,12 +23,14 @@ export interface CreateUnidadMedidaDto {
     nombre: string;
     abreviatura: string;
     aceptaDecimales?: boolean;
+    empresaId: number;
 }
 
 export interface UpdateUnidadMedidaDto {
     nombre?: string;
     abreviatura?: string;
     aceptaDecimales?: boolean;
+    empresaId?: number;
 }
 
 export interface BulkDeleteUnidadMedidaDto {

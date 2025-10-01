@@ -87,17 +87,17 @@ export const getUnidadMedidaColumns = (isSuperAdmin: boolean = false): ColumnDef
   // Agregar columna empresa solo para superadmin
   if (isSuperAdmin) {
     baseColumns.push({
-      accessorKey: 'empresa_id',
+      accessorKey: 'empresa',
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title='Empresa' />
       ),
       cell: ({ row }) => {
-        const empresaId = row.getValue('empresa_id') as number
+        const empresa = row.getValue('empresa') as { id: number; name: string } | undefined
         return (
           <div className='flex space-x-2'>
-            {empresaId ? (
+            {empresa?.name ? (
               <Badge variant="default" className='max-w-[150px] truncate'>
-                Empresa {empresaId}
+                {empresa.name}
               </Badge>
             ) : (
               <Badge variant="secondary" className='max-w-[150px] truncate text-muted-foreground'>
@@ -112,17 +112,17 @@ export const getUnidadMedidaColumns = (isSuperAdmin: boolean = false): ColumnDef
       },
       enableSorting: true,
       filterFn: (row, id, value) => {
-        const empresaId = row.getValue(id) as number
+        const empresa = row.getValue(id) as { id: number; name: string } | undefined
         const searchValue = String(value).toLowerCase()
         
-        // Si busca "sin empresa" y no hay empresa_id, coincide
-        if (searchValue.includes('sin empresa') && !empresaId) {
+        // Si busca "sin empresa" y no hay empresa, coincide
+        if (searchValue.includes('sin empresa') && !empresa?.name) {
           return true
         }
         
-        // Si hay empresa_id, busca por el número
-        if (empresaId) {
-          return String(empresaId).includes(searchValue)
+        // Si hay empresa, busca por el nombre
+        if (empresa?.name) {
+          return empresa.name.toLowerCase().includes(searchValue)
         }
         
         return false

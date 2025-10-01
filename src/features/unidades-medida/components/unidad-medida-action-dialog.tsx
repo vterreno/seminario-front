@@ -17,12 +17,22 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { Input } from '@/components/ui/input'
 import { Switch } from '@/components/ui/switch'
 import { UnidadMedida, UnidadMedidaForm, unidadMedidaFormSchema } from '../data/schema'
 import { toast } from 'sonner'
 import { ErrorHandler } from '@/utils/error-handler'
 import apiUnidadesMedida from '@/service/apiUnidadesMedida.service'
+import apiEmpresa from '@/service/apiEmpresa.service'
+import { useEffect, useState } from 'react'
+import { usePermissions } from '@/hooks/use-permissions'
 
 type UnidadMedidaActionDialogProps = {
   currentRow?: UnidadMedida
@@ -38,6 +48,10 @@ export function UnidadMedidaActionDialog({
   onSuccess,
 }: UnidadMedidaActionDialogProps) {
   const isEdit = !!currentRow
+  const [empresas, setEmpresas] = useState<any[]>([])
+  const [loadingEmpresas, setLoadingEmpresas] = useState(false)
+  const { isSuperAdmin, userEmpresaId } = usePermissions()
+  
   const form = useForm<UnidadMedidaForm>({
     resolver: zodResolver(unidadMedidaFormSchema),
     defaultValues: isEdit
@@ -45,34 +59,68 @@ export function UnidadMedidaActionDialog({
           nombre: currentRow.nombre,
           abreviatura: currentRow.abreviatura,
           aceptaDecimales: currentRow.aceptaDecimales ?? false,
+          empresaId: currentRow.empresaId || userEmpresaId || 0,
           isEdit: true,
         }
       : {
           nombre: '',
           abreviatura: '',
           aceptaDecimales: false,
+          empresaId: isSuperAdmin ? 0 : (userEmpresaId || 0),
           isEdit: false,
         },
   })
 
+  // Cargar empresas cuando se abre el diálogo (solo para superadmin)
+  useEffect(() => {
+    if (open && isSuperAdmin) {
+      loadEmpresas()
+    }
+  }, [open, isSuperAdmin])
+
+  const loadEmpresas = async () => {
+    try {
+      setLoadingEmpresas(true)
+      const response = await apiEmpresa.getAllEmpresas()
+      setEmpresas(response)
+    } catch (error) {
+      console.error('Error loading empresas:', error)
+      toast.error('Error al cargar las empresas')
+      setEmpresas([])
+    } finally {
+      setLoadingEmpresas(false)
+    }
+  }
+
   const onSubmit = async (values: UnidadMedidaForm) => {
     try {
+      // Para usuarios normales, usar su empresaId automáticamente
+      const finalEmpresaId = isSuperAdmin ? values.empresaId : (userEmpresaId || values.empresaId);
+      
       if (isEdit && currentRow?.id) {
         await apiUnidadesMedida.updateUnidadMedidaPartial(currentRow.id, {
           nombre: values.nombre,
           abreviatura: values.abreviatura,
-          aceptaDecimales: values.aceptaDecimales
+          aceptaDecimales: values.aceptaDecimales,
+          empresaId: finalEmpresaId
         })
         toast.success('Unidad de medida actualizada exitosamente')
       } else {
         await apiUnidadesMedida.createUnidadMedida({
           nombre: values.nombre,
           abreviatura: values.abreviatura,
-          aceptaDecimales: values.aceptaDecimales
+          aceptaDecimales: values.aceptaDecimales,
+          empresaId: finalEmpresaId
         })
         toast.success('Unidad de medida creada exitosamente')
       }
-      form.reset()
+      form.reset({
+        nombre: '',
+        abreviatura: '',
+        aceptaDecimales: false,
+        empresaId: isSuperAdmin ? 0 : (userEmpresaId || 0),
+        isEdit: false,
+      })
       onOpenChange(false)
       onSuccess?.()
     } catch (error: any) {
@@ -91,7 +139,13 @@ export function UnidadMedidaActionDialog({
       open={open}
       onOpenChange={(state) => {
         if (!state) {
-          form.reset()
+          form.reset({
+            nombre: '',
+            abreviatura: '',
+            aceptaDecimales: false,
+            empresaId: isSuperAdmin ? 0 : (userEmpresaId || 0),
+            isEdit: false,
+          })
         }
         onOpenChange(state)
       }}
@@ -153,6 +207,37 @@ export function UnidadMedidaActionDialog({
                 </FormItem>
               )}
             />
+
+            {isSuperAdmin && (
+              <FormField
+                control={form.control}
+                name='empresaId'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Empresa *</FormLabel>
+                    <Select 
+                      onValueChange={(value) => field.onChange(parseInt(value))} 
+                      value={field.value ? field.value.toString() : ''}
+                      disabled={loadingEmpresas}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="h-11 px-3 py-2 w-full">
+                          <SelectValue placeholder={loadingEmpresas ? "Cargando empresas..." : "Seleccione una empresa"} />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {empresas.map((empresa) => (
+                          <SelectItem key={empresa.id} value={empresa.id.toString()}>
+                            {empresa.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
 
             <FormField
               control={form.control}
