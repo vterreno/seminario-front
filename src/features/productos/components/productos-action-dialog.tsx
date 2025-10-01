@@ -40,7 +40,9 @@ import { STORAGE_KEYS } from '@/lib/constants'
 import apiEmpresaService, { type Empresa } from '@/service/apiEmpresa.service'
 import apiProductosService from '@/service/apiProductos.service'
 import apiMarcasService from '@/service/apiMarcas.service'
+import apiCategoriasService from '@/service/apiCategorias.service'
 import { type Marca } from '@/features/marcas/data/schema'
+import { type Categoria } from '@/features/categorias/data/schema'
 import { formatCurrency, formatCurrencyInput, parseCurrency } from './format-money'
 
 interface UserData {
@@ -79,6 +81,7 @@ export function ProductosActionDialog({
     const [loading, setLoading] = useState(false)
     const [empresas, setEmpresas] = useState<Empresa[]>([])
     const [marcas, setMarcas] = useState<Marca[]>([])
+    const [categorias, setCategorias] = useState<Categoria[]>([])
     const [precioCostoDisplay, setPrecioCostoDisplay] = useState('')
     const [precioVentaDisplay, setPrecioVentaDisplay] = useState('')
     const isEdit = !!currentRow
@@ -130,7 +133,7 @@ export function ProductosActionDialog({
             setPrecioVentaDisplay(precioVenta ? formatCurrency(precioVenta) : '')
         }
     }, [open, form])
-    // Cargar empresas si es superadmin y marcas
+    // Cargar empresas si es superadmin, marcas y categorías
     useEffect(() => {
         if (open) {
             const fetchData = async () => {
@@ -144,13 +147,24 @@ export function ProductosActionDialog({
                     // Cargar marcas siempre
                     const marcasResponse = await apiMarcasService.getAllMarcas()
                     setMarcas(marcasResponse)
+                    
+                    // Cargar categorías - usar método específico según el tipo de usuario
+                    let categoriasResponse: Categoria[] = []
+                    if (isSuperAdmin) {
+                        // Para superadmin, obtener todas las categorías
+                        categoriasResponse = await apiCategoriasService.getAllCategorias()
+                    } else if (userEmpresaId) {
+                        // Para usuarios regulares, obtener solo categorías de su empresa
+                        categoriasResponse = await apiCategoriasService.getCategoriasByEmpresa(userEmpresaId)
+                    }
+                    setCategorias(categoriasResponse)
                 } catch (error) {
                     toast.error('Error al cargar los datos')
                 }
             }
             fetchData()
         }
-    }, [isSuperAdmin, open])
+    }, [isSuperAdmin, userEmpresaId, open])
 
     const onSubmit = async (_values: ProductoForm | ProductoFormSuperAdmin) => {
         try {
@@ -312,7 +326,13 @@ export function ProductosActionDialog({
                             </FormControl>
                             <SelectContent>
                             <SelectItem value="null">Sin categoría</SelectItem>
-                            {/* TODO: Agregar categorías cuando esté implementado en el backend */}
+                            {categorias
+                                .filter((categoria) => categoria.id != null && categoria.estado)
+                                .map((categoria) => (
+                                    <SelectItem key={categoria.id} value={categoria.id!.toString()}>
+                                        {categoria.nombre}
+                                    </SelectItem>
+                                ))}
                             </SelectContent>
                         </Select>
                         <FormMessage />
