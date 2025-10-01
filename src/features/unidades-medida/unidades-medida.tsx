@@ -12,6 +12,7 @@ import { UnidadMedidaTable } from './components/unidad-medida-table'
 import { UnidadMedida } from './data/schema'
 import apiUnidadesMedida from '@/service/apiUnidadesMedida.service'
 import { toast } from 'sonner'
+import { usePermissions } from '@/hooks/use-permissions'
 
 const route = getRouteApi('/_authenticated/unidades-medida/')
 
@@ -20,9 +21,7 @@ export function UnidadesMedida() {
   const navigate = route.useNavigate()
   const [unidadesMedida, setUnidadesMedida] = useState<UnidadMedida[]>([])
   const [loading, setLoading] = useState(true)
-
-  // Removido: Verificación de permisos - ahora accesible para todos
-  // TODOS los usuarios pueden ver y usar unidades de medida
+  const { isSuperAdmin } = usePermissions()
 
   const fetchUnidadesMedida = async () => {
     try {
@@ -70,7 +69,13 @@ export function UnidadesMedida() {
           <UnidadMedidaPrimaryButtons />
         </div>
         <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-y-0 lg:space-x-12'>
-          <UnidadMedidaTable data={unidadesMedida} search={search} navigate={navigate} onSuccess={fetchUnidadesMedida} />
+          <UnidadMedidaTable 
+            data={unidadesMedida} 
+            search={search} 
+            navigate={navigate} 
+            onSuccess={fetchUnidadesMedida}
+            isSuperAdmin={isSuperAdmin}
+          />
         </div>
       </Main>
 

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import {
   type SortingState,
   type VisibilityState,
@@ -24,7 +24,7 @@ import {
 import { DataTablePagination, DataTableToolbar } from '@/components/data-table'
 import { UnidadMedida } from '../data/schema'
 import { DataTableBulkActions } from './data-table-bulk-actions'
-import { unidadMedidaColumns as columns } from './unidad-medida-columns'
+import { getUnidadMedidaColumns } from './unidad-medida-columns'
 
 
 type DataTableProps = {
@@ -32,15 +32,32 @@ type DataTableProps = {
   search: Record<string, unknown>
   navigate: any
   onSuccess?: () => void
+  isSuperAdmin?: boolean
 }
 
-export function UnidadMedidaTable({ data, search, navigate, onSuccess }: DataTableProps) {
+export function UnidadMedidaTable({ data, search, navigate, onSuccess, isSuperAdmin = false }: DataTableProps) {
   // Local UI-only states
   const [rowSelection, setRowSelection] = useState({})
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [sorting, setSorting] = useState<SortingState>([])
 
   // Synced with URL states (keys/defaults mirror unidades-medida route search schema)
+  // Crear filtros dinámicamente basado en el rol del usuario
+  const tableFilters = useMemo(() => {
+    const baseFilters = [
+      { columnId: 'nombre', searchKey: 'nombre', type: 'string' as const },
+      { columnId: 'abreviatura', searchKey: 'abreviatura', type: 'string' as const },
+      { columnId: 'aceptaDecimales', searchKey: 'aceptaDecimales', type: 'array' as const },
+    ]
+    
+    // Agregar filtro de empresa solo para superadmin
+    if (isSuperAdmin) {
+      baseFilters.push({ columnId: 'empresa_id', searchKey: 'empresa', type: 'string' as const })
+    }
+    
+    return baseFilters
+  }, [isSuperAdmin])
+
   const {
     columnFilters,
     onColumnFiltersChange,
@@ -52,13 +69,14 @@ export function UnidadMedidaTable({ data, search, navigate, onSuccess }: DataTab
     navigate,
     pagination: { defaultPage: 1, defaultPageSize: 10 },
     globalFilter: { enabled: false },
-    columnFilters: [
-      // name per-column text filter
-      { columnId: 'nombre', searchKey: 'nombre', type: 'string' },
-      { columnId: 'abreviatura', searchKey: 'abreviatura', type: 'string' },
-      { columnId: 'aceptaDecimales', searchKey: 'aceptaDecimales', type: 'array' },
-    ],
+    columnFilters: tableFilters,
   })
+
+  // Crear columnas dinámicamente basado en el rol del usuario
+  const columns = useMemo(
+    () => getUnidadMedidaColumns(isSuperAdmin),
+    [isSuperAdmin]
+  )
 
   const table = useReactTable({
     data,
