@@ -27,6 +27,7 @@ import { Route as authForgotPasswordRouteImport } from './routes/(auth)/forgot-p
 import { Route as authChangePasswordRouteImport } from './routes/(auth)/change-password'
 import { Route as ClerkAuthenticatedRouteRouteImport } from './routes/clerk/_authenticated/route'
 import { Route as ClerkauthRouteRouteImport } from './routes/clerk/(auth)/route'
+import { Route as AuthenticatedVentasRouteRouteImport } from './routes/_authenticated/ventas/route'
 import { Route as AuthenticatedSettingsRouteRouteImport } from './routes/_authenticated/settings/route'
 import { Route as AuthenticatedProductosRouteRouteImport } from './routes/_authenticated/productos/route'
 import { Route as AuthenticatedUsersIndexRouteImport } from './routes/_authenticated/users/index'
@@ -42,7 +43,6 @@ import { Route as AuthenticatedAppsIndexRouteImport } from './routes/_authentica
 import { Route as ClerkAuthenticatedUserManagementRouteImport } from './routes/clerk/_authenticated/user-management'
 import { Route as ClerkauthSignUpRouteImport } from './routes/clerk/(auth)/sign-up'
 import { Route as ClerkauthSignInRouteImport } from './routes/clerk/(auth)/sign-in'
-import { Route as AuthenticatedVentaVentaRouteImport } from './routes/_authenticated/venta/venta'
 import { Route as AuthenticatedSettingsSucursalesRouteImport } from './routes/_authenticated/settings/sucursales'
 import { Route as AuthenticatedSettingsNotificationsRouteImport } from './routes/_authenticated/settings/notifications'
 import { Route as AuthenticatedSettingsDisplayRouteImport } from './routes/_authenticated/settings/display'
@@ -50,6 +50,8 @@ import { Route as AuthenticatedSettingsCompanyRouteImport } from './routes/_auth
 import { Route as AuthenticatedSettingsAppearanceRouteImport } from './routes/_authenticated/settings/appearance'
 import { Route as AuthenticatedSettingsAccountRouteImport } from './routes/_authenticated/settings/account'
 import { Route as AuthenticatedErrorsErrorRouteImport } from './routes/_authenticated/errors/$error'
+import { Route as AuthenticatedVentasVentasIndexRouteImport } from './routes/_authenticated/ventas/ventas/index'
+import { Route as AuthenticatedVentasListaPreciosIndexRouteImport } from './routes/_authenticated/ventas/lista-precios/index'
 import { Route as AuthenticatedProductosProductosIndexRouteImport } from './routes/_authenticated/productos/productos/index'
 import { Route as AuthenticatedProductosMarcasIndexRouteImport } from './routes/_authenticated/productos/marcas/index'
 import { Route as AuthenticatedProductosCategoriasIndexRouteImport } from './routes/_authenticated/productos/categorias/index'
@@ -141,6 +143,12 @@ const ClerkauthRouteRoute = ClerkauthRouteRouteImport.update({
   id: '/(auth)',
   getParentRoute: () => ClerkRouteRoute,
 } as any)
+const AuthenticatedVentasRouteRoute =
+  AuthenticatedVentasRouteRouteImport.update({
+    id: '/ventas',
+    path: '/ventas',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedSettingsRouteRoute =
   AuthenticatedSettingsRouteRouteImport.update({
     id: '/settings',
@@ -224,11 +232,6 @@ const ClerkauthSignInRoute = ClerkauthSignInRouteImport.update({
   path: '/sign-in',
   getParentRoute: () => ClerkauthRouteRoute,
 } as any)
-const AuthenticatedVentaVentaRoute = AuthenticatedVentaVentaRouteImport.update({
-  id: '/venta/venta',
-  path: '/venta/venta',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
 const AuthenticatedSettingsSucursalesRoute =
   AuthenticatedSettingsSucursalesRouteImport.update({
     id: '/sucursales',
@@ -271,6 +274,18 @@ const AuthenticatedErrorsErrorRoute =
     path: '/errors/$error',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedVentasVentasIndexRoute =
+  AuthenticatedVentasVentasIndexRouteImport.update({
+    id: '/ventas/',
+    path: '/ventas/',
+    getParentRoute: () => AuthenticatedVentasRouteRoute,
+  } as any)
+const AuthenticatedVentasListaPreciosIndexRoute =
+  AuthenticatedVentasListaPreciosIndexRouteImport.update({
+    id: '/lista-precios/',
+    path: '/lista-precios/',
+    getParentRoute: () => AuthenticatedVentasRouteRoute,
+  } as any)
 const AuthenticatedProductosProductosIndexRoute =
   AuthenticatedProductosProductosIndexRouteImport.update({
     id: '/productos/',
@@ -294,6 +309,7 @@ export interface FileRoutesByFullPath {
   '/clerk': typeof ClerkAuthenticatedRouteRouteWithChildren
   '/productos': typeof AuthenticatedProductosRouteRouteWithChildren
   '/settings': typeof AuthenticatedSettingsRouteRouteWithChildren
+  '/ventas': typeof AuthenticatedVentasRouteRouteWithChildren
   '/clerk/': typeof ClerkauthRouteRouteWithChildren
   '/change-password': typeof authChangePasswordRoute
   '/forgot-password': typeof authForgotPasswordRoute
@@ -316,7 +332,6 @@ export interface FileRoutesByFullPath {
   '/settings/display': typeof AuthenticatedSettingsDisplayRoute
   '/settings/notifications': typeof AuthenticatedSettingsNotificationsRoute
   '/settings/sucursales': typeof AuthenticatedSettingsSucursalesRoute
-  '/venta/venta': typeof AuthenticatedVentaVentaRoute
   '/clerk/sign-in': typeof ClerkauthSignInRoute
   '/clerk/sign-up': typeof ClerkauthSignUpRoute
   '/clerk/user-management': typeof ClerkAuthenticatedUserManagementRoute
@@ -333,9 +348,12 @@ export interface FileRoutesByFullPath {
   '/productos/categorias': typeof AuthenticatedProductosCategoriasIndexRoute
   '/productos/marcas': typeof AuthenticatedProductosMarcasIndexRoute
   '/productos/productos': typeof AuthenticatedProductosProductosIndexRoute
+  '/ventas/lista-precios': typeof AuthenticatedVentasListaPreciosIndexRoute
+  '/ventas/ventas': typeof AuthenticatedVentasVentasIndexRoute
 }
 export interface FileRoutesByTo {
   '/productos': typeof AuthenticatedProductosRouteRouteWithChildren
+  '/ventas': typeof AuthenticatedVentasRouteRouteWithChildren
   '/clerk': typeof ClerkAuthenticatedRouteRouteWithChildren
   '/change-password': typeof authChangePasswordRoute
   '/forgot-password': typeof authForgotPasswordRoute
@@ -358,7 +376,6 @@ export interface FileRoutesByTo {
   '/settings/display': typeof AuthenticatedSettingsDisplayRoute
   '/settings/notifications': typeof AuthenticatedSettingsNotificationsRoute
   '/settings/sucursales': typeof AuthenticatedSettingsSucursalesRoute
-  '/venta/venta': typeof AuthenticatedVentaVentaRoute
   '/clerk/sign-in': typeof ClerkauthSignInRoute
   '/clerk/sign-up': typeof ClerkauthSignUpRoute
   '/clerk/user-management': typeof ClerkAuthenticatedUserManagementRoute
@@ -375,6 +392,8 @@ export interface FileRoutesByTo {
   '/productos/categorias': typeof AuthenticatedProductosCategoriasIndexRoute
   '/productos/marcas': typeof AuthenticatedProductosMarcasIndexRoute
   '/productos/productos': typeof AuthenticatedProductosProductosIndexRoute
+  '/ventas/lista-precios': typeof AuthenticatedVentasListaPreciosIndexRoute
+  '/ventas/ventas': typeof AuthenticatedVentasVentasIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -382,6 +401,7 @@ export interface FileRoutesById {
   '/clerk': typeof ClerkRouteRouteWithChildren
   '/_authenticated/productos': typeof AuthenticatedProductosRouteRouteWithChildren
   '/_authenticated/settings': typeof AuthenticatedSettingsRouteRouteWithChildren
+  '/_authenticated/ventas': typeof AuthenticatedVentasRouteRouteWithChildren
   '/clerk/(auth)': typeof ClerkauthRouteRouteWithChildren
   '/clerk/_authenticated': typeof ClerkAuthenticatedRouteRouteWithChildren
   '/(auth)/change-password': typeof authChangePasswordRoute
@@ -405,7 +425,6 @@ export interface FileRoutesById {
   '/_authenticated/settings/display': typeof AuthenticatedSettingsDisplayRoute
   '/_authenticated/settings/notifications': typeof AuthenticatedSettingsNotificationsRoute
   '/_authenticated/settings/sucursales': typeof AuthenticatedSettingsSucursalesRoute
-  '/_authenticated/venta/venta': typeof AuthenticatedVentaVentaRoute
   '/clerk/(auth)/sign-in': typeof ClerkauthSignInRoute
   '/clerk/(auth)/sign-up': typeof ClerkauthSignUpRoute
   '/clerk/_authenticated/user-management': typeof ClerkAuthenticatedUserManagementRoute
@@ -422,6 +441,8 @@ export interface FileRoutesById {
   '/_authenticated/productos/categorias/': typeof AuthenticatedProductosCategoriasIndexRoute
   '/_authenticated/productos/marcas/': typeof AuthenticatedProductosMarcasIndexRoute
   '/_authenticated/productos/productos/': typeof AuthenticatedProductosProductosIndexRoute
+  '/_authenticated/ventas/lista-precios/': typeof AuthenticatedVentasListaPreciosIndexRoute
+  '/_authenticated/ventas/ventas/': typeof AuthenticatedVentasVentasIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -429,6 +450,7 @@ export interface FileRouteTypes {
     | '/clerk'
     | '/productos'
     | '/settings'
+    | '/ventas'
     | '/clerk/'
     | '/change-password'
     | '/forgot-password'
@@ -451,7 +473,6 @@ export interface FileRouteTypes {
     | '/settings/display'
     | '/settings/notifications'
     | '/settings/sucursales'
-    | '/venta/venta'
     | '/clerk/sign-in'
     | '/clerk/sign-up'
     | '/clerk/user-management'
@@ -468,9 +489,12 @@ export interface FileRouteTypes {
     | '/productos/categorias'
     | '/productos/marcas'
     | '/productos/productos'
+    | '/ventas/lista-precios'
+    | '/ventas/ventas'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/productos'
+    | '/ventas'
     | '/clerk'
     | '/change-password'
     | '/forgot-password'
@@ -493,7 +517,6 @@ export interface FileRouteTypes {
     | '/settings/display'
     | '/settings/notifications'
     | '/settings/sucursales'
-    | '/venta/venta'
     | '/clerk/sign-in'
     | '/clerk/sign-up'
     | '/clerk/user-management'
@@ -510,12 +533,15 @@ export interface FileRouteTypes {
     | '/productos/categorias'
     | '/productos/marcas'
     | '/productos/productos'
+    | '/ventas/lista-precios'
+    | '/ventas/ventas'
   id:
     | '__root__'
     | '/_authenticated'
     | '/clerk'
     | '/_authenticated/productos'
     | '/_authenticated/settings'
+    | '/_authenticated/ventas'
     | '/clerk/(auth)'
     | '/clerk/_authenticated'
     | '/(auth)/change-password'
@@ -539,7 +565,6 @@ export interface FileRouteTypes {
     | '/_authenticated/settings/display'
     | '/_authenticated/settings/notifications'
     | '/_authenticated/settings/sucursales'
-    | '/_authenticated/venta/venta'
     | '/clerk/(auth)/sign-in'
     | '/clerk/(auth)/sign-up'
     | '/clerk/_authenticated/user-management'
@@ -556,6 +581,8 @@ export interface FileRouteTypes {
     | '/_authenticated/productos/categorias/'
     | '/_authenticated/productos/marcas/'
     | '/_authenticated/productos/productos/'
+    | '/_authenticated/ventas/lista-precios/'
+    | '/_authenticated/ventas/ventas/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -702,6 +729,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ClerkauthRouteRouteImport
       parentRoute: typeof ClerkRouteRoute
     }
+    '/_authenticated/ventas': {
+      id: '/_authenticated/ventas'
+      path: '/ventas'
+      fullPath: '/ventas'
+      preLoaderRoute: typeof AuthenticatedVentasRouteRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/settings': {
       id: '/_authenticated/settings'
       path: '/settings'
@@ -807,13 +841,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ClerkauthSignInRouteImport
       parentRoute: typeof ClerkauthRouteRoute
     }
-    '/_authenticated/venta/venta': {
-      id: '/_authenticated/venta/venta'
-      path: '/venta/venta'
-      fullPath: '/venta/venta'
-      preLoaderRoute: typeof AuthenticatedVentaVentaRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/settings/sucursales': {
       id: '/_authenticated/settings/sucursales'
       path: '/sucursales'
@@ -862,6 +889,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/errors/$error'
       preLoaderRoute: typeof AuthenticatedErrorsErrorRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/ventas/ventas/': {
+      id: '/_authenticated/ventas/ventas/'
+      path: '/ventas'
+      fullPath: '/ventas/ventas'
+      preLoaderRoute: typeof AuthenticatedVentasVentasIndexRouteImport
+      parentRoute: typeof AuthenticatedVentasRouteRoute
+    }
+    '/_authenticated/ventas/lista-precios/': {
+      id: '/_authenticated/ventas/lista-precios/'
+      path: '/lista-precios'
+      fullPath: '/ventas/lista-precios'
+      preLoaderRoute: typeof AuthenticatedVentasListaPreciosIndexRouteImport
+      parentRoute: typeof AuthenticatedVentasRouteRoute
     }
     '/_authenticated/productos/productos/': {
       id: '/_authenticated/productos/productos/'
@@ -935,14 +976,31 @@ const AuthenticatedSettingsRouteRouteWithChildren =
     AuthenticatedSettingsRouteRouteChildren,
   )
 
+interface AuthenticatedVentasRouteRouteChildren {
+  AuthenticatedVentasListaPreciosIndexRoute: typeof AuthenticatedVentasListaPreciosIndexRoute
+  AuthenticatedVentasVentasIndexRoute: typeof AuthenticatedVentasVentasIndexRoute
+}
+
+const AuthenticatedVentasRouteRouteChildren: AuthenticatedVentasRouteRouteChildren =
+  {
+    AuthenticatedVentasListaPreciosIndexRoute:
+      AuthenticatedVentasListaPreciosIndexRoute,
+    AuthenticatedVentasVentasIndexRoute: AuthenticatedVentasVentasIndexRoute,
+  }
+
+const AuthenticatedVentasRouteRouteWithChildren =
+  AuthenticatedVentasRouteRoute._addFileChildren(
+    AuthenticatedVentasRouteRouteChildren,
+  )
+
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedProductosRouteRoute: typeof AuthenticatedProductosRouteRouteWithChildren
   AuthenticatedSettingsRouteRoute: typeof AuthenticatedSettingsRouteRouteWithChildren
+  AuthenticatedVentasRouteRoute: typeof AuthenticatedVentasRouteRouteWithChildren
   AuthenticatedBienvenidaRoute: typeof AuthenticatedBienvenidaRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
   AuthenticatedErrorsErrorRoute: typeof AuthenticatedErrorsErrorRoute
-  AuthenticatedVentaVentaRoute: typeof AuthenticatedVentaVentaRoute
   AuthenticatedAppsIndexRoute: typeof AuthenticatedAppsIndexRoute
   AuthenticatedChatsIndexRoute: typeof AuthenticatedChatsIndexRoute
   AuthenticatedComprasIndexRoute: typeof AuthenticatedComprasIndexRoute
@@ -958,11 +1016,11 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedProductosRouteRoute:
     AuthenticatedProductosRouteRouteWithChildren,
   AuthenticatedSettingsRouteRoute: AuthenticatedSettingsRouteRouteWithChildren,
+  AuthenticatedVentasRouteRoute: AuthenticatedVentasRouteRouteWithChildren,
   AuthenticatedBienvenidaRoute: AuthenticatedBienvenidaRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
   AuthenticatedErrorsErrorRoute: AuthenticatedErrorsErrorRoute,
-  AuthenticatedVentaVentaRoute: AuthenticatedVentaVentaRoute,
   AuthenticatedAppsIndexRoute: AuthenticatedAppsIndexRoute,
   AuthenticatedChatsIndexRoute: AuthenticatedChatsIndexRoute,
   AuthenticatedComprasIndexRoute: AuthenticatedComprasIndexRoute,

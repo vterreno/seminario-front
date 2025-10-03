@@ -121,4 +121,15 @@ export const rutasBack = {
             bulkStatus: `${baseUrl}/proveedores/bulk/status`,
         },
     },
+    listaPrecios: {
+        getListaPrecios: `${baseUrl}/lista-precios`,
+        postListaPrecios: `${baseUrl}/lista-precios`,
+        putListaPrecios: `${baseUrl}/lista-precios`,
+        deleteListaPrecios: `${baseUrl}/lista-precios`,
+        getListaPreciosPorId: `${baseUrl}/lista-precios`,
+        getListaPreciosByEmpresa: `${baseUrl}/lista-precios/empresa`,
+        getProductosByListaPrecios: `${baseUrl}/lista-precios`,
+        bulkDeleteListaPrecios: `${baseUrl}/lista-precios/bulk/delete`,
+        bulkUpdateStatus: `${baseUrl}/lista-precios/bulk/status`,
+    },
 };
