@@ -202,6 +202,33 @@ export const getUnidadMedidaColumns = (isSuperAdmin: boolean = false): ColumnDef
       enableSorting: true,
     },
     {
+      accessorKey: 'estado',
+      header: ({ column }) => (
+          <DataTableColumnHeader column={column} title='Estado' />
+      ),
+      cell: ({ row }) => {
+          const estado = row.getValue('estado') as boolean
+          return (
+          <Badge variant={estado ? 'green' : 'secondary'}>
+              {estado ? 'Activo' : 'Inactivo'}
+          </Badge>
+          )
+      },
+      filterFn: (row, id, value) => {
+          const rowValue = row.getValue(id) as boolean
+          if (value.length === 0) return true
+          return value.some((filterValue: string) => {
+              if (filterValue === 'true') return rowValue === true
+              if (filterValue === 'false') return rowValue === false
+              return false
+          })
+      },
+      enableSorting: true,
+      meta: {
+          displayName: 'Estado'
+      },
+      },
+    {
       id: 'actions',
       cell: ({ row }) => <DataTableRowActions row={row} />,
     }

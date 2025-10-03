@@ -16,8 +16,8 @@ export const unidadMedidaSchema = z.object({
   nombre: z.string(),
   abreviatura: z.string(),
   aceptaDecimales: z.boolean(),
-  empresaId: z.number().optional(),
-  empresa: empresaSchema.optional(),
+  estado: z.boolean(),
+  empresa_id: z.number().optional(),
   created_at: z.string().optional(),
   updated_at: z.string().optional(),
   deleted_at: z.string().optional().nullable(),
@@ -33,7 +33,8 @@ export const unidadMedidaFormSchema = z.object({
     .min(1, 'La abreviatura es obligatoria')
     .max(10, 'La abreviatura no puede exceder 10 caracteres'),
   aceptaDecimales: z.boolean(),
-  empresaId: z.number().min(1, 'Debe seleccionar una empresa'),
+  empresa_id: z.number().min(1, 'Debe seleccionar una empresa'),
+  estado: z.boolean(),
   isEdit: z.boolean(),
 })
 
@@ -41,6 +42,7 @@ export type UnidadMedidaForm = {
   nombre: string;
   abreviatura: string;
   aceptaDecimales: boolean;
-  empresaId: number;
+  empresa_id: number;
+  estado: boolean;
   isEdit: boolean;
 }

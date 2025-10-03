@@ -12,8 +12,7 @@ export interface UnidadMedida {
     nombre: string;
     abreviatura: string;
     aceptaDecimales: boolean;
-    empresaId?: number;
-    empresa?: Empresa;
+    empresa_id?: number;
     created_at?: string;
     updated_at?: string;
     deleted_at?: string;
@@ -23,14 +22,16 @@ export interface CreateUnidadMedidaDto {
     nombre: string;
     abreviatura: string;
     aceptaDecimales?: boolean;
-    empresaId: number;
+    estado?: boolean;
+    empresa_id: number;
 }
 
 export interface UpdateUnidadMedidaDto {
     nombre?: string;
     abreviatura?: string;
     aceptaDecimales?: boolean;
-    empresaId?: number;
+    estado?: boolean;
+    empresa_id?: number;
 }
 
 export interface BulkDeleteUnidadMedidaDto {
@@ -62,23 +63,23 @@ export interface PaginatedResponse<T> {
 class ApiUnidadesMedida {
     async getAllUnidadesMedida(): Promise<UnidadMedida[]> {
         try {
-            const response = await axiosService.get(rutasBack.unidadesMedida.getUnidadesMedida);
-            return response.data;
-        } catch (error) {
-            console.error("Error fetching unidades de medida:", error);
-            throw new Error("Failed to fetch unidades de medida");
+            const response = await axiosService.get(rutasBack.unidadesMedida.getUnidadMedida);
+            return response.data
+        } catch (error: any) {
+            const backendMessage = error.response?.data?.message;
+            const errorMessage = backendMessage || "Fallo al obtener todas las unidades de medida";
+            throw new Error(errorMessage);
         }
     }
 
-    async getUnidadesMedidaPaginated(page: number = 1, limit: number = 10): Promise<PaginatedResponse<UnidadMedida>> {
+    async getUnidadesMedidaByEmpresa(empresaId: number): Promise<UnidadMedida[]> {
         try {
-            const response = await axiosService.get(rutasBack.unidadesMedida.getUnidadesMedidaPaginated, {
-                params: { page, limit }
-            });
-            return response.data;
-        } catch (error) {
-            console.error("Error fetching paginated unidades de medida:", error);
-            throw new Error("Failed to fetch paginated unidades de medida");
+            const response = await axiosService.get(`${rutasBack.unidadesMedida.getUnidadesMedidaByEmpresa}/${empresaId}`);
+            return response.data
+        } catch (error: any) {
+            const backendMessage = error.response?.data?.message;
+            const errorMessage = backendMessage || "Fallo al obtener unidades de medida por empresa";
+            throw new Error(errorMessage);
         }
     }
 
@@ -86,81 +87,68 @@ class ApiUnidadesMedida {
         try {
             const response = await axiosService.get(`${rutasBack.unidadesMedida.getUnidadMedidaPorId}/${id}`);
             return response.data;
-        } catch (error) {
-            console.error(`Error fetching unidad de medida with id ${id}:`, error);
-            throw new Error(`Failed to fetch unidad de medida with id ${id}`);
+        } catch (error: any) {
+            const backendMessage = error.response?.data?.message;
+            const errorMessage = backendMessage || "Fallo al obtener unidad de medida";
+            throw new Error(errorMessage);
         }
     }
 
-    async createUnidadMedida(unidadMedidaData: CreateUnidadMedidaDto): Promise<UnidadMedida> {
+    async createUnidadMedida(unidadData: CreateUnidadMedidaDto): Promise<UnidadMedida> {
         try {
-            const response = await axiosService.post(rutasBack.unidadesMedida.postUnidadMedida, unidadMedidaData);
+            const response = await axiosService.post(rutasBack.unidadesMedida.postUnidadMedida, unidadData);
             return response.data;
         } catch (error: any) {
-            console.error("Error creating unidad de medida:", error);
-            // Preservar el mensaje específico del backend
-            const backendMessage = error.response?.data?.message || error.message;
-            throw new Error(backendMessage || "Failed to create unidad de medida");
+            const backendMessage = error.response?.data?.message;
+            const errorMessage = backendMessage || "Fallo al crear unidad de medida";
+            throw new Error(errorMessage);
         }
     }
 
-    async updateUnidadMedida(id: number, unidadMedidaData: UpdateUnidadMedidaDto): Promise<UnidadMedida> {
+    async updateUnidadMedida(id: number, unidadData: Partial<CreateUnidadMedidaDto>): Promise<UnidadMedida> {
         try {
-            const response = await axiosService.put(`${rutasBack.unidadesMedida.putUnidadMedida}/${id}`, unidadMedidaData);
+            const response = await axiosService.put(`${rutasBack.unidadesMedida.putUnidadMedida}/${id}`, unidadData);
             return response.data;
         } catch (error: any) {
-            console.error(`Error updating unidad de medida with id ${id}:`, error);
-            // Preservar el mensaje específico del backend
-            const backendMessage = error.response?.data?.message || error.message;
-            throw new Error(backendMessage || `Failed to update unidad de medida with id ${id}`);
+            const backendMessage = error.response?.data?.message;
+            const errorMessage = backendMessage || "Fallo al actualizar unidad de medida";
+            throw new Error(errorMessage);
         }
     }
 
-    async updateUnidadMedidaPartial(id: number, unidadMedidaData: Partial<UpdateUnidadMedidaDto>): Promise<UnidadMedida> {
+    async deleteUnidadMedida(id: number): Promise<void> {
         try {
-            const response = await axiosService.patch(`${rutasBack.unidadesMedida.patchUnidadMedida}/${id}`, unidadMedidaData);
-            return response.data;
+            const data = await axiosService.delete(`${rutasBack.unidadesMedida.deleteUnidadMedida}/${id}`);
+            return data.data;
         } catch (error: any) {
-            console.error(`Error partially updating unidad de medida with id ${id}:`, error);
-            // Preservar el mensaje específico del backend
-            const backendMessage = error.response?.data?.message || error.message;
-            throw new Error(backendMessage || `Failed to partially update unidad de medida with id ${id}`);
+            const backendMessage = error.response?.data?.message;
+            const errorMessage = backendMessage || "Fallo al eliminar unidad de medida";
+            throw new Error(errorMessage);
         }
     }
 
-    async deleteUnidadMedida(id: number): Promise<{ message: string }> {
+    async bulkDeleteUnidadesMedida(ids: number[]): Promise<void> {
         try {
-            const response = await axiosService.delete(`${rutasBack.unidadesMedida.deleteUnidadMedida}/${id}`);
-            return response.data;
-        } catch (error: any) {
-            console.error(`Error deleting unidad de medida with id ${id}:`, error);
-            // Preservar el mensaje específico del backend
-            const backendMessage = error.response?.data?.message || error.message;
-            throw new Error(backendMessage || `Failed to delete unidad de medida with id ${id}`);
-        }
-    }
-
-    async deleteUnidadesMedida(ids: number[]): Promise<{ message: string }> {
-        try {
-            const response = await axiosService.delete(rutasBack.unidadesMedida.deleteUnidadesMedida, {
-                data: { ids: ids }
+            await axiosService.delete(rutasBack.unidadesMedida.bulkDeleteUnidadesMedida, {
+                data: { ids }
             });
-            return response.data;
         } catch (error: any) {
-            console.error("Error deleting unidades de medida:", error);
-            // Preservar el mensaje específico del backend
-            const backendMessage = error.response?.data?.message || error.message;
-            throw new Error(backendMessage || "Failed to delete unidades de medida");
+            const backendMessage = error.response?.data?.message;
+            const errorMessage = backendMessage || "Fallo al eliminar unidades de medida masivamente";
+            throw new Error(errorMessage);
         }
     }
 
-    async canDeleteUnidadMedida(id: number): Promise<CanDeleteResponse> {
+    async bulkUpdateUnidadMedidaStatus(ids: number[], estado: boolean): Promise<void> {
         try {
-            const response = await axiosService.get(`${rutasBack.unidadesMedida.canDeleteUnidadMedida}/${id}/can-delete`);
-            return response.data;
-        } catch (error) {
-            console.error(`Error checking if unidad de medida with id ${id} can be deleted:`, error);
-            throw new Error(`Failed to check if unidad de medida with id ${id} can be deleted`);
+            await axiosService.put(rutasBack.unidadesMedida.bulkUpdateStatus, {
+                ids,
+                estado
+            });
+        } catch (error: any) {
+            const backendMessage = error.response?.data?.message;
+            const errorMessage = backendMessage || "Fallo al actualizar estado de unidades de medida masivamente";
+            throw new Error(errorMessage);
         }
     }
 }

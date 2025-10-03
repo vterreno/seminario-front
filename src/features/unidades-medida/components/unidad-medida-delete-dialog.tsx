@@ -27,22 +27,17 @@ export function UnidadMedidaDeleteDialog({
   const handleDelete = async () => {
     try {
       if (currentRow.id) {
-        // Verificar si se puede eliminar
-        const canDeleteResponse = await apiUnidadesMedida.canDeleteUnidadMedida(currentRow.id)
-
-        if (!canDeleteResponse.canDelete) {
-          toast.error(canDeleteResponse.message || 'Esta unidad de medida está siendo utilizada por al menos un producto y no se puede eliminar')
-          return
-        }
-
+        // Ejecutar eliminación y manejar el resultado vía excepción si falla
         await apiUnidadesMedida.deleteUnidadMedida(currentRow.id)
         toast.success(`Unidad de medida "${currentRow.nombre}" eliminada exitosamente`)
         onOpenChange(false)
         onSuccess?.()
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error deleting unidad de medida:', error)
-      toast.error('Error al eliminar la unidad de medida')
+      // Mostrar mensaje del error si existe, sino un mensaje genérico
+      const message = error?.message || 'Error al eliminar la unidad de medida'
+      toast.error(message)
     }
   }
 

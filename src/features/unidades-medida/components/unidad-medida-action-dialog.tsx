@@ -59,14 +59,16 @@ export function UnidadMedidaActionDialog({
           nombre: currentRow.nombre,
           abreviatura: currentRow.abreviatura,
           aceptaDecimales: currentRow.aceptaDecimales ?? false,
-          empresaId: currentRow.empresaId || userEmpresaId || 0,
+          empresa_id: currentRow.empresa_id || userEmpresaId || 0,
+          estado: currentRow.estado,
           isEdit: true,
         }
       : {
           nombre: '',
           abreviatura: '',
           aceptaDecimales: false,
-          empresaId: isSuperAdmin ? 0 : (userEmpresaId || 0),
+          empresa_id: isSuperAdmin ? 0 : (userEmpresaId || 0),
+          estado: true,
           isEdit: false,
         },
   })
@@ -94,15 +96,16 @@ export function UnidadMedidaActionDialog({
 
   const onSubmit = async (values: UnidadMedidaForm) => {
     try {
-      // Para usuarios normales, usar su empresaId automáticamente
-      const finalEmpresaId = isSuperAdmin ? values.empresaId : (userEmpresaId || values.empresaId);
-      
+      // Para usuarios normales, usar su empresa_id automáticamente
+      const finalEmpresaId = isSuperAdmin ? values.empresa_id : (userEmpresaId || values.empresa_id);
+
       if (isEdit && currentRow?.id) {
-        await apiUnidadesMedida.updateUnidadMedidaPartial(currentRow.id, {
+        await apiUnidadesMedida.updateUnidadMedida(currentRow.id, {
           nombre: values.nombre,
           abreviatura: values.abreviatura,
           aceptaDecimales: values.aceptaDecimales,
-          empresaId: finalEmpresaId
+          estado: values.estado,
+          empresa_id: finalEmpresaId
         })
         toast.success('Unidad de medida actualizada exitosamente')
       } else {
@@ -110,7 +113,8 @@ export function UnidadMedidaActionDialog({
           nombre: values.nombre,
           abreviatura: values.abreviatura,
           aceptaDecimales: values.aceptaDecimales,
-          empresaId: finalEmpresaId
+          estado: values.estado,
+          empresa_id: finalEmpresaId
         })
         toast.success('Unidad de medida creada exitosamente')
       }
@@ -118,19 +122,15 @@ export function UnidadMedidaActionDialog({
         nombre: '',
         abreviatura: '',
         aceptaDecimales: false,
-        empresaId: isSuperAdmin ? 0 : (userEmpresaId || 0),
+        empresa_id: isSuperAdmin ? 0 : (userEmpresaId || 0),
+        estado: true,
         isEdit: false,
       })
       onOpenChange(false)
       onSuccess?.()
     } catch (error: any) {
-      console.error('Error saving unidad de medida:', error)
-      
-      // Usar el manejador de errores para obtener un mensaje apropiado
-      const context = isEdit ? 'actualizar la unidad de medida' : 'crear la unidad de medida'
-      const errorMessage = ErrorHandler.formatErrorMessage(error, context)
-      
-      toast.error(errorMessage)
+
+      toast.error(error?.message || 'Error al guardar la unidad de medida')
     }
   }
 
@@ -143,7 +143,7 @@ export function UnidadMedidaActionDialog({
             nombre: '',
             abreviatura: '',
             aceptaDecimales: false,
-            empresaId: isSuperAdmin ? 0 : (userEmpresaId || 0),
+            empresa_id: isSuperAdmin ? 0 : (userEmpresaId || 0),
             isEdit: false,
           })
         }
@@ -211,7 +211,7 @@ export function UnidadMedidaActionDialog({
             {isSuperAdmin && (
               <FormField
                 control={form.control}
-                name='empresaId'
+                name='empresa_id'
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Empresa *</FormLabel>
@@ -260,6 +260,29 @@ export function UnidadMedidaActionDialog({
                     />
                   </FormControl>
                 </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name='estado'
+              render={({ field }) => (
+                <FormItem className='flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm'>
+                  <div className='space-y-0.5'>
+                    <FormLabel className='text-base'>Estado</FormLabel>
+                    <div className='text-sm text-muted-foreground'>
+                      {field.value
+                        ? 'Activo'
+                        : 'Inactivo'
+                      }
+                    </div>
+                  </div>
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+              </FormItem>
               )}
             />
 

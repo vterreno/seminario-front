@@ -33,9 +33,10 @@ type DataTableProps = {
   navigate: any
   onSuccess?: () => void
   isSuperAdmin?: boolean
+  canBulkAction: boolean // Nueva prop para controlar bulk actions
 }
 
-export function UnidadMedidaTable({ data, search, navigate, onSuccess, isSuperAdmin = false }: DataTableProps) {
+export function UnidadMedidaTable({ data, search, navigate, onSuccess, isSuperAdmin = false, canBulkAction }: DataTableProps) {
   // Local UI-only states
   const [rowSelection, setRowSelection] = useState({})
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
@@ -88,7 +89,7 @@ export function UnidadMedidaTable({ data, search, navigate, onSuccess, isSuperAd
       columnFilters,
       columnVisibility,
     },
-    enableRowSelection: true,
+    enableRowSelection: canBulkAction,
     onPaginationChange,
     onColumnFiltersChange,
     onRowSelectionChange: setRowSelection,

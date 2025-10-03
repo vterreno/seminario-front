@@ -9,18 +9,27 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { UnidadMedida } from '../data/schema'
-import { useUnidadMedida } from './unidad-medida-provider'
+import { Categoria } from '../data/schema'
+import { useCategorias } from './categorias-provider'
+import { usePermissions } from '@/hooks/use-permissions'
 
 type DataTableRowActionsProps = {
-  row: Row<UnidadMedida>
+  row: Row<Categoria>
 }
 
 export function DataTableRowActions({ row }: DataTableRowActionsProps) {
-  const { setOpen, setCurrentRow } = useUnidadMedida()
-  const unidadMedida = row.original
+  const { setOpen, setCurrentRow } = useCategorias()
+  const { hasPermission } = usePermissions()
+  const categoria = row.original
 
-  // Removido: Verificación de permisos - accesible para todos
+  // Verificar permisos para categorías
+  const canEdit = hasPermission('categoria_modificar')
+  const canDelete = hasPermission('categoria_eliminar')
+
+  // Si no tiene ningún permiso, no mostrar el menú
+  if (!canEdit && !canDelete) {
+    return null
+  }
 
   return (
     <DropdownMenu>
@@ -34,26 +43,30 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align='end' className='w-[160px]'>
-        <DropdownMenuItem
-          onClick={() => {
-            setCurrentRow(unidadMedida)
-            setOpen('edit')
-          }}
-        >
-          <Pencil size={16} />
-          Editar
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem
-          onClick={() => {
-            setCurrentRow(unidadMedida)
-            setOpen('delete')
-          }}
-          className='text-red-600 hover:text-red-600'
-        >
-          <Trash2 size={16} color='red'/>
-          Eliminar
-        </DropdownMenuItem>
+        {canEdit && (
+          <DropdownMenuItem
+            onClick={() => {
+              setCurrentRow(categoria)
+              setOpen('edit')
+            }}
+          >
+            <Pencil size={16} />
+            Editar
+          </DropdownMenuItem>
+        )}
+        {canEdit && canDelete && <DropdownMenuSeparator />}
+        {canDelete && (
+          <DropdownMenuItem
+            onClick={() => {
+              setCurrentRow(categoria)
+              setOpen('delete')
+            }}
+            className='text-red-600 hover:text-red-600'
+          >
+            <Trash2 size={16} color='red'/>
+            Eliminar
+          </DropdownMenuItem>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   )
