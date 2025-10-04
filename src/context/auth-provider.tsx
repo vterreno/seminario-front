@@ -1,6 +1,6 @@
 import { DatosUsuariosContextType } from "@/interface/DatosUsuariosContextType.interface";
 import apiUserService from "@/service/apiUser.service";
-import { useSessionStore } from "@/stores/session-store";
+import { useSessionStore } from "../stores/session-store";
 import { useAuthStore } from "@/stores/auth-store";
 import { createContext, ReactNode } from "react";
 import axiosService from "@/api/apiClient";

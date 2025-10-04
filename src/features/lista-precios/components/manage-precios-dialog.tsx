@@ -16,13 +16,14 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table'
-import { Plus, Trash2, Edit, Save, X } from 'lucide-react'
+import { Plus, Trash2, Edit, Save, X, Percent, TrendingUp, TrendingDown } from 'lucide-react'
 import apiListaPreciosService from '@/service/apiListaPrecios.service'
 import type { ListaPrecios, ProductoListaPrecio } from '../data/schema'
 import { ProductSelectorDialog } from './product-selector-dialog'
 import { formatCurrency, formatCurrencyInput, parseCurrency } from './format-money'
 import { toast } from 'sonner'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Label } from '@/components/ui/label'
 
 interface ManagePreciosDialogProps {
     lista: ListaPrecios | null
@@ -50,6 +51,9 @@ export function ManagePreciosDialog({
     const [isProductSelectorOpen, setIsProductSelectorOpen] = useState(false)
     const [editingId, setEditingId] = useState<number | null>(null)
     const [editingPrice, setEditingPrice] = useState('')
+    const [porcentajeAjuste, setPorcentajeAjuste] = useState<string>('')
+    const [tipoAjuste, setTipoAjuste] = useState<'aumento' | 'descuento'>('aumento')
+    const [showPorcentajePanel, setShowPorcentajePanel] = useState(false)
 
     useEffect(() => {
         if (isOpen && lista) {
@@ -136,6 +140,55 @@ export function ManagePreciosDialog({
         }
     }
 
+    const aplicarPorcentajeATodos = async () => {
+        if (!lista) return
+        
+        const porcentaje = parseFloat(porcentajeAjuste)
+        
+        if (isNaN(porcentaje) || porcentaje < 0) {
+            toast.error('Ingrese un porcentaje válido')
+            return
+        }
+
+        if (productos.length === 0) {
+            toast.error('No hay productos en la lista')
+            return
+        }
+
+        try {
+            // Aplicar el porcentaje a todos los productos
+            const promesas = productos.map(producto => {
+                const precioBase = producto.precio_venta ?? 0
+                let nuevoPrecio: number
+                
+                if (tipoAjuste === 'aumento') {
+                    nuevoPrecio = precioBase * (1 + porcentaje / 100)
+                } else {
+                    nuevoPrecio = precioBase * (1 - porcentaje / 100)
+                }
+                
+                nuevoPrecio = Math.max(0, Math.round(nuevoPrecio * 100) / 100)
+                
+                return apiListaPreciosService.updateProductoPrecioInLista(lista.id, producto.id, nuevoPrecio)
+            })
+
+            await Promise.all(promesas)
+            
+            // Recargar productos
+            await loadProductos()
+            
+            toast.success(
+                `${tipoAjuste === 'aumento' ? 'Aumento' : 'Descuento'} del ${porcentaje}% aplicado a ${productos.length} producto(s)`
+            )
+            
+            setPorcentajeAjuste('')
+            setShowPorcentajePanel(false)
+            onSuccess?.()
+        } catch (error: any) {
+            toast.error(error.message || 'Error al aplicar el porcentaje')
+        }
+    }
+
     const productosYaAgregados = productos.map(p => p.id)
 
     return (
@@ -160,14 +213,84 @@ export function ManagePreciosDialog({
                         </DialogDescription>
                     </DialogHeader>
 
-                    <div className="px-6 py-4 border-b shrink-0">
-                        <Button
-                            onClick={() => setIsProductSelectorOpen(true)}
-                            className="w-full sm:w-auto"
-                        >
-                            <Plus className="mr-2 h-4 w-4" />
-                            Agregar Productos
-                        </Button>
+                    <div className="px-6 py-4 border-b shrink-0 space-y-3">
+                        <div className="flex flex-col sm:flex-row gap-2">
+                            <Button
+                                onClick={() => setIsProductSelectorOpen(true)}
+                                className="w-full sm:w-auto"
+                            >
+                                <Plus className="mr-2 h-4 w-4" />
+                                Agregar Productos
+                            </Button>
+                            <Button
+                                variant="outline"
+                                onClick={() => setShowPorcentajePanel(!showPorcentajePanel)}
+                                className="w-full sm:w-auto"
+                                disabled={productos.length === 0}
+                            >
+                                <Percent className="mr-2 h-4 w-4" />
+                                Ajuste Porcentual Global
+                            </Button>
+                        </div>
+
+                        {/* Panel de ajuste porcentual */}
+                        {showPorcentajePanel && productos.length > 0 && (
+                            <div className="rounded-lg border bg-muted/50 p-4 animate-in slide-in-from-top-2">
+                                <Label className="mb-3 flex items-center gap-2 text-sm font-semibold">
+                                    <Percent className="h-4 w-4" />
+                                    Aplicar ajuste a todos los productos de la lista
+                                </Label>
+                                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
+                                    <div className="flex gap-2 w-full sm:w-auto">
+                                        <Button
+                                            type="button"
+                                            variant={tipoAjuste === 'aumento' ? 'default' : 'outline'}
+                                            size="sm"
+                                            onClick={() => setTipoAjuste('aumento')}
+                                            className="gap-1 flex-1 sm:flex-none"
+                                        >
+                                            <TrendingUp className="h-4 w-4" />
+                                            Aumento
+                                        </Button>
+                                        <Button
+                                            type="button"
+                                            variant={tipoAjuste === 'descuento' ? 'default' : 'outline'}
+                                            size="sm"
+                                            onClick={() => setTipoAjuste('descuento')}
+                                            className="gap-1 flex-1 sm:flex-none"
+                                        >
+                                            <TrendingDown className="h-4 w-4" />
+                                            Descuento
+                                        </Button>
+                                    </div>
+                                    <div className="relative flex-1">
+                                        <Input
+                                            type="number"
+                                            placeholder="Ej: 10"
+                                            value={porcentajeAjuste}
+                                            onChange={e => setPorcentajeAjuste(e.target.value)}
+                                            className="pr-8"
+                                            min="0"
+                                            step="0.01"
+                                        />
+                                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
+                                            %
+                                        </span>
+                                    </div>
+                                    <Button
+                                        type="button"
+                                        onClick={aplicarPorcentajeATodos}
+                                        disabled={!porcentajeAjuste}
+                                        className="w-full sm:w-auto"
+                                    >
+                                        Aplicar a Todos
+                                    </Button>
+                                </div>
+                                <p className="mt-2 text-xs text-muted-foreground">
+                                    💡 Se aplicará el {tipoAjuste} del {porcentajeAjuste || '0'}% sobre el precio base de cada producto
+                                </p>
+                            </div>
+                        )}
                     </div>
 
                     <div className="flex-1 overflow-auto px-6">

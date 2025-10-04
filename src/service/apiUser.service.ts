@@ -1,8 +1,8 @@
 import axiosService from '../api/apiClient';
 import { rutasBack } from '../config/env';
-import { STORAGE_KEYS } from '@/lib/constants';
-import { setStorageItem, removeStorageItem, getStorageItem } from '@/hooks/use-local-storage';
-import { User, UserForm } from '@/features/users/data/schema';
+import { STORAGE_KEYS } from '../lib/constants';
+import { setStorageItem, removeStorageItem, getStorageItem } from '../hooks/use-local-storage';
+import { User, UserForm } from '../features/users/data/schema';
 
 class ApiUsers {
     async login(email: string, password: string): Promise<any> {

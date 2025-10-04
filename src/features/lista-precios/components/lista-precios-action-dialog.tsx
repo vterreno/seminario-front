@@ -32,8 +32,9 @@ import {
     SelectValue,
 } from '@/components/ui/select'
 import apiEmpresaService from '@/service/apiEmpresa.service'
-import { ProductSelectorDialog } from './product-selector-dialog'
-import { Package, Plus, X } from 'lucide-react'
+import { ProductWithPriceSelectorDialog } from './product-with-price-selector-dialog'
+import { Package, Plus, X, DollarSign } from 'lucide-react'
+import type { ProductoConPrecio } from '../data/schema'
 
 interface ListaPreciosActionDialogProps {
     mode: 'add' | 'edit'
@@ -53,7 +54,7 @@ export function ListaPreciosActionDialog({ mode, onSuccess }: ListaPreciosAction
 
     const [empresas, setEmpresas] = useState<Array<{ id: number; name: string }>>([])
     const [isProductSelectorOpen, setIsProductSelectorOpen] = useState(false)
-    const [selectedProductIds, setSelectedProductIds] = useState<number[]>([])
+    const [selectedProductos, setSelectedProductos] = useState<ProductoConPrecio[]>([])
     
     const isOpen = mode === 'add' ? isAddDialogOpen : isEditDialogOpen
     const setIsOpen = mode === 'add' ? setIsAddDialogOpen : setIsEditDialogOpen
@@ -71,14 +72,20 @@ export function ListaPreciosActionDialog({ mode, onSuccess }: ListaPreciosAction
 
     useEffect(() => {
         if (mode === 'edit' && selectedLista && isEditDialogOpen) {
+            // Convertir productos de la lista al formato ProductoConPrecio
+            const productosConPrecio: ProductoConPrecio[] = selectedLista.productos?.map(p => ({
+                producto_id: p.id,
+                precio_venta_especifico: p.precio ?? p.precio_venta ?? 0
+            })) || []
+            
             form.reset({
                 nombre: selectedLista.nombre,
                 descripcion: selectedLista.descripcion || '',
                 estado: selectedLista.estado,
                 empresa_id: selectedLista.empresa_id,
-                productos: selectedLista.productos?.map(p => p.id) || [],
+                productos: productosConPrecio,
             })
-            setSelectedProductIds(selectedLista.productos?.map(p => p.id) || [])
+            setSelectedProductos(productosConPrecio)
         } else if (mode === 'add' && isAddDialogOpen) {
             form.reset({
                 nombre: '',
@@ -87,7 +94,7 @@ export function ListaPreciosActionDialog({ mode, onSuccess }: ListaPreciosAction
                 empresa_id: userEmpresaId,
                 productos: [],
             })
-            setSelectedProductIds([])
+            setSelectedProductos([])
         }
     }, [mode, selectedLista, isAddDialogOpen, isEditDialogOpen])
 
@@ -99,9 +106,9 @@ export function ListaPreciosActionDialog({ mode, onSuccess }: ListaPreciosAction
         }
     }, [isSuperAdmin])
 
-    const handleProductSelection = (ids: number[]) => {
-        setSelectedProductIds(ids)
-        form.setValue('productos', ids)
+    const handleProductSelection = (productos: ProductoConPrecio[]) => {
+        setSelectedProductos(productos)
+        form.setValue('productos', productos)
     }
 
     const onSubmit = async (data: any) => {
@@ -109,10 +116,6 @@ export function ListaPreciosActionDialog({ mode, onSuccess }: ListaPreciosAction
             if (!isSuperAdmin) {
                 delete data.empresa_id
             }
-
-            // Asegurar que los productos seleccionados se incluyan
-            data.productos = selectedProductIds
-
             if (mode === 'add') {
                 await apiListaPreciosService.createListaPrecios(data)
                 toast.success('Lista de precios creada exitosamente')
@@ -123,7 +126,7 @@ export function ListaPreciosActionDialog({ mode, onSuccess }: ListaPreciosAction
 
             setIsOpen(false)
             form.reset()
-            setSelectedProductIds([])
+            setSelectedProductos([])
             onSuccess?.()
         } catch (error: any) {
             toast.error(error.message || 'Error al guardar la lista de precios')
@@ -213,7 +216,7 @@ export function ListaPreciosActionDialog({ mode, onSuccess }: ListaPreciosAction
                             <FormDescription>
                                 {isSuperAdmin && !form.watch('empresa_id') 
                                     ? 'Primero selecciona una empresa para agregar productos'
-                                    : 'Selecciona los productos que deseas incluir en esta lista'
+                                    : 'Selecciona los productos y define sus precios específicos para esta lista'
                                 }
                             </FormDescription>
                             <div className="flex items-center gap-2">
@@ -225,17 +228,17 @@ export function ListaPreciosActionDialog({ mode, onSuccess }: ListaPreciosAction
                                     className="flex-1"
                                 >
                                     <Plus className="mr-2 h-4 w-4" />
-                                    {selectedProductIds.length > 0 
-                                        ? `${selectedProductIds.length} producto(s) seleccionado(s)` 
-                                        : 'Seleccionar productos'}
+                                    {selectedProductos.length > 0 
+                                        ? `${selectedProductos.length} producto(s) seleccionado(s)` 
+                                        : 'Seleccionar productos y precios'}
                                 </Button>
-                                {selectedProductIds.length > 0 && (
+                                {selectedProductos.length > 0 && (
                                     <Button
                                         type="button"
                                         variant="ghost"
                                         size="icon"
                                         onClick={() => {
-                                            setSelectedProductIds([])
+                                            setSelectedProductos([])
                                             form.setValue('productos', [])
                                         }}
                                     >
@@ -243,10 +246,16 @@ export function ListaPreciosActionDialog({ mode, onSuccess }: ListaPreciosAction
                                     </Button>
                                 )}
                             </div>
-                            {selectedProductIds.length > 0 && (
-                                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                    <Package className="h-4 w-4" />
-                                    <span>{selectedProductIds.length} productos en esta lista</span>
+                            {selectedProductos.length > 0 && (
+                                <div className="rounded-lg border bg-muted/50 p-3 space-y-2">
+                                    <div className="flex items-center gap-2 text-sm font-medium">
+                                        <Package className="h-4 w-4" />
+                                        <span>{selectedProductos.length} productos en esta lista</span>
+                                    </div>
+                                    <div className="text-sm text-muted-foreground">
+                                        <DollarSign className="inline h-3 w-3 mr-1" />
+                                        Precios asignados. Click en "Seleccionar productos" para editar.
+                                    </div>
                                 </div>
                             )}
                         </div>
@@ -281,12 +290,12 @@ export function ListaPreciosActionDialog({ mode, onSuccess }: ListaPreciosAction
                 </Form>
             </DialogContent>
             
-            {/* Diálogo de Selector de Productos */}
-            <ProductSelectorDialog
+            {/* Diálogo de Selector de Productos con Precios */}
+            <ProductWithPriceSelectorDialog
                 isOpen={isProductSelectorOpen}
                 onClose={() => setIsProductSelectorOpen(false)}
                 onConfirm={handleProductSelection}
-                initialSelectedIds={selectedProductIds}
+                initialProductos={selectedProductos}
                 empresaId={form.watch('empresa_id')}
                 isSuperAdmin={isSuperAdmin}
             />

@@ -173,7 +173,8 @@ export const listaPreciosColumns = (options: ListaPreciosColumnsOptions = {}): C
                 displayName: 'Estado'
             },
             filterFn: (row, id, value) => {
-                return value.includes(row.getValue(id))
+                const estado = row.getValue(id) as boolean
+                return value.includes(String(estado))
             },
         },
         {

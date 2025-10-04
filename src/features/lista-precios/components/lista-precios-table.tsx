@@ -143,7 +143,27 @@ export function ListaPreciosTable({
 
     return (
         <div className='w-full space-y-2.5 overflow-auto'>
-            <DataTableToolbar table={table} />
+            <DataTableToolbar 
+                table={table} 
+                searchKey="nombre"
+                searchPlaceholder="Buscar lista de precios..."
+                filters={[
+                    {
+                        columnId: 'estado',
+                        title: 'Estado',
+                        options: [
+                            {
+                                label: 'Activo',
+                                value: 'true',
+                            },
+                            {
+                                label: 'Inactivo',
+                                value: 'false',
+                            },
+                        ],
+                    },
+                ]}
+            />
             <div className='overflow-hidden rounded-lg border bg-card'>
                 <Table>
                     <TableHeader>
@@ -216,7 +236,7 @@ export function ListaPreciosTable({
                                                                         <TableHead>Nombre</TableHead>
                                                                         <TableHead className="w-32">Marca</TableHead>
                                                                         <TableHead className="w-32">Categoría</TableHead>
-                                                                        <TableHead className="w-32 text-right">Precio</TableHead>
+                                                                        <TableHead className="w-32 text-right">Precio Venta</TableHead>
                                                                         <TableHead className="w-24">Estado</TableHead>
                                                                     </TableRow>
                                                                 </TableHeader>

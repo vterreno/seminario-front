@@ -58,12 +58,19 @@ export type ListaPreciosBackend = z.infer<typeof listaPreciosBackendSchema>
 export const listaPreciosSchema = listaPreciosBackendSchema
 export type ListaPrecios = z.infer<typeof listaPreciosSchema>
 
+// 🔹 Schema para producto seleccionado con precio
+export const productoConPrecioSchema = z.object({
+  producto_id: z.number(),
+  precio_venta_especifico: z.number().min(0, 'El precio debe ser mayor o igual a 0'),
+})
+export type ProductoConPrecio = z.infer<typeof productoConPrecioSchema>
+
 // 🔹 Schema específico para formularios CON coerce - SIN empresa_id
 export const listaPreciosFormSchema = z.object({
   nombre: z.string().min(2, 'El nombre debe tener al menos 2 caracteres').max(100),
   descripcion: z.string().optional(),
   estado: z.boolean(),
-  productos: z.array(z.number()).optional(), // IDs de productos
+  productos: z.array(productoConPrecioSchema).optional(),
 })
 export type ListaPreciosForm = z.infer<typeof listaPreciosFormSchema>
 
@@ -73,7 +80,7 @@ export const listaPreciosFormSuperAdminSchema = z.object({
   descripcion: z.string().optional(),
   estado: z.boolean(),
   empresa_id: z.coerce.number().min(1, 'Debe seleccionar una empresa'),
-  productos: z.array(z.number()).optional(), // IDs de productos
+  productos: z.array(productoConPrecioSchema).optional(),
 })
 export type ListaPreciosFormSuperAdmin = z.infer<typeof listaPreciosFormSuperAdminSchema>
 
@@ -83,7 +90,7 @@ export const listaPreciosFormUnifiedSchema = z.object({
   descripcion: z.string().optional(),
   estado: z.boolean(),
   empresa_id: z.coerce.number().min(1, 'Debe seleccionar una empresa').optional(),
-  productos: z.array(z.number()).optional(), // IDs de productos
+  productos: z.array(productoConPrecioSchema).optional(),
 })
 export type ListaPreciosFormUnified = z.infer<typeof listaPreciosFormUnifiedSchema>
 
