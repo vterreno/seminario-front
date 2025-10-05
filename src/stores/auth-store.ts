@@ -28,6 +28,7 @@ interface AuthState {
   auth: {
     user: AuthUser | null
     setUser: (user: AuthUser | null) => void
+    addPermissionToUser: (permission: { id: number; nombre: string; codigo: string }) => void
     accessToken: string
     setAccessToken: (accessToken: string) => void
     resetAccessToken: () => void
@@ -51,6 +52,32 @@ export const useAuthStore = create<AuthState>()((set) => {
             removeStorageItem(STORAGE_KEYS.USER_DATA)
           }
           return { ...state, auth: { ...state.auth, user } }
+        }),
+      addPermissionToUser: (permission) =>
+        set((state) => {
+          if (!state.auth.user || !state.auth.user.roles || state.auth.user.roles.length === 0) {
+            return state
+          }
+          
+          // Crear una copia profunda del usuario
+          const updatedUser = { ...state.auth.user }
+          updatedUser.roles = updatedUser.roles.map(role => ({
+            ...role,
+            permissions: [...role.permissions]
+          }))
+          
+          // Agregar el permiso a todos los roles del usuario si no existe ya
+          updatedUser.roles.forEach(role => {
+            const existePermiso = role.permissions.some(p => p.codigo === permission.codigo)
+            if (!existePermiso) {
+              role.permissions.push(permission)
+            }
+          })
+          
+          // Actualizar localStorage
+          setStorageItem(STORAGE_KEYS.USER_DATA, updatedUser)
+          
+          return { ...state, auth: { ...state.auth, user: updatedUser } }
         }),
       accessToken: initToken,
       setAccessToken: (accessToken) =>

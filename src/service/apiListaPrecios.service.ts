@@ -3,6 +3,7 @@ import axiosService from '../api/apiClient';
 import { rutasBack } from '../config/env';
 
 class ApiListaPreciosService {
+    
     async getAllListaPrecios(): Promise<ListaPrecios[]> {
         try {
             const response = await axiosService.get(rutasBack.listaPrecios.getListaPrecios);
@@ -47,11 +48,15 @@ class ApiListaPreciosService {
         }
     }
 
-    async createListaPrecios(listaPreciosData: ListaPreciosForm): Promise<ListaPrecios> {
-        console.log(listaPreciosData)
+    async createListaPrecios(listaPreciosData: ListaPreciosForm): Promise<{ lista: ListaPrecios, permisoCreado: any }> {
         try {
             const response = await axiosService.post(rutasBack.listaPrecios.postListaPrecios, listaPreciosData);
-            return mapBackendListaPreciosToFrontend(response.data);
+            const { permisoCreado, ...listaData } = response.data;
+            
+            return {
+                lista: mapBackendListaPreciosToFrontend(listaData),
+                permisoCreado: permisoCreado
+            };
         } catch (error: any) {            
             const backendMessage = error.response?.data?.message;
             const errorMessage = backendMessage || "Fallo al crear la lista de precios";

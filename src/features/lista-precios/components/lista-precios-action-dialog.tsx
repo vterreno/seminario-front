@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useContext } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
@@ -24,6 +24,7 @@ import { useListaPreciosContext } from './lista-precios-provider'
 import apiListaPreciosService from '@/service/apiListaPrecios.service'
 import { toast } from 'sonner'
 import { listaPreciosFormUnifiedSchema } from '../data/schema'
+import { AuthContext } from '@/context/auth-provider'
 import {
     Select,
     SelectContent,
@@ -51,6 +52,8 @@ export function ListaPreciosActionDialog({ mode, onSuccess }: ListaPreciosAction
         isSuperAdmin,
         userEmpresaId,
     } = useListaPreciosContext()
+    
+    const { refreshUserData } = useContext(AuthContext)
 
     const [empresas, setEmpresas] = useState<Array<{ id: number; name: string }>>([])
     const [isProductSelectorOpen, setIsProductSelectorOpen] = useState(false)
@@ -118,7 +121,12 @@ export function ListaPreciosActionDialog({ mode, onSuccess }: ListaPreciosAction
             }
             if (mode === 'add') {
                 await apiListaPreciosService.createListaPrecios(data)
+                
                 toast.success('Lista de precios creada exitosamente')
+                
+                // Refrescar los datos del usuario para obtener el nuevo permiso desde el backend
+                // Esto asegura que el permiso esté disponible inmediatamente
+                await refreshUserData()
             } else if (selectedLista) {
                 await apiListaPreciosService.updateListaPrecios(selectedLista.id, data)
                 toast.success('Lista de precios actualizada exitosamente')

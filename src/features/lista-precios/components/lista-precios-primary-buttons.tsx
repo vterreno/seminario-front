@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button'
-import { Plus, RefreshCw } from 'lucide-react'
+import { Plus } from 'lucide-react'
 import { useListaPreciosContext } from './lista-precios-provider'
 import { usePermissions } from '@/hooks/use-permissions'
 

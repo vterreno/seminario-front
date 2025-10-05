@@ -123,8 +123,11 @@ export function ListaPreciosTable({
         try {
             const productos = await apiListaPreciosService.getProductosByListaPrecios(listaId)
             setProductsData(prev => ({ ...prev, [listaId]: productos }))
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error loading products:', error)
+            console.error('Error details:', error.message)
+            // Marcar como vacío en caso de error para no reintentar
+            setProductsData(prev => ({ ...prev, [listaId]: [] }))
         } finally {
             setLoadingProducts(prev => ({ ...prev, [listaId]: false }))
         }

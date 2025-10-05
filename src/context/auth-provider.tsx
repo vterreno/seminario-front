@@ -13,7 +13,8 @@ export const AuthContext = createContext<DatosUsuariosContextType>({
     crearUsuario: async (_usuario: any) => {return {};},
     login: async (_email: string, _password: string) => {return {};},
     logout: () => { console.log("Logout function not implemented yet.");},
-    cambiarContrasena: async (_email: string, _nuevaContrasena: string) => {return {};}
+    cambiarContrasena: async (_email: string, _nuevaContrasena: string) => {return {};},
+    refreshUserData: async () => {}
 })
 
 interface DatosUsuariosProviderProps {
@@ -25,29 +26,39 @@ export const DatosUsuariosProvider = ({ children }: DatosUsuariosProviderProps) 
     const { setAuthenticated, resetSession } = useSessionStore();
     const { auth } = useAuthStore();
     
+    // Función helper para refrescar los datos del usuario desde el backend
+    const refreshUserData = async () => {
+        try {
+            const userDataResponse = await axiosService.get(rutasBack.usuarios.me);
+            const userData = userDataResponse.data;
+            
+            auth.setUser({
+                name: userData.name,
+                email: userData.email,
+                empresa: userData.empresa,
+                roles: userData.roles,
+            });
+        } catch (error) {
+            console.error('Error refreshing user data:', error);
+            throw error;
+        }
+    };
+    
     const login = async (email: string, password: string) => {
         try {
-        const response = await apiUserService.login(email, password);
+            const response = await apiUserService.login(email, password);
 
-        // Obtener datos completos del usuario después del login
-        const userDataResponse = await axiosService.get(rutasBack.usuarios.me);
-        const userData = userDataResponse.data;
-        
-        auth.setUser({
-            name: userData.name,
-            email: userData.email,
-            empresa: userData.empresa,
-            roles: userData.roles,
-        });
+            // Obtener datos completos del usuario después del login
+            await refreshUserData();
 
-        setAuthenticated(true);
-        return response;
+            setAuthenticated(true);
+            return response;
         } catch (error: any) {
-        if (error.response.status === 401) {
-            throw new Error("Usuario o contraseña incorrectos");
-        }
+            if (error.response.status === 401) {
+                throw new Error("Usuario o contraseña incorrectos");
+            }
 
-        throw new Error("Error en el servidor. Intente más tarde.");
+            throw new Error("Error en el servidor. Intente más tarde.");
         }
     };    
     const logout = () => {
@@ -63,14 +74,7 @@ export const DatosUsuariosProvider = ({ children }: DatosUsuariosProviderProps) 
             const response = await apiUserService.cambiarContraseña(email, nuevaContrasena);
             
             // Obtener datos completos del usuario después del cambio de contraseña
-            const userDataResponse = await axiosService.get(rutasBack.usuarios.me);
-            const userData = userDataResponse.data;
-            auth.setUser({
-                name: userData.name,
-                email: userData.email,
-                empresa: userData.empresa,
-                roles: userData.roles,
-            });
+            await refreshUserData();
 
             setAuthenticated(true);
             return response;
@@ -88,7 +92,8 @@ export const DatosUsuariosProvider = ({ children }: DatosUsuariosProviderProps) 
             crearUsuario: async (_usuario: any) => {return {};},
             login,
             logout,
-            cambiarContrasena
+            cambiarContrasena,
+            refreshUserData
         }}>
             {children}
         </AuthContext.Provider>

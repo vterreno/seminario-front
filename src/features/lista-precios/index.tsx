@@ -1,5 +1,5 @@
 import { getRouteApi } from '@tanstack/react-router'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
@@ -7,8 +7,10 @@ import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
 import { toast } from 'sonner'
 import { usePermissions } from '@/hooks/use-permissions'
+import { useAuthStore } from '@/stores/auth-store'
 import { getStorageItem } from '@/hooks/use-local-storage'
 import { STORAGE_KEYS } from '@/lib/constants'
+import { hasToken } from '@/lib/auth-utils'
 import apiListaPreciosService from '@/service/apiListaPrecios.service'
 import { type ListaPrecios } from './data/schema'
 import { ListaPreciosProvider } from './components/lista-precios-provider'
@@ -47,6 +49,7 @@ interface UserData {
 
 export function ListasPreciosPage() {
     const { hasPermission } = usePermissions()
+    const { auth } = useAuthStore()
     const search = route.useSearch()
     const navigate = route.useNavigate()
     const [listaPrecios, setListaPrecios] = useState<ListaPrecios[]>([])
@@ -81,7 +84,31 @@ export function ListasPreciosPage() {
     const userEmpresaId = userData?.empresa?.id
     const isSuperAdmin = !userEmpresaId
 
-    const fetchListaPrecios = async () => {
+    // Función helper para verificar permisos en tiempo de ejecución
+    // Esto asegura que siempre use los permisos más actualizados del store
+    const checkPermission = (codigo: string): boolean => {
+        // Primero intentar usar auth.user (más actualizado)
+        if (auth.user?.roles) {
+            return auth.user.roles.some(role =>
+                role.permissions?.some(permission => permission.codigo === codigo)
+            )
+        }
+        
+        // Fallback a userData del localStorage
+        // Nota: userData tiene 'role' singular, no 'roles'
+        if (userData?.role?.permisos) {
+            return !!userData.role.permisos[codigo]
+        }
+        
+        return false
+    }
+
+    const fetchListaPrecios = useCallback(async () => {
+        // No intentar cargar si no hay token (usuario no autenticado)
+        if (!hasToken()) {
+            return
+        }
+
         try {
             setLoading(true)
             let data: ListaPrecios[]
@@ -98,24 +125,27 @@ export function ListasPreciosPage() {
                     // Generar el código de permiso esperado basado en el nombre de la lista
                     const codigoPermiso = generarCodigoPermisoLista(lista.nombre)
                     
-                    // Verificar si el usuario tiene el permiso específico para esta lista
-                    // Ejemplo: "predeterminada_ver", "lista_1_ver", "descuento_ver", etc.
-                    return hasPermission(codigoPermiso)
+                    // Usar checkPermission que lee del store en tiempo real
+                    return checkPermission(codigoPermiso)
                 })
             }
             
             setListaPrecios(data)
-        } catch (error) {
-            console.error('Error fetching listas de precios:', error)
-            toast.error('Error al cargar las listas de precios')
+        } catch (error: any) {
+            // Solo mostrar error si no es un error de autenticación (401)
+            // El interceptor de axios ya maneja la redirección al login
+            if (error.response?.status !== 401) {
+                console.error('Error fetching listas de precios:', error)
+                toast.error('Error al cargar las listas de precios')
+            }
         } finally {
             setLoading(false)
         }
-    }
+    }, [auth.user, isSuperAdmin, userEmpresaId]) // Dependencias: cuando cambian, se recrea la función
 
     useEffect(() => {
         fetchListaPrecios()
-    }, [])
+    }, [fetchListaPrecios]) // Ahora depende de fetchListaPrecios que se recrea cuando cambian los permisos
 
     const handleSuccess = () => {
         fetchListaPrecios()

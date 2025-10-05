@@ -68,9 +68,10 @@ export function ManagePreciosDialog({
             setLoading(true)
             const data = await apiListaPreciosService.getProductosByListaPrecios(lista.id)
             setProductos(data)
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error loading productos:', error)
-            toast.error('Error al cargar los productos')
+            const errorMessage = error.message || 'Error al cargar los productos'
+            toast.error(errorMessage)
         } finally {
             setLoading(false)
         }
