@@ -12,6 +12,7 @@ export interface UnidadMedida {
     nombre: string;
     abreviatura: string;
     aceptaDecimales: boolean;
+    estado: boolean;
     empresa_id?: number;
     created_at?: string;
     updated_at?: string;
