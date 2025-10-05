@@ -95,15 +95,14 @@ export const rutasBack = {
         ajusteStock: `${baseUrl}/movimientos-stock/ajuste-stock`,
     },
     unidadesMedida: {
-        getUnidadesMedida: `${baseUrl}/unidades-medida`,
-        getUnidadesMedidaPaginated: `${baseUrl}/unidades-medida`,
-        postUnidadMedida: `${baseUrl}/unidades-medida`,
-        putUnidadMedida: `${baseUrl}/unidades-medida`,
-        patchUnidadMedida: `${baseUrl}/unidades-medida`,
-        deleteUnidadMedida: `${baseUrl}/unidades-medida`,
-        getUnidadMedidaPorId: `${baseUrl}/unidades-medida`,
-        deleteUnidadesMedida: `${baseUrl}/unidades-medida/bulk-delete`,
-        canDeleteUnidadMedida: `${baseUrl}/unidades-medida`,
+        getUnidadMedida: `${baseUrl}/unidad-medida`,
+        postUnidadMedida: `${baseUrl}/unidad-medida`,
+        putUnidadMedida: `${baseUrl}/unidad-medida`,
+        deleteUnidadMedida: `${baseUrl}/unidad-medida`,
+        getUnidadMedidaPorId: `${baseUrl}/unidad-medida`,
+        getUnidadesMedidaByEmpresa: `${baseUrl}/unidad-medida/empresa`,
+        bulkDeleteUnidadesMedida: `${baseUrl}/unidad-medida/bulk/delete`,
+        bulkUpdateStatus: `${baseUrl}/unidad-medida/bulk/status`,
     },
     contactos: {
         clientes: {

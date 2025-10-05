@@ -9,22 +9,22 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Categoria } from '../data/schema'
-import { useCategorias } from './categorias-provider'
+import { UnidadMedida } from '../data/schema'
+import { useUnidadMedida } from './unidad-medida-provider'
 import { usePermissions } from '@/hooks/use-permissions'
 
 type DataTableRowActionsProps = {
-  row: Row<Categoria>
+  row: Row<UnidadMedida>
 }
 
 export function DataTableRowActions({ row }: DataTableRowActionsProps) {
-  const { setOpen, setCurrentRow } = useCategorias()
+  const { setOpen, setCurrentRow } = useUnidadMedida()
   const { hasPermission } = usePermissions()
-  const categoria = row.original
+  const unidadMedida = row.original
 
-  // Verificar permisos para categorías
-  const canEdit = hasPermission('categoria_modificar')
-  const canDelete = hasPermission('categoria_eliminar')
+  // Verificar permisos
+  const canEdit = hasPermission('unidad_medida_modificar')
+  const canDelete = hasPermission('unidad_medida_eliminar')
 
   // Si no tiene ningún permiso, no mostrar el menú
   if (!canEdit && !canDelete) {
@@ -46,7 +46,7 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
         {canEdit && (
           <DropdownMenuItem
             onClick={() => {
-              setCurrentRow(categoria)
+              setCurrentRow(unidadMedida)
               setOpen('edit')
             }}
           >
@@ -58,7 +58,7 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
         {canDelete && (
           <DropdownMenuItem
             onClick={() => {
-              setCurrentRow(categoria)
+              setCurrentRow(unidadMedida)
               setOpen('delete')
             }}
             className='text-red-600 hover:text-red-600'

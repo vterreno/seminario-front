@@ -140,7 +140,7 @@ export const productosColumns = (options: ProductosColumnsOptions = {}): ColumnD
             return (
             <div className="max-w-[100px]">
                 <span className="text-sm">
-                {unidadMedida?.sigla || '-'}
+                {unidadMedida?.nombre || '-'}
                 </span>
             </div>
             )

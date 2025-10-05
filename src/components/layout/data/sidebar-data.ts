@@ -16,11 +16,11 @@ import {
   LucideShoppingCart,
   Box,
   Tag,
+  Scale,
 } from 'lucide-react'
-import { type SidebarData } from '../types'
+import { type SidebarData, type BaseNavItem } from '../types'
 import { getStorageItem } from '@/hooks/use-local-storage'
 import { STORAGE_KEYS } from '@/lib/constants'
-import { hasPermission } from '@/lib/auth-utils'
 
 interface UserData {
   name: string
@@ -186,7 +186,8 @@ export const getSidebarData = (): SidebarData => {
       textColor: '#ffffff',
     })
   }
-  const productosSubItems: SidebarItem[] = []
+  
+  const productosSubItems: (BaseNavItem & { url: string })[] = []
   
   // Solo agregar si tiene permisos para ver productos
   if (hasPermission(userData, 'producto_ver')) {
@@ -271,6 +272,15 @@ export const getSidebarData = (): SidebarData => {
       textColor: '#ffffff',
     })
   }
+
+  // Unidades de medida disponible para todos los usuarios
+  configuracionItems.push({
+    title: 'Unidades de medida',
+    url: '/unidades-medida',
+    icon: Scale,
+    backgroundColor: '#40ba22',
+    textColor: '#ffffff',
+  })
 
   if (hasPermission(userData, 'configuracion_empresa')) {
     configuracionItems.push({

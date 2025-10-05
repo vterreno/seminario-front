@@ -30,6 +30,7 @@ import { Route as ClerkauthRouteRouteImport } from './routes/clerk/(auth)/route'
 import { Route as AuthenticatedSettingsRouteRouteImport } from './routes/_authenticated/settings/route'
 import { Route as AuthenticatedProductosRouteRouteImport } from './routes/_authenticated/productos/route'
 import { Route as AuthenticatedUsersIndexRouteImport } from './routes/_authenticated/users/index'
+import { Route as AuthenticatedUnidadesMedidaIndexRouteImport } from './routes/_authenticated/unidades-medida/index'
 import { Route as AuthenticatedTasksIndexRouteImport } from './routes/_authenticated/tasks/index'
 import { Route as AuthenticatedSettingsIndexRouteImport } from './routes/_authenticated/settings/index'
 import { Route as AuthenticatedRolesIndexRouteImport } from './routes/_authenticated/roles/index'
@@ -158,6 +159,12 @@ const AuthenticatedUsersIndexRoute = AuthenticatedUsersIndexRouteImport.update({
   path: '/users/',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedUnidadesMedidaIndexRoute =
+  AuthenticatedUnidadesMedidaIndexRouteImport.update({
+    id: '/unidades-medida/',
+    path: '/unidades-medida/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedTasksIndexRoute = AuthenticatedTasksIndexRouteImport.update({
   id: '/tasks/',
   path: '/tasks/',
@@ -329,6 +336,7 @@ export interface FileRoutesByFullPath {
   '/roles': typeof AuthenticatedRolesIndexRoute
   '/settings/': typeof AuthenticatedSettingsIndexRoute
   '/tasks': typeof AuthenticatedTasksIndexRoute
+  '/unidades-medida': typeof AuthenticatedUnidadesMedidaIndexRoute
   '/users': typeof AuthenticatedUsersIndexRoute
   '/productos/categorias': typeof AuthenticatedProductosCategoriasIndexRoute
   '/productos/marcas': typeof AuthenticatedProductosMarcasIndexRoute
@@ -371,6 +379,7 @@ export interface FileRoutesByTo {
   '/roles': typeof AuthenticatedRolesIndexRoute
   '/settings': typeof AuthenticatedSettingsIndexRoute
   '/tasks': typeof AuthenticatedTasksIndexRoute
+  '/unidades-medida': typeof AuthenticatedUnidadesMedidaIndexRoute
   '/users': typeof AuthenticatedUsersIndexRoute
   '/productos/categorias': typeof AuthenticatedProductosCategoriasIndexRoute
   '/productos/marcas': typeof AuthenticatedProductosMarcasIndexRoute
@@ -418,6 +427,7 @@ export interface FileRoutesById {
   '/_authenticated/roles/': typeof AuthenticatedRolesIndexRoute
   '/_authenticated/settings/': typeof AuthenticatedSettingsIndexRoute
   '/_authenticated/tasks/': typeof AuthenticatedTasksIndexRoute
+  '/_authenticated/unidades-medida/': typeof AuthenticatedUnidadesMedidaIndexRoute
   '/_authenticated/users/': typeof AuthenticatedUsersIndexRoute
   '/_authenticated/productos/categorias/': typeof AuthenticatedProductosCategoriasIndexRoute
   '/_authenticated/productos/marcas/': typeof AuthenticatedProductosMarcasIndexRoute
@@ -464,6 +474,7 @@ export interface FileRouteTypes {
     | '/roles'
     | '/settings/'
     | '/tasks'
+    | '/unidades-medida'
     | '/users'
     | '/productos/categorias'
     | '/productos/marcas'
@@ -506,6 +517,7 @@ export interface FileRouteTypes {
     | '/roles'
     | '/settings'
     | '/tasks'
+    | '/unidades-medida'
     | '/users'
     | '/productos/categorias'
     | '/productos/marcas'
@@ -552,6 +564,7 @@ export interface FileRouteTypes {
     | '/_authenticated/roles/'
     | '/_authenticated/settings/'
     | '/_authenticated/tasks/'
+    | '/_authenticated/unidades-medida/'
     | '/_authenticated/users/'
     | '/_authenticated/productos/categorias/'
     | '/_authenticated/productos/marcas/'
@@ -721,6 +734,13 @@ declare module '@tanstack/react-router' {
       path: '/users'
       fullPath: '/users'
       preLoaderRoute: typeof AuthenticatedUsersIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/unidades-medida/': {
+      id: '/_authenticated/unidades-medida/'
+      path: '/unidades-medida'
+      fullPath: '/unidades-medida'
+      preLoaderRoute: typeof AuthenticatedUnidadesMedidaIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/tasks/': {
@@ -951,6 +971,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedHelpCenterIndexRoute: typeof AuthenticatedHelpCenterIndexRoute
   AuthenticatedRolesIndexRoute: typeof AuthenticatedRolesIndexRoute
   AuthenticatedTasksIndexRoute: typeof AuthenticatedTasksIndexRoute
+  AuthenticatedUnidadesMedidaIndexRoute: typeof AuthenticatedUnidadesMedidaIndexRoute
   AuthenticatedUsersIndexRoute: typeof AuthenticatedUsersIndexRoute
 }
 
@@ -971,6 +992,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedHelpCenterIndexRoute: AuthenticatedHelpCenterIndexRoute,
   AuthenticatedRolesIndexRoute: AuthenticatedRolesIndexRoute,
   AuthenticatedTasksIndexRoute: AuthenticatedTasksIndexRoute,
+  AuthenticatedUnidadesMedidaIndexRoute: AuthenticatedUnidadesMedidaIndexRoute,
   AuthenticatedUsersIndexRoute: AuthenticatedUsersIndexRoute,
 }
 
