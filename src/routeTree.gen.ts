@@ -36,6 +36,7 @@ import { Route as AuthenticatedSettingsIndexRouteImport } from './routes/_authen
 import { Route as AuthenticatedRolesIndexRouteImport } from './routes/_authenticated/roles/index'
 import { Route as AuthenticatedHelpCenterIndexRouteImport } from './routes/_authenticated/help-center/index'
 import { Route as AuthenticatedEmpresaIndexRouteImport } from './routes/_authenticated/empresa/index'
+import { Route as AuthenticatedContactosIndexRouteImport } from './routes/_authenticated/contactos/index'
 import { Route as AuthenticatedComprasIndexRouteImport } from './routes/_authenticated/compras/index'
 import { Route as AuthenticatedChatsIndexRouteImport } from './routes/_authenticated/chats/index'
 import { Route as AuthenticatedAppsIndexRouteImport } from './routes/_authenticated/apps/index'
@@ -50,7 +51,6 @@ import { Route as AuthenticatedSettingsCompanyRouteImport } from './routes/_auth
 import { Route as AuthenticatedSettingsAppearanceRouteImport } from './routes/_authenticated/settings/appearance'
 import { Route as AuthenticatedSettingsAccountRouteImport } from './routes/_authenticated/settings/account'
 import { Route as AuthenticatedErrorsErrorRouteImport } from './routes/_authenticated/errors/$error'
-import { Route as AuthenticatedContactoContactoRouteImport } from './routes/_authenticated/contacto/contacto'
 import { Route as AuthenticatedProductosProductosIndexRouteImport } from './routes/_authenticated/productos/productos/index'
 import { Route as AuthenticatedProductosMarcasIndexRouteImport } from './routes/_authenticated/productos/marcas/index'
 import { Route as AuthenticatedProductosCategoriasIndexRouteImport } from './routes/_authenticated/productos/categorias/index'
@@ -193,6 +193,12 @@ const AuthenticatedEmpresaIndexRoute =
     path: '/empresa/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedContactosIndexRoute =
+  AuthenticatedContactosIndexRouteImport.update({
+    id: '/contactos/',
+    path: '/contactos/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedComprasIndexRoute =
   AuthenticatedComprasIndexRouteImport.update({
     id: '/compras/',
@@ -272,12 +278,6 @@ const AuthenticatedErrorsErrorRoute =
     path: '/errors/$error',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedContactoContactoRoute =
-  AuthenticatedContactoContactoRouteImport.update({
-    id: '/contacto/contacto',
-    path: '/contacto/contacto',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
 const AuthenticatedProductosProductosIndexRoute =
   AuthenticatedProductosProductosIndexRouteImport.update({
     id: '/productos/',
@@ -316,7 +316,6 @@ export interface FileRoutesByFullPath {
   '/bienvenida': typeof AuthenticatedBienvenidaRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/': typeof AuthenticatedIndexRoute
-  '/contacto/contacto': typeof AuthenticatedContactoContactoRoute
   '/errors/$error': typeof AuthenticatedErrorsErrorRoute
   '/settings/account': typeof AuthenticatedSettingsAccountRoute
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
@@ -331,6 +330,7 @@ export interface FileRoutesByFullPath {
   '/apps': typeof AuthenticatedAppsIndexRoute
   '/chats': typeof AuthenticatedChatsIndexRoute
   '/compras': typeof AuthenticatedComprasIndexRoute
+  '/contactos': typeof AuthenticatedContactosIndexRoute
   '/empresa': typeof AuthenticatedEmpresaIndexRoute
   '/help-center': typeof AuthenticatedHelpCenterIndexRoute
   '/roles': typeof AuthenticatedRolesIndexRoute
@@ -359,7 +359,6 @@ export interface FileRoutesByTo {
   '/bienvenida': typeof AuthenticatedBienvenidaRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/': typeof AuthenticatedIndexRoute
-  '/contacto/contacto': typeof AuthenticatedContactoContactoRoute
   '/errors/$error': typeof AuthenticatedErrorsErrorRoute
   '/settings/account': typeof AuthenticatedSettingsAccountRoute
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
@@ -374,6 +373,7 @@ export interface FileRoutesByTo {
   '/apps': typeof AuthenticatedAppsIndexRoute
   '/chats': typeof AuthenticatedChatsIndexRoute
   '/compras': typeof AuthenticatedComprasIndexRoute
+  '/contactos': typeof AuthenticatedContactosIndexRoute
   '/empresa': typeof AuthenticatedEmpresaIndexRoute
   '/help-center': typeof AuthenticatedHelpCenterIndexRoute
   '/roles': typeof AuthenticatedRolesIndexRoute
@@ -407,7 +407,6 @@ export interface FileRoutesById {
   '/_authenticated/bienvenida': typeof AuthenticatedBienvenidaRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
-  '/_authenticated/contacto/contacto': typeof AuthenticatedContactoContactoRoute
   '/_authenticated/errors/$error': typeof AuthenticatedErrorsErrorRoute
   '/_authenticated/settings/account': typeof AuthenticatedSettingsAccountRoute
   '/_authenticated/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
@@ -422,6 +421,7 @@ export interface FileRoutesById {
   '/_authenticated/apps/': typeof AuthenticatedAppsIndexRoute
   '/_authenticated/chats/': typeof AuthenticatedChatsIndexRoute
   '/_authenticated/compras/': typeof AuthenticatedComprasIndexRoute
+  '/_authenticated/contactos/': typeof AuthenticatedContactosIndexRoute
   '/_authenticated/empresa/': typeof AuthenticatedEmpresaIndexRoute
   '/_authenticated/help-center/': typeof AuthenticatedHelpCenterIndexRoute
   '/_authenticated/roles/': typeof AuthenticatedRolesIndexRoute
@@ -454,7 +454,6 @@ export interface FileRouteTypes {
     | '/bienvenida'
     | '/dashboard'
     | '/'
-    | '/contacto/contacto'
     | '/errors/$error'
     | '/settings/account'
     | '/settings/appearance'
@@ -469,6 +468,7 @@ export interface FileRouteTypes {
     | '/apps'
     | '/chats'
     | '/compras'
+    | '/contactos'
     | '/empresa'
     | '/help-center'
     | '/roles'
@@ -497,7 +497,6 @@ export interface FileRouteTypes {
     | '/bienvenida'
     | '/dashboard'
     | '/'
-    | '/contacto/contacto'
     | '/errors/$error'
     | '/settings/account'
     | '/settings/appearance'
@@ -512,6 +511,7 @@ export interface FileRouteTypes {
     | '/apps'
     | '/chats'
     | '/compras'
+    | '/contactos'
     | '/empresa'
     | '/help-center'
     | '/roles'
@@ -544,7 +544,6 @@ export interface FileRouteTypes {
     | '/_authenticated/bienvenida'
     | '/_authenticated/dashboard'
     | '/_authenticated/'
-    | '/_authenticated/contacto/contacto'
     | '/_authenticated/errors/$error'
     | '/_authenticated/settings/account'
     | '/_authenticated/settings/appearance'
@@ -559,6 +558,7 @@ export interface FileRouteTypes {
     | '/_authenticated/apps/'
     | '/_authenticated/chats/'
     | '/_authenticated/compras/'
+    | '/_authenticated/contactos/'
     | '/_authenticated/empresa/'
     | '/_authenticated/help-center/'
     | '/_authenticated/roles/'
@@ -778,6 +778,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedEmpresaIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/contactos/': {
+      id: '/_authenticated/contactos/'
+      path: '/contactos'
+      fullPath: '/contactos'
+      preLoaderRoute: typeof AuthenticatedContactosIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/compras/': {
       id: '/_authenticated/compras/'
       path: '/compras'
@@ -876,13 +883,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedErrorsErrorRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/contacto/contacto': {
-      id: '/_authenticated/contacto/contacto'
-      path: '/contacto/contacto'
-      fullPath: '/contacto/contacto'
-      preLoaderRoute: typeof AuthenticatedContactoContactoRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/productos/productos/': {
       id: '/_authenticated/productos/productos/'
       path: '/productos'
@@ -961,12 +961,12 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedBienvenidaRoute: typeof AuthenticatedBienvenidaRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
-  AuthenticatedContactoContactoRoute: typeof AuthenticatedContactoContactoRoute
   AuthenticatedErrorsErrorRoute: typeof AuthenticatedErrorsErrorRoute
   AuthenticatedVentaVentaRoute: typeof AuthenticatedVentaVentaRoute
   AuthenticatedAppsIndexRoute: typeof AuthenticatedAppsIndexRoute
   AuthenticatedChatsIndexRoute: typeof AuthenticatedChatsIndexRoute
   AuthenticatedComprasIndexRoute: typeof AuthenticatedComprasIndexRoute
+  AuthenticatedContactosIndexRoute: typeof AuthenticatedContactosIndexRoute
   AuthenticatedEmpresaIndexRoute: typeof AuthenticatedEmpresaIndexRoute
   AuthenticatedHelpCenterIndexRoute: typeof AuthenticatedHelpCenterIndexRoute
   AuthenticatedRolesIndexRoute: typeof AuthenticatedRolesIndexRoute
@@ -982,12 +982,12 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedBienvenidaRoute: AuthenticatedBienvenidaRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
-  AuthenticatedContactoContactoRoute: AuthenticatedContactoContactoRoute,
   AuthenticatedErrorsErrorRoute: AuthenticatedErrorsErrorRoute,
   AuthenticatedVentaVentaRoute: AuthenticatedVentaVentaRoute,
   AuthenticatedAppsIndexRoute: AuthenticatedAppsIndexRoute,
   AuthenticatedChatsIndexRoute: AuthenticatedChatsIndexRoute,
   AuthenticatedComprasIndexRoute: AuthenticatedComprasIndexRoute,
+  AuthenticatedContactosIndexRoute: AuthenticatedContactosIndexRoute,
   AuthenticatedEmpresaIndexRoute: AuthenticatedEmpresaIndexRoute,
   AuthenticatedHelpCenterIndexRoute: AuthenticatedHelpCenterIndexRoute,
   AuthenticatedRolesIndexRoute: AuthenticatedRolesIndexRoute,
