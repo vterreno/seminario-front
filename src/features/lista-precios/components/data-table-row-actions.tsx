@@ -23,9 +23,9 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
     const { setSelectedLista, setIsEditDialogOpen, setIsDeleteDialogOpen, setIsManagePreciosDialogOpen } = useListaPreciosContext()
     const { hasPermission } = usePermissions()
 
-    const canEdit = hasPermission('lista_precios_modificar')
-    const canDelete = hasPermission('lista_precios_eliminar')
-    const canManage = hasPermission('lista_precios_modificar') // Mismo permiso que editar
+    const canEdit = hasPermission('modulo_listas_modificar')
+    const canDelete = hasPermission('modulo_listas_eliminar')
+    const canManage = hasPermission('modulo_listas_modificar') // Mismo permiso que editar
 
     const handleEdit = async () => {
         try {

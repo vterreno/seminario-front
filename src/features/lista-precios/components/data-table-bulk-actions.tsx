@@ -29,8 +29,8 @@ export function DataTableBulkActions<TData>({
 
     const selectedListas = selectedRows.map((row) => row.original as ListaPrecios)
 
-    const canModify = hasPermission('lista_precios_modificar')
-    const canDelete = hasPermission('lista_precios_eliminar')
+    const canModify = hasPermission('modulo_listas_modificar')
+    const canDelete = hasPermission('modulo_listas_eliminar')
 
         const handleBulkStatusChange = async (status: 'active' | 'inactive') => {
         const listaIds = selectedListas.filter(lista => lista.id !== undefined).map(lista => lista.id)

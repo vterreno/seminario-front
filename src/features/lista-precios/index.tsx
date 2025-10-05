@@ -18,6 +18,15 @@ import { ListaPreciosPrimaryButtons } from './components/lista-precios-primary-b
 
 const route = getRouteApi('/_authenticated/ventas/lista-precios/')
 
+// Función helper para generar el código de permiso desde el nombre de la lista
+// Debe coincidir con la lógica del backend: generarCodigoPermiso()
+const generarCodigoPermisoLista = (nombreLista: string): string => {
+    return 'lista_' + nombreLista
+        .trim()
+        .toLowerCase()
+        .replace(/\s+/g, '_') + '_ver'
+}
+
 interface UserData {
     id: number
     nombre: string
@@ -44,11 +53,11 @@ export function ListasPreciosPage() {
     const [loading, setLoading] = useState(true)
 
     // Verificar permisos
-    const canEdit = hasPermission('lista_precios_modificar')
-    const canDelete = hasPermission('lista_precios_eliminar')
+    const canEdit = hasPermission('modulo_listas_modificar')
+    const canDelete = hasPermission('modulo_listas_eliminar')
     const canBulkAction = canEdit || canDelete
 
-    if (!hasPermission('lista_precios_ver')) {
+    if (!hasPermission('modulo_listas_ver')) {
         return (
             <>
                 <Header>
@@ -81,6 +90,20 @@ export function ListasPreciosPage() {
             } else {
                 data = await apiListaPreciosService.getListaPreciosByEmpresa(userEmpresaId!)
             }
+            
+            // Filtrar listas según permisos específicos (solo si NO es superadmin)
+            // SIEMPRE filtrar por permisos de cada lista individual
+            if (!isSuperAdmin) {
+                data = data.filter(lista => {
+                    // Generar el código de permiso esperado basado en el nombre de la lista
+                    const codigoPermiso = generarCodigoPermisoLista(lista.nombre)
+                    
+                    // Verificar si el usuario tiene el permiso específico para esta lista
+                    // Ejemplo: "predeterminada_ver", "lista_1_ver", "descuento_ver", etc.
+                    return hasPermission(codigoPermiso)
+                })
+            }
+            
             setListaPrecios(data)
         } catch (error) {
             console.error('Error fetching listas de precios:', error)

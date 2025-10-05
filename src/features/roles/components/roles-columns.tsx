@@ -132,7 +132,7 @@ export const rolesColumns = (options: RolesColumnsOptions = {}): ColumnDef<Role>
       ),
       cell: ({ row }) => {
         const { permisos } = row.original
-        const permisosCount = permisos ? Object.keys(permisos).filter(key => permisos[key as keyof typeof permisos] === true).length : 0
+        const permisosCount = permisos ? Object.keys(permisos).filter(key => !!(permisos as unknown as Record<string, unknown>)[key]).length : 0
         return (
           <div className='flex items-center gap-x-2'>
             <Badge variant='outline' className='text-xs'>

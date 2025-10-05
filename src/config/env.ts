@@ -54,6 +54,7 @@ export const rutasBack = {
     },
     permisos: {
         getPermisos: `${baseUrl}/permisos/all`,
+        getPermisosByEmpresa: `${baseUrl}/permisos/empresa`,
     },
     ubicaciones: {
         provincias: `${baseUrl}/ubicaciones/provincias`,

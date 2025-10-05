@@ -11,7 +11,7 @@ export function ListaPreciosPrimaryButtons({ onSuccess }: ListaPreciosPrimaryBut
     const { setIsAddDialogOpen } = useListaPreciosContext()
     const { hasPermission } = usePermissions()
 
-    const canAdd = hasPermission('lista_precios_agregar')
+    const canAdd = hasPermission('modulo_listas_agregar')
 
     return (
         <div className="flex gap-2">

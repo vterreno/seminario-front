@@ -242,7 +242,7 @@ export const getSidebarData = (): SidebarData => {
         textColor: '#ffffff',
       })
     }
-    if (hasPermission(userData, 'lista_precios_ver')) {
+    if (hasPermission(userData, 'modulo_listas_ver')) {
       ventasSubItems.push({
         title: 'Lista Precios',
         url: '/ventas/lista-precios',

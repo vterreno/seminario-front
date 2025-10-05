@@ -19,6 +19,15 @@ class ApiPermisosService {
       throw new Error('Failed to fetch permissions')
     }
   }
+  async getPermisosByEmpresa(empresaId: number): Promise<Permission[]> {
+    const url = `${rutasBack.permisos.getPermisosByEmpresa}/${empresaId}`;
+    try {
+      const response = await axiosService.get(url)
+      return response.data
+    } catch (error) {
+      throw new Error('Failed to fetch permisos by empresa')
+    }
+  }
 }
 
 const apiPermisosService = new ApiPermisosService()

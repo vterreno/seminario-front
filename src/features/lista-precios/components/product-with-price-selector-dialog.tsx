@@ -48,15 +48,13 @@ export function ProductWithPriceSelectorDialog({
     const [filteredProductos, setFilteredProductos] = useState<ProductoConDatos[]>([])
     const [searchTerm, setSearchTerm] = useState('')
     const [loading, setLoading] = useState(true)
-    const [porcentajeAjuste, setPorcentajeAjuste] = useState<string>('')
+    const [porcentajeAjuste, setPorcentajeAjuste] = useState<string>('0')
     const [tipoAjuste, setTipoAjuste] = useState<'aumento' | 'descuento'>('aumento')
-    const [aplicarAutomatico, setAplicarAutomatico] = useState(false)
 
     useEffect(() => {
         if (isOpen) {
             loadProductos()
-            setPorcentajeAjuste('')
-            setAplicarAutomatico(false)
+            setPorcentajeAjuste('0')
         }
     }, [isOpen, initialProductos])
 
@@ -76,12 +74,12 @@ export function ProductWithPriceSelectorDialog({
         }
     }, [searchTerm, productos])
 
-    // 🔥 Nuevo: Aplicar porcentaje automáticamente mientras se escribe
+    // 🔥 Aplicar porcentaje automáticamente mientras se escribe (siempre activo)
     useEffect(() => {
-        if (!aplicarAutomatico || !porcentajeAjuste) return
+        if (!porcentajeAjuste) return
         
         const porcentaje = parseFloat(porcentajeAjuste)
-        if (isNaN(porcentaje) || porcentaje < 0) return
+        if (isNaN(porcentaje)) return
 
         const productosSeleccionados = productos.filter(p => p.selected)
         if (productosSeleccionados.length === 0) return
@@ -105,7 +103,7 @@ export function ProductWithPriceSelectorDialog({
                 return { ...p, precioEspecifico: nuevoPrecio }
             })
         )
-    }, [porcentajeAjuste, tipoAjuste, aplicarAutomatico])
+    }, [porcentajeAjuste, tipoAjuste, productos.filter(p => p.selected).length])
 
     const loadProductos = async () => {
         try {
@@ -129,7 +127,8 @@ export function ProductWithPriceSelectorDialog({
                 const productoInicial = initialProductos.find(ip => ip.producto_id === p.id)
                 return {
                     ...p,
-                    precioEspecifico: productoInicial?.precio_venta_especifico ?? p.precio_venta ?? 0,
+                    // Si existe en initialProductos, usar ese precio, si no, usar 0 por defecto
+                    precioEspecifico: productoInicial?.precio_venta_especifico ?? 0,
                     selected: !!productoInicial
                 }
             })
@@ -168,52 +167,6 @@ export function ProductWithPriceSelectorDialog({
         )
     }
 
-    const aplicarPorcentajeGeneral = () => {
-        const porcentaje = parseFloat(porcentajeAjuste)
-        
-        if (isNaN(porcentaje) || porcentaje < 0) {
-            toast.error('Ingrese un porcentaje válido')
-            return
-        }
-
-        const productosSeleccionados = productos.filter(p => p.selected)
-        
-        if (productosSeleccionados.length === 0) {
-            toast.error('Debe seleccionar al menos un producto')
-            return
-        }
-
-        // Activar modo automático para que se actualice mientras se escribe
-        setAplicarAutomatico(true)
-
-        setProductos(prev =>
-            prev.map(p => {
-                if (!p.selected) return p
-                
-                const precioBase = p.precio_venta ?? 0
-                let nuevoPrecio: number
-                
-                if (tipoAjuste === 'aumento') {
-                    nuevoPrecio = precioBase * (1 + porcentaje / 100)
-                } else {
-                    nuevoPrecio = precioBase * (1 - porcentaje / 100)
-                }
-                
-                // Redondear a 2 decimales
-                nuevoPrecio = Math.max(0, Math.round(nuevoPrecio * 100) / 100)
-                
-                return { ...p, precioEspecifico: nuevoPrecio }
-            })
-        )
-
-        toast.success(
-            `${tipoAjuste === 'aumento' ? 'Aumento' : 'Descuento'} del ${porcentaje}% aplicado a ${productosSeleccionados.length} producto(s)`,
-            {
-                description: 'Modo automático activado. Los cambios se aplicarán mientras escribes.'
-            }
-        )
-    }
-
     const handleConfirm = () => {
         const productosSeleccionados = productos.filter(p => p.selected)
         
@@ -233,8 +186,7 @@ export function ProductWithPriceSelectorDialog({
 
     const handleCancel = () => {
         setSearchTerm('')
-        setPorcentajeAjuste('')
-        setAplicarAutomatico(false)
+        setPorcentajeAjuste('0')
         onClose()
     }
 
@@ -289,34 +241,17 @@ export function ProductWithPriceSelectorDialog({
                 </div>
 
                 {/* Controles de ajuste porcentual */}
-                <div className={cn(
-                    "rounded-lg border p-4 transition-colors",
-                    aplicarAutomatico ? "bg-primary/10 border-primary" : "bg-muted/50"
-                )}>
+                <div className="rounded-lg border p-4 bg-primary/10 border-primary">
                     <div className="mb-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                         <Label className="flex items-center gap-2 text-sm font-semibold">
                             <Percent className="h-4 w-4" />
                             Ajuste Porcentual Global (sobre productos seleccionados)
                         </Label>
-                        {aplicarAutomatico && (
-                            <div className="flex items-center gap-2">
-                                <span className="text-xs text-primary font-medium animate-pulse">
-                                    ● Modo automático activo
-                                </span>
-                                <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => {
-                                        setAplicarAutomatico(false)
-                                        toast.info('Modo automático desactivado')
-                                    }}
-                                    className="h-6 text-xs"
-                                >
-                                    Desactivar
-                                </Button>
-                            </div>
-                        )}
+                        <div className="flex items-center gap-2">
+                            <span className="text-xs text-primary font-medium animate-pulse">
+                                ● Actualización automática
+                            </span>
+                        </div>
                     </div>
                     <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
                         <div className="flex gap-2 w-full sm:w-auto">
@@ -344,13 +279,10 @@ export function ProductWithPriceSelectorDialog({
                         <div className="relative flex-1">
                             <Input
                                 type="number"
-                                placeholder="Ej: 10"
+                                placeholder="Ej: 10 (por defecto 0%)"
                                 value={porcentajeAjuste}
                                 onChange={e => setPorcentajeAjuste(e.target.value)}
-                                className={cn(
-                                    "pr-8",
-                                    aplicarAutomatico && "border-primary"
-                                )}
+                                className="pr-8 border-primary"
                                 min="0"
                                 step="0.01"
                             />
@@ -358,22 +290,10 @@ export function ProductWithPriceSelectorDialog({
                                 %
                             </span>
                         </div>
-                        {!aplicarAutomatico && (
-                            <Button
-                                type="button"
-                                onClick={aplicarPorcentajeGeneral}
-                                disabled={!porcentajeAjuste || productosSeleccionados.length === 0}
-                                className="w-full sm:w-auto"
-                            >
-                                Aplicar
-                            </Button>
-                        )}
                     </div>
-                    {aplicarAutomatico && (
-                        <p className="mt-2 text-xs text-muted-foreground">
-                            💡 Los precios se actualizan automáticamente al cambiar el porcentaje o tipo de ajuste
-                        </p>
-                    )}
+                    <p className="mt-2 text-xs text-muted-foreground">
+                        💡 Los precios se actualizan automáticamente al cambiar el porcentaje o tipo de ajuste
+                    </p>
                 </div>
 
                 {/* Lista de productos */}
