@@ -18,8 +18,8 @@ import {
 } from '@/components/ui/table'
 import { Plus, Trash2, Edit, Save, X, Percent, TrendingUp, TrendingDown } from 'lucide-react'
 import apiListaPreciosService from '@/service/apiListaPrecios.service'
-import type { ListaPrecios, ProductoListaPrecio } from '../data/schema'
-import { ProductSelectorDialog } from './product-selector-dialog'
+import type { ListaPrecios, ProductoListaPrecio, ProductoConPrecio } from '../data/schema'
+import { ProductWithPriceSelectorDialog } from './product-with-price-selector-dialog'
 import { formatCurrency, formatCurrencyInput, parseCurrency } from './format-money'
 import { toast } from 'sonner'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -34,7 +34,7 @@ interface ManagePreciosDialogProps {
     isSuperAdmin?: boolean
 }
 
-interface ProductoConPrecio extends ProductoListaPrecio {
+interface ProductoConPrecioEditado extends ProductoListaPrecio {
     precioEditado?: string
 }
 
@@ -46,7 +46,7 @@ export function ManagePreciosDialog({
     empresaId,
     isSuperAdmin = false
 }: ManagePreciosDialogProps) {
-    const [productos, setProductos] = useState<ProductoConPrecio[]>([])
+    const [productos, setProductos] = useState<ProductoConPrecioEditado[]>([])
     const [loading, setLoading] = useState(false)
     const [isProductSelectorOpen, setIsProductSelectorOpen] = useState(false)
     const [editingId, setEditingId] = useState<number | null>(null)
@@ -77,12 +77,21 @@ export function ManagePreciosDialog({
         }
     }
 
-    const handleAddProductos = async (productIds: number[]) => {
+    const handleAddProductos = async (productosConPrecio: ProductoConPrecio[]) => {
         if (!lista) return
         
         try {
-            await apiListaPreciosService.addProductosToListaPrecios(lista.id, productIds)
-            toast.success(`${productIds.length} producto(s) agregado(s) a la lista`)
+            // Agregar cada producto con su precio específico
+            const promesas = productosConPrecio.map(producto => 
+                apiListaPreciosService.addProductoToListaPrecios(
+                    lista.id,
+                    producto.producto_id,
+                    producto.precio_venta_especifico
+                )
+            )
+            
+            await Promise.all(promesas)
+            toast.success(`${productosConPrecio.length} producto(s) agregado(s) a la lista`)
             await loadProductos()
             onSuccess?.()
         } catch (error: any) {
@@ -90,7 +99,7 @@ export function ManagePreciosDialog({
         }
     }
 
-    const handleStartEdit = (producto: ProductoConPrecio) => {
+    const handleStartEdit = (producto: ProductoConPrecioEditado) => {
         setEditingId(producto.id)
         setEditingPrice(formatCurrency(producto.precio))
     }
@@ -100,7 +109,7 @@ export function ManagePreciosDialog({
         setEditingPrice('')
     }
 
-    const handleSaveEdit = async (producto: ProductoConPrecio) => {
+    const handleSaveEdit = async (producto: ProductoConPrecioEditado) => {
         if (!lista) return
         
         try {
@@ -130,7 +139,6 @@ export function ManagePreciosDialog({
 
     const handleRemoveProducto = async (productoId: number) => {
         if (!lista) return
-        
         try {
             await apiListaPreciosService.removeProductoFromListaPrecios(lista.id, productoId)
             setProductos(prev => prev.filter(p => p.id !== productoId))
@@ -143,9 +151,7 @@ export function ManagePreciosDialog({
 
     const aplicarPorcentajeATodos = async () => {
         if (!lista) return
-        
         const porcentaje = parseFloat(porcentajeAjuste)
-        
         if (isNaN(porcentaje) || porcentaje < 0) {
             toast.error('Ingrese un porcentaje válido')
             return
@@ -167,21 +173,15 @@ export function ManagePreciosDialog({
                 } else {
                     nuevoPrecio = precioBase * (1 - porcentaje / 100)
                 }
-                
                 nuevoPrecio = Math.max(0, Math.round(nuevoPrecio * 100) / 100)
-                
                 return apiListaPreciosService.updateProductoPrecioInLista(lista.id, producto.id, nuevoPrecio)
             })
-
             await Promise.all(promesas)
-            
             // Recargar productos
             await loadProductos()
-            
             toast.success(
                 `${tipoAjuste === 'aumento' ? 'Aumento' : 'Descuento'} del ${porcentaje}% aplicado a ${productos.length} producto(s)`
             )
-            
             setPorcentajeAjuste('')
             setShowPorcentajePanel(false)
             onSuccess?.()
@@ -189,9 +189,7 @@ export function ManagePreciosDialog({
             toast.error(error.message || 'Error al aplicar el porcentaje')
         }
     }
-
-    const productosYaAgregados = productos.map(p => p.id)
-
+    
     return (
         <>
             <Dialog open={isOpen} onOpenChange={onClose}>
@@ -426,12 +424,14 @@ export function ManagePreciosDialog({
                     </div>
                 </DialogContent>
             </Dialog>
-
-            <ProductSelectorDialog
+            <ProductWithPriceSelectorDialog
                 isOpen={isProductSelectorOpen}
                 onClose={() => setIsProductSelectorOpen(false)}
                 onConfirm={handleAddProductos}
-                initialSelectedIds={productosYaAgregados}
+                initialProductos={productos.map(p => ({
+                    producto_id: p.id,
+                    precio_venta_especifico: p.precio ?? p.precio_venta ?? 0
+                }))}
                 empresaId={empresaId}
                 isSuperAdmin={isSuperAdmin}
             />

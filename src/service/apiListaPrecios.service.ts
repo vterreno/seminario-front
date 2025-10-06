@@ -127,6 +127,20 @@ class ApiListaPreciosService {
         }
     }
 
+    // Agregar un producto con precio específico a una lista de precios
+    async addProductoToListaPrecios(listaId: number, productoId: number, precioEspecifico: number): Promise<void> {
+        try {
+            await axiosService.post(`${rutasBack.listaPrecios.getListaPreciosPorId}/${listaId}/productos`, {
+                productoId,
+                precioEspecifico
+            });
+        } catch (error: any) {
+            const backendMessage = error.response?.data?.message;
+            const errorMessage = backendMessage || "Fallo al agregar producto a la lista de precios";
+            throw new Error(errorMessage);
+        }
+    }
+
     // Eliminar un producto de una lista de precios
     async removeProductoFromListaPrecios(listaId: number, productoId: number): Promise<void> {
         try {
