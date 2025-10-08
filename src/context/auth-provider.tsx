@@ -12,6 +12,7 @@ export const AuthContext = createContext<DatosUsuariosContextType>({
     modificarUsuario: async (_id: number, _usuario: any) => {return {};},
     crearUsuario: async (_usuario: any) => {return {};},
     login: async (_email: string, _password: string) => {return {};},
+    register: async(_empresa: string, _nombre: string, _apellido: string, _email: string, _password: string) => {return {};},
     logout: () => { console.log("Logout function not implemented yet.");},
     cambiarContrasena: async (_email: string, _nuevaContrasena: string) => {return {};},
     refreshUserData: async () => {}
@@ -44,6 +45,25 @@ export const DatosUsuariosProvider = ({ children }: DatosUsuariosProviderProps) 
         }
     };
     
+    const register = async (empresa: string, nombre: string, apellido: string, email: string, password: string) => {
+        try {
+            await apiUserService.register(empresa, nombre, apellido, email, password);
+            // Obtener datos completos del usuario después del registro
+            const userDataResponse = await axiosService.get(rutasBack.usuarios.me);
+            const userData = userDataResponse.data;
+            
+            auth.setUser({
+                name: userData.name,
+                email: userData.email,
+                empresa: userData.empresa,
+                roles: userData.roles,
+            });
+            setAuthenticated(true);
+        } catch (error: any) {     
+            // El error que llega desde apiUserService ya tiene el mensaje correcto
+            throw new Error(error.message || "Error al registrar usuario");
+        }
+    };  
     const login = async (email: string, password: string) => {
         try {
             const response = await apiUserService.login(email, password);
@@ -60,7 +80,7 @@ export const DatosUsuariosProvider = ({ children }: DatosUsuariosProviderProps) 
 
             throw new Error("Error en el servidor. Intente más tarde.");
         }
-    };    
+    };
     const logout = () => {
         apiUserService.logout();
         // Limpiar datos del usuario del auth store
@@ -92,6 +112,7 @@ export const DatosUsuariosProvider = ({ children }: DatosUsuariosProviderProps) 
             crearUsuario: async (_usuario: any) => {return {};},
             login,
             logout,
+            register,
             cambiarContrasena,
             refreshUserData
         }}>

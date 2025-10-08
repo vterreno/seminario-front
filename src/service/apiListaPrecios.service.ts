@@ -114,19 +114,6 @@ class ApiListaPreciosService {
         }
     }
 
-    // Agregar productos a una lista de precios
-    async addProductosToListaPrecios(listaId: number, productoIds: number[]): Promise<void> {
-        try {
-            await axiosService.post(`${rutasBack.listaPrecios.getListaPreciosPorId}/${listaId}/productos`, {
-                productoIds
-            });
-        } catch (error: any) {
-            const backendMessage = error.response?.data?.message;
-            const errorMessage = backendMessage || "Fallo al agregar productos a la lista de precios";
-            throw new Error(errorMessage);
-        }
-    }
-
     // Agregar un producto con precio específico a una lista de precios
     async addProductoToListaPrecios(listaId: number, productoId: number, precioEspecifico: number): Promise<void> {
         try {
