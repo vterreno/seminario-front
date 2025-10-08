@@ -163,15 +163,16 @@ export function ManagePreciosDialog({
         }
 
         try {
-            // Aplicar el porcentaje a todos los productos
+            // Aplicar el porcentaje a todos los productos SOBRE EL PRECIO DE LA LISTA
             const promesas = productos.map(producto => {
-                const precioBase = producto.precio_venta ?? 0
+                // Usar el precio actual de la lista, no el precio_venta base
+                const precioActualLista = producto.precio ?? 0
                 let nuevoPrecio: number
                 
                 if (tipoAjuste === 'aumento') {
-                    nuevoPrecio = precioBase * (1 + porcentaje / 100)
+                    nuevoPrecio = precioActualLista * (1 + porcentaje / 100)
                 } else {
-                    nuevoPrecio = precioBase * (1 - porcentaje / 100)
+                    nuevoPrecio = precioActualLista * (1 - porcentaje / 100)
                 }
                 nuevoPrecio = Math.max(0, Math.round(nuevoPrecio * 100) / 100)
                 return apiListaPreciosService.updateProductoPrecioInLista(lista.id, producto.id, nuevoPrecio)
@@ -286,7 +287,7 @@ export function ManagePreciosDialog({
                                     </Button>
                                 </div>
                                 <p className="mt-2 text-xs text-muted-foreground">
-                                    💡 Se aplicará el {tipoAjuste} del {porcentajeAjuste || '0'}% sobre el precio base de cada producto
+                                    💡 Se aplicará el {tipoAjuste} del {porcentajeAjuste || '0'}% sobre el precio actual de la lista de cada producto
                                 </p>
                             </div>
                         )}
