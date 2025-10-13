@@ -230,17 +230,36 @@ export const getSidebarData = (): SidebarData => {
     })
   }
 
+  const ventasSubItems: SidebarItem[] = []
   // Solo agregar si tiene permisos para ver ventas
   if (hasPermission(userData, 'ventas_ver')) {
-    generalItems.push({
+    
+    if (hasPermission(userData, 'ventas_ver')) {
+      ventasSubItems.push({
+        title: 'Ventas',
+        url: '/ventas/ventas',
+        icon: ShoppingCart,
+        backgroundColor: '#f7c33b',
+        textColor: '#ffffff',
+      })
+    }
+    if (hasPermission(userData, 'modulo_listas_ver')) {
+      ventasSubItems.push({
+        title: 'Lista Precios',
+        url: '/ventas/lista-precios',
+        icon: LucideShoppingCart,
+        backgroundColor: '#f7c33b',
+        textColor: '#ffffff',
+      })
+    }
+  }
+  generalItems.push({
       title: 'Ventas',
-      url: '/ventas',
-      icon: ShoppingCart,
+      icon: Box,
       backgroundColor: '#f7c33b',
       textColor: '#ffffff',
-    })
-  }
-
+      items: ventasSubItems,
+  })
   // Solo agregar si tiene permisos para ver compras
   if (hasPermission(userData, 'compras_ver')) {
     generalItems.push({

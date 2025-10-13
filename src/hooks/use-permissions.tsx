@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import { useAuthStore } from '@/stores/auth-store'
 import { getStorageItem } from '@/hooks/use-local-storage'
 import { STORAGE_KEYS } from '@/lib/constants'
 
@@ -23,12 +24,28 @@ interface UserData {
 
 /**
  * Hook para verificar permisos del usuario actual
+ * Se suscribe al auth store para reaccionar a cambios en permisos
  */
 export function usePermissions() {
+  // Subscribirse al usuario del auth store para reaccionar a cambios
+  const { auth } = useAuthStore()
+  
   const userData = useMemo(() => {
+    // Primero intentar obtener del store (más actualizado)
+    if (auth.user) {
+      return auth.user as UserData
+    }
+    // Fallback a localStorage si el store no está inicializado
     const data = getStorageItem(STORAGE_KEYS.USER_DATA, null) as UserData | null
     return data
-  }, [])
+  }, [auth.user])
+
+  /**
+   * Verifica si el usuario es superadmin (no tiene empresa asignada)
+   */
+  const isSuperAdmin = useMemo(() => {
+    return !userData?.empresa?.id
+  }, [userData])
 
   const userPermissions = useMemo(() => {
     if (!userData?.roles || userData.roles.length === 0) {
@@ -89,13 +106,6 @@ export function usePermissions() {
     }
     return permissions.every(permission => userPermissions[permission] === true)
   }
-
-  /**
-   * Verifica si el usuario es superadmin (no tiene empresa asignada)
-   */
-  const isSuperAdmin = useMemo(() => {
-    return !userData?.empresa?.id
-  }, [userData])
 
   return {
     userData,

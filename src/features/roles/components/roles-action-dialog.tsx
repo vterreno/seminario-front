@@ -26,7 +26,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Role, RoleForm, roleFormSchema, permissionsSchema } from '../data/schema'
+import { Role, RoleForm, roleFormSchema } from '../data/schema'
 import { PermissionsSelector } from './permissions-selector'
 import { toast } from 'sonner'
 import { useEffect, useState } from 'react'
@@ -58,22 +58,20 @@ export function RolesActionDialog({
   const userEmpresaId = userData?.empresa?.id
   const isSuperAdmin = !userEmpresaId // If user doesn't have empresa_id, they are superadmin
 
-  const defaultPermissions = permissionsSchema.parse({})
-
   const form = useForm<RoleForm>({
     resolver: zodResolver(roleFormSchema) as any,
     defaultValues: isEdit && currentRow
       ? {
           nombre: currentRow.nombre,
           empresa_id: currentRow.empresa_id,
-          permisos: currentRow.permisos || defaultPermissions,
+          permisos: currentRow.permisos || [],
           estado: currentRow.estado,
           isEdit,
         }
       : {
           nombre: '',
-          empresa_id: isSuperAdmin ? 0 : userEmpresaId || 0,
-          permisos: defaultPermissions,
+          empresa_id: isSuperAdmin ? undefined : userEmpresaId || undefined,
+          permisos: [],
           estado: true,
           isEdit,
         },

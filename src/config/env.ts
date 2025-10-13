@@ -54,6 +54,7 @@ export const rutasBack = {
     },
     permisos: {
         getPermisos: `${baseUrl}/permisos/all`,
+        getPermisosByEmpresa: `${baseUrl}/permisos/empresa`,
     },
     ubicaciones: {
         provincias: `${baseUrl}/ubicaciones/provincias`,
@@ -119,5 +120,16 @@ export const rutasBack = {
             patch: `${baseUrl}/proveedores`,
             bulkStatus: `${baseUrl}/proveedores/bulk/status`,
         },
+    },
+    listaPrecios: {
+        getListaPrecios: `${baseUrl}/lista-precios`,
+        postListaPrecios: `${baseUrl}/lista-precios`,
+        putListaPrecios: `${baseUrl}/lista-precios`,
+        deleteListaPrecios: `${baseUrl}/lista-precios`,
+        getListaPreciosPorId: `${baseUrl}/lista-precios`,
+        getListaPreciosByEmpresa: `${baseUrl}/lista-precios/empresa`,
+        getProductosByListaPrecios: `${baseUrl}/lista-precios`,
+        bulkDeleteListaPrecios: `${baseUrl}/lista-precios/bulk/delete`,
+        bulkUpdateStatus: `${baseUrl}/lista-precios/bulk/status`,
     },
 };
