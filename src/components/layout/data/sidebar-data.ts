@@ -16,11 +16,16 @@ import {
   LucideShoppingCart,
   Box,
   Tag,
+  History,
+  PlusCircle,
+  Archive,
 } from 'lucide-react'
-import { type SidebarData } from '../types'
+import { type SidebarData, type NavLink } from '../types'
 import { getStorageItem } from '@/hooks/use-local-storage'
 import { STORAGE_KEYS } from '@/lib/constants'
-import { hasPermission } from '@/lib/auth-utils'
+
+// Type alias para mantener compatibilidad
+type SidebarItem = NavLink
 
 interface UserData {
   name: string
@@ -87,7 +92,8 @@ export const getFirstAvailableRoute = (userData: UserData | null): string => {
   const rutasDisponibles = [
     { permiso: 'usuario_ver', ruta: '/users' },
     { permiso: 'producto_ver', ruta: '/productos' },
-    { permiso: 'ventas_ver', ruta: '/ventas' },
+    { permiso: 'ventas_crear', ruta: '/ventas/nueva-venta' },
+    { permiso: 'ventas_ver', ruta: '/ventas/ventas' },
     { permiso: 'compras_ver', ruta: '/compras' },
     { permiso: 'cliente_ver', ruta: '/contactos' },
     { permiso: 'roles_ver', ruta: '/roles' },
@@ -229,14 +235,43 @@ export const getSidebarData = (): SidebarData => {
     })
   }
 
+  const ventasSubItems: SidebarItem[] = []
   // Solo agregar si tiene permisos para ver ventas
   if (hasPermission(userData, 'ventas_ver')) {
+    if (hasPermission(userData, 'ventas_agregar')) {
+      ventasSubItems.push({
+        title: 'Nueva Venta',
+        url: '/ventas/nueva-venta',
+        icon: PlusCircle,
+        backgroundColor: '#f7c33b',
+        textColor: '#ffffff',
+      })
+    }
+    if (hasPermission(userData, 'ventas_ver')) {
+      ventasSubItems.push({
+        title: 'Historial de Ventas',
+        url: '/ventas/ventas',
+        icon: Archive,
+        backgroundColor: '#f7c33b',
+        textColor: '#ffffff',
+      })
+    }
+    if (hasPermission(userData, 'lista-precios_ver')) {
+      ventasSubItems.push({
+        title: 'Lista de Precios',
+        url: '/ventas/lista-precios',
+        icon: CreditCard,
+        backgroundColor: '#f7c33b',
+        textColor: '#ffffff',
+      })
+    }
+    
     generalItems.push({
       title: 'Ventas',
-      url: '/ventas',
       icon: ShoppingCart,
       backgroundColor: '#f7c33b',
       textColor: '#ffffff',
+      items: ventasSubItems,
     })
   }
 
