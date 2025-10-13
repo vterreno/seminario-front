@@ -44,6 +44,8 @@ import apiCategoriasService from '@/service/apiCategorias.service'
 import { type Marca } from '@/features/marcas/data/schema'
 import { type Categoria } from '@/features/categorias/data/schema'
 import { formatCurrency, formatCurrencyInput, parseCurrency } from './format-money'
+import apiUnidadesMedidaService from '@/service/apiUnidadesMedida.service'
+import { UnidadMedida } from '@/features/unidades-medida/data/schema'
 
 interface UserData {
     id: number
@@ -82,8 +84,10 @@ export function ProductosActionDialog({
     const [empresas, setEmpresas] = useState<Empresa[]>([])
     const [marcas, setMarcas] = useState<Marca[]>([])
     const [categorias, setCategorias] = useState<Categoria[]>([])
+    const [unidadesMedida, setUnidadesMedida] = useState<UnidadMedida[]>([])
     const [precioCostoDisplay, setPrecioCostoDisplay] = useState('')
     const [precioVentaDisplay, setPrecioVentaDisplay] = useState('')
+
     const isEdit = !!currentRow
 
     // Detectar si el usuario es superadmin
@@ -133,39 +137,54 @@ export function ProductosActionDialog({
             setPrecioVentaDisplay(precioVenta ? formatCurrency(precioVenta) : '')
         }
     }, [open, form])
-    // Cargar empresas si es superadmin, marcas y categorías
     useEffect(() => {
-        if (open) {
-            const fetchData = async () => {
-                try {
-                    // Cargar empresas solo si es superadmin
-                    if (isSuperAdmin) {
-                        const empresasResponse = await apiEmpresaService.getAllEmpresas()
-                        setEmpresas(empresasResponse)
-                    }
-                    
-                    // Cargar marcas siempre
-                    const marcasResponse = await apiMarcasService.getAllMarcas()
-                    setMarcas(marcasResponse)
-                    
-                    // Cargar categorías - usar método específico según el tipo de usuario
-                    let categoriasResponse: Categoria[] = []
-                    if (isSuperAdmin) {
-                        // Para superadmin, obtener todas las categorías
-                        categoriasResponse = await apiCategoriasService.getAllCategorias()
-                    } else if (userEmpresaId) {
-                        // Para usuarios regulares, obtener solo categorías de su empresa
-                        categoriasResponse = await apiCategoriasService.getCategoriasByEmpresa(userEmpresaId)
-                    }
-                    setCategorias(categoriasResponse)
-                } catch (error) {
-                    toast.error('Error al cargar los datos')
-                }
+    if (open && isSuperAdmin) {
+        const fetchEmpresas = async () => {
+            try {
+                const empresasResponse = await apiEmpresaService.getAllEmpresas()
+                setEmpresas(empresasResponse)
+            } catch (error) {
+                toast.error("Error al cargar empresas")
             }
-            fetchData()
         }
-    }, [isSuperAdmin, userEmpresaId, open])
+        fetchEmpresas()
+    }
+}, [open, isSuperAdmin])
+    useEffect(() => {
+        const selectedEmpresaId = form.watch("empresa_id")
 
+        const fetchData = async () => {
+            try {
+                if (isSuperAdmin) {
+                    // Superadmin: solo cargamos si seleccionó empresa
+                    if (selectedEmpresaId) {
+                        const [marcasResponse, categoriasResponse, unidadesMedidaResponse] = await Promise.all([
+                            apiMarcasService.getMarcasByEmpresa(selectedEmpresaId),
+                            apiCategoriasService.getCategoriasByEmpresa(selectedEmpresaId),
+                            apiUnidadesMedidaService.getUnidadesMedidaByEmpresa(selectedEmpresaId),
+                        ])
+                        setMarcas(marcasResponse)
+                        setCategorias(categoriasResponse)
+                        setUnidadesMedida(unidadesMedidaResponse)
+                    }
+                } else if (userEmpresaId) {
+                    // Usuario común: su empresa es fija, cargamos directo
+                    const [marcasResponse, categoriasResponse, unidadesMedidaResponse] = await Promise.all([
+                        apiMarcasService.getMarcasByEmpresa(userEmpresaId),
+                        apiCategoriasService.getCategoriasByEmpresa(userEmpresaId),
+                        apiUnidadesMedidaService.getUnidadesMedidaByEmpresa(userEmpresaId),
+                    ])
+                    setMarcas(marcasResponse)
+                    setCategorias(categoriasResponse)
+                    setUnidadesMedida(unidadesMedidaResponse)
+                }
+            } catch (error) {
+                toast.error("Error al cargar marcas/categorías")
+            }
+        }
+
+        fetchData()
+    }, [form.watch("empresa_id"), isSuperAdmin, userEmpresaId])
     const onSubmit = async (_values: ProductoForm | ProductoFormSuperAdmin) => {
         try {
         setLoading(true)
@@ -274,6 +293,39 @@ export function ProductosActionDialog({
                     )}
                     />
                 </div>
+                {/* Campo de selección de empresa solo para superadmin */}
+                {isSuperAdmin && (
+                    <FormField
+                    control={form.control}
+                    name="empresa_id"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Empresa *</FormLabel>
+                        <Select 
+                            onValueChange={(value) => field.onChange(Number(value))} 
+                            value={field.value?.toString()}
+                            disabled={loading}
+                        >
+                            <FormControl>
+                            <SelectTrigger className='w-full'>
+                                <SelectValue placeholder="Selecciona una empresa" />
+                            </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                            {empresas
+                                .filter((empresa) => empresa.id != null)
+                                .map((empresa) => (
+                                    <SelectItem key={empresa.id!} value={empresa.id!.toString()}>
+                                        {empresa.name}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                    />
+                )}
 
                 <div className="grid grid-cols-2 gap-4">
                     <FormField
@@ -285,7 +337,7 @@ export function ProductosActionDialog({
                         <Select 
                             onValueChange={(value) => field.onChange(value === "null" ? null : Number(value))} 
                             value={field.value?.toString() || "null"}
-                            disabled={loading}
+                            disabled={loading || (isSuperAdmin && !form.watch("empresa_id"))}
                         >
                             <FormControl>
                             <SelectTrigger className='w-full'>
@@ -317,7 +369,7 @@ export function ProductosActionDialog({
                         <Select 
                             onValueChange={(value) => field.onChange(value === "null" ? null : Number(value))} 
                             value={field.value?.toString() || "null"}
-                            disabled={loading}
+                            disabled={loading || (isSuperAdmin && !form.watch("empresa_id"))}
                         >
                             <FormControl>
                             <SelectTrigger className='w-full'>
@@ -351,7 +403,7 @@ export function ProductosActionDialog({
                         <Select 
                             onValueChange={(value) => field.onChange(value === "null" ? null : Number(value))} 
                             value={field.value?.toString() || "null"}
-                            disabled={loading}
+                            disabled={loading || (isSuperAdmin && !form.watch("empresa_id"))}
                         >
                             <FormControl>
                             <SelectTrigger className='w-full'>
@@ -360,7 +412,13 @@ export function ProductosActionDialog({
                             </FormControl>
                             <SelectContent>
                             <SelectItem value="null">Sin unidad</SelectItem>
-                            {/* TODO: Agregar unidades de medida cuando esté implementado en el backend */}
+                            {unidadesMedida
+                                .filter((unidad) => unidad.id != null && unidad.estado)
+                                .map((unidad) => (
+                                    <SelectItem key={unidad.id} value={unidad.id!.toString()}>
+                                        {unidad.nombre}
+                                    </SelectItem>
+                                ))}
                             </SelectContent>
                         </Select>
                         <FormMessage />
@@ -368,39 +426,6 @@ export function ProductosActionDialog({
                     )}
                     />
 
-                    {/* Campo de selección de empresa solo para superadmin */}
-                    {isSuperAdmin && (
-                        <FormField
-                        control={form.control}
-                        name="empresa_id"
-                        render={({ field }) => (
-                            <FormItem>
-                            <FormLabel>Empresa *</FormLabel>
-                            <Select 
-                                onValueChange={(value) => field.onChange(Number(value))} 
-                                value={field.value?.toString()}
-                                disabled={loading}
-                            >
-                                <FormControl>
-                                <SelectTrigger className='w-full'>
-                                    <SelectValue placeholder="Selecciona una empresa" />
-                                </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                {empresas
-                                    .filter((empresa) => empresa.id != null)
-                                    .map((empresa) => (
-                                        <SelectItem key={empresa.id!} value={empresa.id!.toString()}>
-                                            {empresa.name}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                            <FormMessage />
-                            </FormItem>
-                        )}
-                        />
-                    )}
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
