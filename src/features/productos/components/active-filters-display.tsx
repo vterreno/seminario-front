@@ -9,6 +9,7 @@ interface ActiveFiltersDisplayProps {
     onClearAll: () => void
     marcas?: Array<{id: number, nombre: string}>
     empresas?: Array<{id: number, name: string}>
+    sucursales?: Array<{id: number, nombre: string}>
 }
 
 export function ActiveFiltersDisplay({ 
@@ -16,7 +17,8 @@ export function ActiveFiltersDisplay({
     onRemoveFilter, 
     onClearAll, 
     marcas = [], 
-    empresas = [] 
+    empresas = [],
+    sucursales = []
 }: ActiveFiltersDisplayProps) {
     const hasFilters = Object.keys(filters).length > 0
 
@@ -50,6 +52,9 @@ export function ActiveFiltersDisplay({
         case 'empresa_id':
             const empresa = empresas.find(e => e.id === value)
             return `Empresa: ${empresa?.name || 'N/A'}`
+        case 'sucursal_id':
+            const sucursal = sucursales.find(s => s.id === value)
+            return `Sucursal: ${sucursal?.nombre || 'N/A'}`
         default:
             return `${key}: ${value}`
         }

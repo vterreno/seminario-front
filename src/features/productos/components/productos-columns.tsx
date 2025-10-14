@@ -225,7 +225,7 @@ export const productosColumns = (options: ProductosColumnsOptions = {}): ColumnD
             <DataTableColumnHeader column={column} title='Empresa' />
         ),
         cell: ({ row }) => {
-            const empresa = row.original.empresa
+            const empresa = row.original.sucursal?.empresa
             return (
             <div className="max-w-[150px]">
                 <LongText className='max-w-full'>
@@ -240,6 +240,28 @@ export const productosColumns = (options: ProductosColumnsOptions = {}): ColumnD
         },
         })
     }
+
+    // Agregar columna de sucursal
+    baseColumns.push({
+        accessorKey: 'sucursal',
+        header: ({ column }) => (
+        <DataTableColumnHeader column={column} title='Sucursal' />
+        ),
+        cell: ({ row }) => {
+        const sucursal = row.original.sucursal
+        return (
+            <div className="max-w-[150px]">
+            <LongText className='max-w-full'>
+                {sucursal?.nombre || '-'}
+            </LongText>
+            </div>
+        )
+        },
+        meta: {
+        className: 'w-40',
+        displayName: 'Sucursal'
+        },
+    })
 
     baseColumns.push(
         {
