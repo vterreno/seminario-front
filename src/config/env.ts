@@ -54,6 +54,7 @@ export const rutasBack = {
     },
     permisos: {
         getPermisos: `${baseUrl}/permisos/all`,
+        getPermisosByEmpresa: `${baseUrl}/permisos/empresa`,
     },
     ubicaciones: {
         provincias: `${baseUrl}/ubicaciones/provincias`,
@@ -95,15 +96,14 @@ export const rutasBack = {
         ajusteStock: `${baseUrl}/movimientos-stock/ajuste-stock`,
     },
     unidadesMedida: {
-        getUnidadesMedida: `${baseUrl}/unidades-medida`,
-        getUnidadesMedidaPaginated: `${baseUrl}/unidades-medida`,
-        postUnidadMedida: `${baseUrl}/unidades-medida`,
-        putUnidadMedida: `${baseUrl}/unidades-medida`,
-        patchUnidadMedida: `${baseUrl}/unidades-medida`,
-        deleteUnidadMedida: `${baseUrl}/unidades-medida`,
-        getUnidadMedidaPorId: `${baseUrl}/unidades-medida`,
-        deleteUnidadesMedida: `${baseUrl}/unidades-medida/bulk-delete`,
-        canDeleteUnidadMedida: `${baseUrl}/unidades-medida`,
+        getUnidadMedida: `${baseUrl}/unidad-medida`,
+        postUnidadMedida: `${baseUrl}/unidad-medida`,
+        putUnidadMedida: `${baseUrl}/unidad-medida`,
+        deleteUnidadMedida: `${baseUrl}/unidad-medida`,
+        getUnidadMedidaPorId: `${baseUrl}/unidad-medida`,
+        getUnidadesMedidaByEmpresa: `${baseUrl}/unidad-medida/empresa`,
+        bulkDeleteUnidadesMedida: `${baseUrl}/unidad-medida/bulk/delete`,
+        bulkUpdateStatus: `${baseUrl}/unidad-medida/bulk/status`,
     },
     contactos: {
         clientes: {
@@ -130,5 +130,17 @@ export const rutasBack = {
         putVenta: `${baseUrl}/ventas`,
         deleteVenta: `${baseUrl}/ventas`,
         bulkDeleteVentas: `${baseUrl}/ventas/bulk/delete`,
+    },
+};
+    listaPrecios: {
+        getListaPrecios: `${baseUrl}/lista-precios`,
+        postListaPrecios: `${baseUrl}/lista-precios`,
+        putListaPrecios: `${baseUrl}/lista-precios`,
+        deleteListaPrecios: `${baseUrl}/lista-precios`,
+        getListaPreciosPorId: `${baseUrl}/lista-precios`,
+        getListaPreciosByEmpresa: `${baseUrl}/lista-precios/empresa`,
+        getProductosByListaPrecios: `${baseUrl}/lista-precios`,
+        bulkDeleteListaPrecios: `${baseUrl}/lista-precios/bulk/delete`,
+        bulkUpdateStatus: `${baseUrl}/lista-precios/bulk/status`,
     },
 };

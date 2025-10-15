@@ -31,6 +31,7 @@ import { Route as AuthenticatedVentasRouteRouteImport } from './routes/_authenti
 import { Route as AuthenticatedSettingsRouteRouteImport } from './routes/_authenticated/settings/route'
 import { Route as AuthenticatedProductosRouteRouteImport } from './routes/_authenticated/productos/route'
 import { Route as AuthenticatedUsersIndexRouteImport } from './routes/_authenticated/users/index'
+import { Route as AuthenticatedUnidadesMedidaIndexRouteImport } from './routes/_authenticated/unidades-medida/index'
 import { Route as AuthenticatedTasksIndexRouteImport } from './routes/_authenticated/tasks/index'
 import { Route as AuthenticatedSettingsIndexRouteImport } from './routes/_authenticated/settings/index'
 import { Route as AuthenticatedRolesIndexRouteImport } from './routes/_authenticated/roles/index'
@@ -52,6 +53,7 @@ import { Route as AuthenticatedSettingsAccountRouteImport } from './routes/_auth
 import { Route as AuthenticatedErrorsErrorRouteImport } from './routes/_authenticated/errors/$error'
 import { Route as AuthenticatedVentasVentasIndexRouteImport } from './routes/_authenticated/ventas/ventas/index'
 import { Route as AuthenticatedVentasNuevaVentaIndexRouteImport } from './routes/_authenticated/ventas/nueva-venta/index'
+import { Route as AuthenticatedVentasListaPreciosIndexRouteImport } from './routes/_authenticated/ventas/lista-precios/index'
 import { Route as AuthenticatedProductosProductosIndexRouteImport } from './routes/_authenticated/productos/productos/index'
 import { Route as AuthenticatedProductosMarcasIndexRouteImport } from './routes/_authenticated/productos/marcas/index'
 import { Route as AuthenticatedProductosCategoriasIndexRouteImport } from './routes/_authenticated/productos/categorias/index'
@@ -166,6 +168,12 @@ const AuthenticatedUsersIndexRoute = AuthenticatedUsersIndexRouteImport.update({
   path: '/users/',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedUnidadesMedidaIndexRoute =
+  AuthenticatedUnidadesMedidaIndexRouteImport.update({
+    id: '/unidades-medida/',
+    path: '/unidades-medida/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedTasksIndexRoute = AuthenticatedTasksIndexRouteImport.update({
   id: '/tasks/',
   path: '/tasks/',
@@ -284,6 +292,10 @@ const AuthenticatedVentasNuevaVentaIndexRoute =
   AuthenticatedVentasNuevaVentaIndexRouteImport.update({
     id: '/nueva-venta/',
     path: '/nueva-venta/',
+const AuthenticatedVentasListaPreciosIndexRoute =
+  AuthenticatedVentasListaPreciosIndexRouteImport.update({
+    id: '/lista-precios/',
+    path: '/lista-precios/',
     getParentRoute: () => AuthenticatedVentasRouteRoute,
   } as any)
 const AuthenticatedProductosProductosIndexRoute =
@@ -344,11 +356,13 @@ export interface FileRoutesByFullPath {
   '/roles': typeof AuthenticatedRolesIndexRoute
   '/settings/': typeof AuthenticatedSettingsIndexRoute
   '/tasks': typeof AuthenticatedTasksIndexRoute
+  '/unidades-medida': typeof AuthenticatedUnidadesMedidaIndexRoute
   '/users': typeof AuthenticatedUsersIndexRoute
   '/productos/categorias': typeof AuthenticatedProductosCategoriasIndexRoute
   '/productos/marcas': typeof AuthenticatedProductosMarcasIndexRoute
   '/productos/productos': typeof AuthenticatedProductosProductosIndexRoute
   '/ventas/nueva-venta': typeof AuthenticatedVentasNuevaVentaIndexRoute
+  '/ventas/lista-precios': typeof AuthenticatedVentasListaPreciosIndexRoute
   '/ventas/ventas': typeof AuthenticatedVentasVentasIndexRoute
 }
 export interface FileRoutesByTo {
@@ -388,11 +402,13 @@ export interface FileRoutesByTo {
   '/roles': typeof AuthenticatedRolesIndexRoute
   '/settings': typeof AuthenticatedSettingsIndexRoute
   '/tasks': typeof AuthenticatedTasksIndexRoute
+  '/unidades-medida': typeof AuthenticatedUnidadesMedidaIndexRoute
   '/users': typeof AuthenticatedUsersIndexRoute
   '/productos/categorias': typeof AuthenticatedProductosCategoriasIndexRoute
   '/productos/marcas': typeof AuthenticatedProductosMarcasIndexRoute
   '/productos/productos': typeof AuthenticatedProductosProductosIndexRoute
   '/ventas/nueva-venta': typeof AuthenticatedVentasNuevaVentaIndexRoute
+  '/ventas/lista-precios': typeof AuthenticatedVentasListaPreciosIndexRoute
   '/ventas/ventas': typeof AuthenticatedVentasVentasIndexRoute
 }
 export interface FileRoutesById {
@@ -437,11 +453,13 @@ export interface FileRoutesById {
   '/_authenticated/roles/': typeof AuthenticatedRolesIndexRoute
   '/_authenticated/settings/': typeof AuthenticatedSettingsIndexRoute
   '/_authenticated/tasks/': typeof AuthenticatedTasksIndexRoute
+  '/_authenticated/unidades-medida/': typeof AuthenticatedUnidadesMedidaIndexRoute
   '/_authenticated/users/': typeof AuthenticatedUsersIndexRoute
   '/_authenticated/productos/categorias/': typeof AuthenticatedProductosCategoriasIndexRoute
   '/_authenticated/productos/marcas/': typeof AuthenticatedProductosMarcasIndexRoute
   '/_authenticated/productos/productos/': typeof AuthenticatedProductosProductosIndexRoute
   '/_authenticated/ventas/nueva-venta/': typeof AuthenticatedVentasNuevaVentaIndexRoute
+  '/_authenticated/ventas/lista-precios/': typeof AuthenticatedVentasListaPreciosIndexRoute
   '/_authenticated/ventas/ventas/': typeof AuthenticatedVentasVentasIndexRoute
 }
 export interface FileRouteTypes {
@@ -485,11 +503,13 @@ export interface FileRouteTypes {
     | '/roles'
     | '/settings/'
     | '/tasks'
+    | '/unidades-medida'
     | '/users'
     | '/productos/categorias'
     | '/productos/marcas'
     | '/productos/productos'
     | '/ventas/nueva-venta'
+    | '/ventas/lista-precios'
     | '/ventas/ventas'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -529,11 +549,13 @@ export interface FileRouteTypes {
     | '/roles'
     | '/settings'
     | '/tasks'
+    | '/unidades-medida'
     | '/users'
     | '/productos/categorias'
     | '/productos/marcas'
     | '/productos/productos'
     | '/ventas/nueva-venta'
+    | '/ventas/lista-precios'
     | '/ventas/ventas'
   id:
     | '__root__'
@@ -577,11 +599,13 @@ export interface FileRouteTypes {
     | '/_authenticated/roles/'
     | '/_authenticated/settings/'
     | '/_authenticated/tasks/'
+    | '/_authenticated/unidades-medida/'
     | '/_authenticated/users/'
     | '/_authenticated/productos/categorias/'
     | '/_authenticated/productos/marcas/'
     | '/_authenticated/productos/productos/'
     | '/_authenticated/ventas/nueva-venta/'
+    | '/_authenticated/ventas/lista-precios/'
     | '/_authenticated/ventas/ventas/'
   fileRoutesById: FileRoutesById
 }
@@ -757,6 +781,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedUsersIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/unidades-medida/': {
+      id: '/_authenticated/unidades-medida/'
+      path: '/unidades-medida'
+      fullPath: '/unidades-medida'
+      preLoaderRoute: typeof AuthenticatedUnidadesMedidaIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/tasks/': {
       id: '/_authenticated/tasks/'
       path: '/tasks'
@@ -902,6 +933,11 @@ declare module '@tanstack/react-router' {
       path: '/nueva-venta'
       fullPath: '/ventas/nueva-venta'
       preLoaderRoute: typeof AuthenticatedVentasNuevaVentaIndexRouteImport
+    '/_authenticated/ventas/lista-precios/': {
+      id: '/_authenticated/ventas/lista-precios/'
+      path: '/lista-precios'
+      fullPath: '/ventas/lista-precios'
+      preLoaderRoute: typeof AuthenticatedVentasListaPreciosIndexRouteImport
       parentRoute: typeof AuthenticatedVentasRouteRoute
     }
     '/_authenticated/productos/productos/': {
@@ -978,6 +1014,7 @@ const AuthenticatedSettingsRouteRouteWithChildren =
 
 interface AuthenticatedVentasRouteRouteChildren {
   AuthenticatedVentasNuevaVentaIndexRoute: typeof AuthenticatedVentasNuevaVentaIndexRoute
+  AuthenticatedVentasListaPreciosIndexRoute: typeof AuthenticatedVentasListaPreciosIndexRoute
   AuthenticatedVentasVentasIndexRoute: typeof AuthenticatedVentasVentasIndexRoute
 }
 
@@ -985,6 +1022,8 @@ const AuthenticatedVentasRouteRouteChildren: AuthenticatedVentasRouteRouteChildr
   {
     AuthenticatedVentasNuevaVentaIndexRoute:
       AuthenticatedVentasNuevaVentaIndexRoute,
+    AuthenticatedVentasListaPreciosIndexRoute:
+      AuthenticatedVentasListaPreciosIndexRoute,
     AuthenticatedVentasVentasIndexRoute: AuthenticatedVentasVentasIndexRoute,
   }
 
@@ -1009,6 +1048,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedHelpCenterIndexRoute: typeof AuthenticatedHelpCenterIndexRoute
   AuthenticatedRolesIndexRoute: typeof AuthenticatedRolesIndexRoute
   AuthenticatedTasksIndexRoute: typeof AuthenticatedTasksIndexRoute
+  AuthenticatedUnidadesMedidaIndexRoute: typeof AuthenticatedUnidadesMedidaIndexRoute
   AuthenticatedUsersIndexRoute: typeof AuthenticatedUsersIndexRoute
 }
 
@@ -1029,6 +1069,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedHelpCenterIndexRoute: AuthenticatedHelpCenterIndexRoute,
   AuthenticatedRolesIndexRoute: AuthenticatedRolesIndexRoute,
   AuthenticatedTasksIndexRoute: AuthenticatedTasksIndexRoute,
+  AuthenticatedUnidadesMedidaIndexRoute: AuthenticatedUnidadesMedidaIndexRoute,
   AuthenticatedUsersIndexRoute: AuthenticatedUsersIndexRoute,
 }
 

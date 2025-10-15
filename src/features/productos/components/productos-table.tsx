@@ -75,11 +75,11 @@ export function ProductosTable({ data, search, navigate, onSuccess, canBulkActio
         data,
         columns,
         state: {
-        sorting,
-        pagination,
-        rowSelection,
-        columnFilters,
-        columnVisibility,
+            sorting,
+            pagination,
+            rowSelection,
+            columnFilters,
+            columnVisibility,
         },
         enableRowSelection: canBulkAction, // Usar canBulkAction para habilitar/deshabilitar la selección de filas
         onPaginationChange,

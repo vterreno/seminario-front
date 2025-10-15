@@ -36,11 +36,11 @@ class ApiRolesService {
 
   async createRole(roleData: RoleForm): Promise<Role> {
     try {
-      const permissions = await this.mapPermissionsToBackend(roleData.permisos)
+      const permissionIds = roleData.permisos?.map(p => p.id) || []
       const response = await axiosService.post(rutasBack.roles.postRole, {
         nombre: roleData.nombre,
         empresa_id: roleData.empresa_id,
-        permissions: permissions,
+        permissions: permissionIds,
         estado: roleData.estado
       })
       return this.mapBackendPermissionsToFrontend(response.data)
@@ -59,7 +59,7 @@ class ApiRolesService {
       }
       
       if (roleData.permisos) {
-        updateData.permissions = await this.mapPermissionsToBackend(roleData.permisos)
+        updateData.permissions = roleData.permisos.map(p => p.id)
       }
       
       const response = await axiosService.put(`${rutasBack.roles.putRole}/${id}`, updateData)
@@ -112,34 +112,6 @@ class ApiRolesService {
     }
   }
 
-  // Helper method to map frontend permissions to backend format
-  private async mapPermissionsToBackend(permisos: any): Promise<number[]> {
-    const permissionIds: number[] = []
-    
-    try {
-      // Get all permissions from the API
-      const allPermissions = await apiPermisosService.getAllPermisos()
-      
-      // Create a map of permission codes to IDs
-      const permissionMap: { [key: string]: number } = {}
-      allPermissions.forEach(permission => {
-        permissionMap[permission.codigo] = permission.id
-      })
-      
-      // Map the selected permissions to IDs
-      Object.entries(permisos).forEach(([key, value]) => {
-        if (value === true && permissionMap[key]) {
-          permissionIds.push(permissionMap[key])
-        }
-      })
-      
-      return permissionIds
-    } catch (error) {
-      console.error('Error mapping permissions:', error)
-      return []
-    }
-  }
-
   // Get all permissions for the frontend
   async getAllPermissions(): Promise<Permission[]> {
     return await apiPermisosService.getAllPermisos()
@@ -147,74 +119,23 @@ class ApiRolesService {
 
   // Helper method to map backend role permissions to frontend format
   private mapBackendPermissionsToFrontend(backendRole: any): any {
-    const defaultPermissions = {
-      usuario_ver: false,
-      usuario_agregar: false,
-      usuario_modificar: false,
-      usuario_borrar: false,
-      roles_ver: false,
-      roles_agregar: false,
-      roles_modificar: false,
-      roles_eliminar: false,
-      proveedor_ver: false,
-      proveedor_agregar: false,
-      proveedor_modificar: false,
-      proveedor_eliminar: false,
-      cliente_ver: false,
-      cliente_agregar: false,
-      cliente_modificar: false,
-      cliente_eliminar: false,
-      producto_ver: false,
-      producto_agregar: false,
-      producto_modificar: false,
-      producto_eliminar: false,
-      compras_ver: false,
-      compras_agregar: false,
-      movimiento_stock_historial: false,
-      movimiento_stock_ajustar: false,
-      compras_modificar: false,
-      compras_eliminar: false,
-      ventas_ver: false,
-      ventas_agregar: false,
-      ventas_modificar: false,
-      ventas_eliminar: false,
-      ventas_acceso_caja: false,
-      marca_ver: false,
-      marca_agregar: false,
-      marca_modificar: false,
-      marca_eliminar: false,
-      unidad_ver: false,
-      unidad_agregar: false,
-      unidad_modificar: false,
-      unidad_eliminar: false,
-      categoria_ver: false,
-      categoria_agregar: false,
-      categoria_modificar: false,
-      categoria_eliminar: false,
-      configuracion_empresa: false,
-      sucursal_ver: false,
-      sucursal_agregar: false,
-      sucursal_modificar: false,
-      sucursal_eliminar: false,
-      lista_precios_predeterminada: false,
-      lista_precios_1: false,
-      lista_precios_2: false,
-    }
-
-    // If the role has permissions, map them
-    if (backendRole.permissions && Array.isArray(backendRole.permissions)) {
-      backendRole.permissions.forEach((permission: any) => {
-        if (permission.codigo && defaultPermissions.hasOwnProperty(permission.codigo)) {
-          defaultPermissions[permission.codigo as keyof typeof defaultPermissions] = true
-        }
-      })
-    }
-
     // Map empresa information if it exists
     const empresaInfo = backendRole.empresa ? {
       id: backendRole.empresa.id,
       nombre: backendRole.empresa.nombre || backendRole.empresa.name
     } : undefined
+
+    // Map permissions to the format expected by the frontend
+    const permisos = backendRole.permissions && Array.isArray(backendRole.permissions)
+      ? backendRole.permissions.map((permission: any) => ({
+          id: permission.id,
+          nombre: permission.nombre,
+          codigo: permission.codigo,
+          created_at: permission.created_at,
+          updated_at: permission.updated_at
+        }))
+      : []
+
     const mappedRole = {
       id: backendRole.id,
       nombre: backendRole.nombre,
@@ -224,9 +145,10 @@ class ApiRolesService {
       created_at: backendRole.created_at,
       updated_at: backendRole.updated_at,
       deleted_at: backendRole.deleted_at,
-      permisos: defaultPermissions
-    };
-    return mappedRole;
+      permisos: permisos
+    }
+    
+    return mappedRole
   }
 }
 

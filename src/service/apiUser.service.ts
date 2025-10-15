@@ -1,13 +1,13 @@
 import axiosService from '../api/apiClient';
 import { rutasBack } from '../config/env';
-import { STORAGE_KEYS } from '@/lib/constants';
-import { setStorageItem, removeStorageItem, getStorageItem } from '@/hooks/use-local-storage';
-import { User, UserForm } from '@/features/users/data/schema';
+import { STORAGE_KEYS } from '../lib/constants';
+import { setStorageItem, removeStorageItem, getStorageItem } from '../hooks/use-local-storage';
+import { User, UserForm } from '../features/users/data/schema';
 
 class ApiUsers {
     async login(email: string, password: string): Promise<any> {
         try {
-        const response = await axiosService.post(rutasBack.usuarios.login, { email, password });
+        const response = await axiosService.post(rutasBack.usuarios.login, {email, password });
         setStorageItem(STORAGE_KEYS.ACCESS_TOKEN, response.data.accessToken);
         setStorageItem(STORAGE_KEYS.REFRESH_TOKEN, response.data.refreshToken);
 
@@ -20,6 +20,21 @@ class ApiUsers {
         }
     }
 
+    async register(empresa: string, nombre: string, apellido: string, email: string, password: string ): Promise<any> {
+        try {
+        const response = await axiosService.post(rutasBack.usuarios.register, {empresa, nombre, apellido, email, password});
+            setStorageItem(STORAGE_KEYS.ACCESS_TOKEN, response.data.accessToken);
+            setStorageItem(STORAGE_KEYS.REFRESH_TOKEN, response.data.refreshToken);
+
+            return response.data;
+        } catch (error: any) {   
+            const backendMessage = error.response?.data?.message;
+            const errorMessage = backendMessage || "Fallo al crear usuario";
+            throw new Error(errorMessage);
+        }
+        
+    }
+    
     async validateToken(): Promise<boolean> {
         try {
             const token = getStorageItem(STORAGE_KEYS.ACCESS_TOKEN, null);

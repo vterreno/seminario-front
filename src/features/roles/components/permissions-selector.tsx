@@ -1,32 +1,138 @@
 import { useFormContext } from 'react-hook-form'
+import { useEffect, useState, useMemo } from 'react'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { permissionGroups, PermissionKey, Permissions } from '../data/schema'
 import { RoleForm } from '../data/schema'
+import apiPermisosService, { Permission } from '@/service/apiPermisos.service'
+import { toast } from 'sonner'
 
 type PermissionsSelectorProps = {
   disabled?: boolean
 }
 
+interface PermissionGroup {
+  id: string
+  name: string
+  permissions: Permission[]
+}
+
 export function PermissionsSelector({ disabled = false }: PermissionsSelectorProps) {
   const { watch, setValue } = useFormContext<RoleForm>()
-  const permisos = watch('permisos')
+  const permisos = watch('permisos') || []
+  const empresaId = watch('empresa_id')
+  const [allPermissions, setAllPermissions] = useState<Permission[]>([])
+  const [loading, setLoading] = useState(true)
+
+  // Refetch permissions when empresa_id changes
+  useEffect(() => {
+    fetchPermissions()
+  }, [empresaId])
+
+  const fetchPermissions = async () => {
+    try {
+      setLoading(true)
+      
+      // Si hay empresa_id, obtener solo permisos relevantes para esa empresa
+      // Si no hay empresa_id (ej: superadmin sin seleccionar empresa), no cargar permisos
+      if (empresaId) {
+        const data = await apiPermisosService.getPermisosByEmpresa(empresaId)
+        setAllPermissions(data)
+        
+        // Limpiar permisos seleccionados que ya no están disponibles para esta empresa
+        if (permisos.length > 0) {
+          const availableCodes = new Set(data.map(p => p.codigo))
+          const filteredPermisos = permisos.filter((p: Permission) => 
+            availableCodes.has(p.codigo)
+          )
+          
+          // Solo actualizar si hay cambios
+          if (filteredPermisos.length !== permisos.length) {
+            setValue('permisos', filteredPermisos, { shouldValidate: true })
+          }
+        }
+      } else {
+        // Si no hay empresa seleccionada, limpiar todo
+        setAllPermissions([])
+        if (permisos.length > 0) {
+          setValue('permisos', [], { shouldValidate: true })
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching permissions:', error)
+      toast.error('Error al cargar los permisos')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const capitalizeFirst = (str: string): string => {
+    return str.charAt(0).toUpperCase() + str.slice(1).replace(/_/g, ' ')
+  }
+
+  // Agrupar permisos dinámicamente basado en el prefijo del código
+  const permissionGroups = useMemo(() => {
+    const groups: { [key: string]: PermissionGroup } = {}
+    
+    allPermissions.forEach(permission => {
+      // Extraer el grupo del código (ej: "usuario_ver" -> "usuario")
+      const parts = permission.codigo.split('_')
+      const groupKey = parts[0]
+      
+      if (!groups[groupKey]) {
+        groups[groupKey] = {
+          id: groupKey,
+          name: capitalizeFirst(groupKey),
+          permissions: []
+        }
+      }
+      
+      groups[groupKey].permissions.push(permission)
+    })
+    
+    return Object.values(groups)
+  }, [allPermissions])
+
+  const isPermissionSelected = (codigo: string): boolean => {
+    return permisos.some((p: Permission) => p.codigo === codigo)
+  }
 
   const handleSelectAll = (groupId: string, checked: boolean) => {
     const group = permissionGroups.find(g => g.id === groupId)
     if (!group) return
 
-    const updates: Partial<Permissions> = {}
-    group.permissions.forEach(permission => {
-      updates[permission.key as PermissionKey] = checked
-    })
+    let updatedPermisos = [...permisos]
     
-    setValue('permisos', { ...permisos, ...updates }, { shouldValidate: true })
+    if (checked) {
+      // Agregar todos los permisos del grupo que no estén ya seleccionados
+      group.permissions.forEach(permission => {
+        if (!updatedPermisos.some((p: Permission) => p.codigo === permission.codigo)) {
+          updatedPermisos.push(permission)
+        }
+      })
+    } else {
+      // Remover todos los permisos del grupo
+      const groupCodes = group.permissions.map(p => p.codigo)
+      updatedPermisos = updatedPermisos.filter((p: Permission) => !groupCodes.includes(p.codigo))
+    }
+    
+    setValue('permisos', updatedPermisos, { shouldValidate: true })
   }
 
-  const handlePermissionChange = (permissionKey: PermissionKey, checked: boolean) => {
-    setValue(`permisos.${permissionKey}`, checked, { shouldValidate: true })
+  const handlePermissionChange = (permission: Permission, checked: boolean) => {
+    let updatedPermisos = [...permisos]
+    
+    if (checked) {
+      // Agregar permiso si no existe
+      if (!updatedPermisos.some((p: Permission) => p.codigo === permission.codigo)) {
+        updatedPermisos.push(permission)
+      }
+    } else {
+      // Remover permiso
+      updatedPermisos = updatedPermisos.filter((p: Permission) => p.codigo !== permission.codigo)
+    }
+    
+    setValue('permisos', updatedPermisos, { shouldValidate: true })
   }
 
   const isGroupFullySelected = (groupId: string): boolean => {
@@ -34,7 +140,7 @@ export function PermissionsSelector({ disabled = false }: PermissionsSelectorPro
     if (!group) return false
     
     return group.permissions.every(permission => 
-      permisos[permission.key as PermissionKey] === true
+      isPermissionSelected(permission.codigo)
     )
   }
 
@@ -43,11 +149,38 @@ export function PermissionsSelector({ disabled = false }: PermissionsSelectorPro
     if (!group) return false
     
     const selectedCount = group.permissions.filter(permission => 
-      permisos[permission.key as PermissionKey] === true
+      isPermissionSelected(permission.codigo)
     ).length
     
     return selectedCount > 0 && selectedCount < group.permissions.length
   }
+
+  if (loading) {
+    return (
+      <div className="space-y-4">
+        <div>
+          <Label className="text-base font-medium">Permisos del rol</Label>
+          <p className="text-sm text-muted-foreground">
+            Cargando permisos...
+          </p>
+        </div>
+      </div>
+    )
+  }
+
+  if (!empresaId) {
+    return (
+      <div className="space-y-4">
+        <div>
+          <Label className="text-base font-medium">Permisos del rol</Label>
+          <p className="text-sm text-muted-foreground">
+            Por favor, seleccione una empresa para ver los permisos disponibles
+          </p>
+        </div>
+      </div>
+    )
+  }
+
 
   return (
     <div className="space-y-4">
@@ -70,7 +203,10 @@ export function PermissionsSelector({ disabled = false }: PermissionsSelectorPro
                   <Checkbox
                     checked={isFullySelected}
                     ref={(el) => {
-                      if (el) el.indeterminate = isPartiallySelected && !isFullySelected
+                      if (el) {
+                        const input = el.querySelector('button')
+                        if (input) (input as any).indeterminate = isPartiallySelected && !isFullySelected
+                      }
                     }}
                     onCheckedChange={(checked) => 
                       handleSelectAll(group.id, checked as boolean)
@@ -92,20 +228,20 @@ export function PermissionsSelector({ disabled = false }: PermissionsSelectorPro
               <CardContent className="pt-0">
                 <div className="space-y-2">
                   {group.permissions.map((permission) => (
-                    <div key={permission.key} className="flex items-center space-x-2">
+                    <div key={permission.codigo} className="flex items-center space-x-2">
                       <Checkbox
-                        checked={permisos[permission.key as PermissionKey] || false}
+                        checked={isPermissionSelected(permission.codigo)}
                         onCheckedChange={(checked) =>
-                          handlePermissionChange(permission.key as PermissionKey, checked as boolean)
+                          handlePermissionChange(permission, checked as boolean)
                         }
                         disabled={disabled}
-                        id={permission.key}
+                        id={permission.codigo}
                       />
                       <Label
-                        htmlFor={permission.key}
+                        htmlFor={permission.codigo}
                         className="text-sm font-normal cursor-pointer"
                       >
-                        {permission.label}
+                        {permission.nombre}
                       </Label>
                     </div>
                   ))}

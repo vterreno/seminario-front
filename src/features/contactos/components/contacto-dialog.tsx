@@ -14,6 +14,13 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Check, ChevronsUpDown } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { 
+  formatIdentificationNumber, 
+  cleanIdentificationNumber, 
+  getIdentificationPlaceholder, 
+  validateIdentificationNumber,
+  IdentificationType 
+} from '@/lib/identification-formatting'
 
 export function ContactoDialog({ 
   open, 
@@ -45,6 +52,7 @@ export function ContactoDialog({
   const [nombreError, setNombreError] = useState<string>('')
   const [tipoDocError, setTipoDocError] = useState<string>('')
   const [numeroDocError, setNumeroDocError] = useState<string>('')
+  const [formatError, setFormatError] = useState<string>('')
   
   // Estados para controlar los popovers
   const [openProvincia, setOpenProvincia] = useState(false)
@@ -105,14 +113,28 @@ export function ContactoDialog({
     // Validar documentos: si hay tipo, número es obligatorio
     if (tipoIdentificacion && tipoIdentificacion !== 'NONE' && (!numeroIdentificacion || numeroIdentificacion.trim() === '')) {
       setNumeroDocError('El número de identificación es obligatorio cuando se selecciona un tipo')
+      setFormatError('')
       isValid = false
+    } else if (tipoIdentificacion && tipoIdentificacion !== 'NONE' && numeroIdentificacion) {
+      // Validar formato del número de identificación
+      const formatValidation = validateIdentificationNumber(numeroIdentificacion, tipoIdentificacion as IdentificationType)
+      if (!formatValidation.isValid) {
+        setFormatError(formatValidation.message || 'Formato inválido')
+        setNumeroDocError('')
+        isValid = false
+      } else {
+        setFormatError('')
+        setNumeroDocError('')
+      }
     } else {
       setNumeroDocError('')
+      setFormatError('')
     }
 
     // Limpiar error de tipo si no hay tipo seleccionado
     if (!tipoIdentificacion || tipoIdentificacion === 'NONE') {
       setTipoDocError('')
+      setFormatError('')
     }
     
     return isValid
@@ -147,7 +169,15 @@ export function ContactoDialog({
     // Inicializar estados controlados
     setNombreRazonSocial(value.nombre_razon_social || '')
     setTipoIdentificacion(value.tipo_identificacion || 'NONE')
-    setNumeroIdentificacion(value.numero_identificacion || '')
+    
+    // Aplicar formato al número de identificación existente si hay tipo
+    const rawNumber = value.numero_identificacion || ''
+    if (rawNumber && value.tipo_identificacion && value.tipo_identificacion !== 'NONE') {
+      const formattedNumber = formatIdentificationNumber(rawNumber, value.tipo_identificacion as IdentificationType)
+      setNumeroIdentificacion(formattedNumber)
+    } else {
+      setNumeroIdentificacion(rawNumber)
+    }
     setCondicionIva(value.condicion_iva || '')
     setEmail(value.email || '')
     setTelefono(value.telefono_movil || '')
@@ -162,6 +192,7 @@ export function ContactoDialog({
     setNombreError('')
     setTipoDocError('')
     setNumeroDocError('')
+    setFormatError('')
     
     // Si hay provincia, cargar sus ciudades y luego establecer la ciudad
     if (value.provincia_id) {
@@ -291,6 +322,7 @@ export function ContactoDialog({
                   setTipoIdentificacion(v);
                   // Limpiar errores al seleccionar
                   setTipoDocError('');
+                  setFormatError('');
                   // Si se selecciona un tipo y no hay número, mostrar error
                   if (v && v !== 'NONE' && (!numeroIdentificacion || numeroIdentificacion.trim() === '')) {
                     setNumeroDocError('El número de identificación es obligatorio cuando se selecciona un tipo');
@@ -301,6 +333,12 @@ export function ContactoDialog({
                   if (!v || v === 'NONE') {
                     setNumeroIdentificacion('');
                     setNumeroDocError('');
+                    setFormatError('');
+                  }
+                  // Si se selecciona un tipo y hay un número, aplicar formato
+                  if (v && v !== 'NONE' && numeroIdentificacion) {
+                    const formatted = formatIdentificationNumber(numeroIdentificacion, v as IdentificationType);
+                    setNumeroIdentificacion(formatted);
                   }
                 }}
               >
@@ -322,18 +360,42 @@ export function ContactoDialog({
               <Label>Número de identificación {(tipoIdentificacion && tipoIdentificacion !== 'NONE') ? '*' : ''}</Label>
               <Input 
                 value={numeroIdentificacion} 
+                placeholder={tipoIdentificacion && tipoIdentificacion !== 'NONE' ? getIdentificationPlaceholder(tipoIdentificacion as IdentificationType) : ''}
                 onChange={(e) => {
-                  setNumeroIdentificacion(e.target.value);
+                  const rawValue = e.target.value;
+                  let formattedValue = rawValue;
+                  
+                  // Aplicar formato si hay un tipo seleccionado
+                  if (tipoIdentificacion && tipoIdentificacion !== 'NONE') {
+                    formattedValue = formatIdentificationNumber(rawValue, tipoIdentificacion as IdentificationType);
+                  }
+                  
+                  setNumeroIdentificacion(formattedValue);
+                  
                   // Validar en tiempo real
-                  if (tipoIdentificacion && tipoIdentificacion !== 'NONE' && (!e.target.value || e.target.value.trim() === '')) {
+                  if (tipoIdentificacion && tipoIdentificacion !== 'NONE' && (!rawValue || rawValue.trim() === '')) {
                     setNumeroDocError('El número de identificación es obligatorio cuando se selecciona un tipo');
+                    setFormatError('');
+                  } else if (tipoIdentificacion && tipoIdentificacion !== 'NONE' && rawValue) {
+                    // Validar formato
+                    const formatValidation = validateIdentificationNumber(formattedValue, tipoIdentificacion as IdentificationType);
+                    if (!formatValidation.isValid) {
+                      setFormatError(formatValidation.message || 'Formato inválido');
+                      setNumeroDocError('');
+                    } else {
+                      setFormatError('');
+                      setNumeroDocError('');
+                    }
                   } else {
                     setNumeroDocError('');
+                    setFormatError('');
                   }
                 }}
-                className={numeroDocError ? 'border-red-500' : ''}
+                className={`${numeroDocError || formatError ? 'border-red-500' : ''}`}
+                disabled={!tipoIdentificacion || tipoIdentificacion === 'NONE'}
               />
               {numeroDocError && <span className="text-sm text-red-500">{numeroDocError}</span>}
+              {formatError && <span className="text-sm text-red-500">{formatError}</span>}
             </div>
           </div>
           <div className="grid gap-1">
@@ -482,7 +544,7 @@ export function ContactoDialog({
                 </PopoverContent>
               </Popover>
             </div>
-            <div className="grid gap-1 my-3">
+            <div className="grid gap-1">
               <Label>Código postal</Label>
               <Input value={codigoPostal} onChange={(e) => setCodigoPostal(e.target.value)} />
             </div>
@@ -500,7 +562,7 @@ export function ContactoDialog({
               // Usar los estados controlados en lugar del objeto value
               nombre_razon_social: nombreRazonSocial,
               tipo_identificacion: (tipoIdentificacion && tipoIdentificacion !== 'NONE') ? tipoIdentificacion : undefined,
-              numero_identificacion: (numeroIdentificacion && numeroIdentificacion !== '') ? numeroIdentificacion : undefined,
+              numero_identificacion: (numeroIdentificacion && numeroIdentificacion !== '') ? cleanIdentificationNumber(numeroIdentificacion) : undefined,
               condicion_iva: condicionIva || undefined,
               email: email || undefined,
               telefono_movil: telefono || undefined,

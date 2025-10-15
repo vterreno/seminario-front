@@ -9,8 +9,31 @@ import { TasksPrimaryButtons } from './components/tasks-primary-buttons'
 import { TasksProvider } from './components/tasks-provider'
 import { TasksTable } from './components/tasks-table'
 import { tasks } from './data/tasks'
+import { usePermissions } from '@/hooks/use-permissions'
 
 export function Tasks() {
+  const { hasPermission } = usePermissions()
+
+  if (!hasPermission('task_ver')) {
+    return (
+      <>
+        <Header>
+          <div className='ms-auto flex items-center space-x-4'>
+            <Search />
+            <ThemeSwitch />
+            <ProfileDropdown />
+          </div>
+        </Header>
+        <Main>
+          <div className="text-center p-8">
+            <h2 className="text-2xl font-bold mb-4">Sin permisos</h2>
+            <p className="text-muted-foreground">No tienes permisos para ver esta sección.</p>
+          </div>
+        </Main>
+      </>
+    )
+  }
+
   return (
     <TasksProvider>
       <Header fixed>

@@ -53,7 +53,7 @@ export const productoBackendSchema = z.object({
     .object({
       id: z.number(),
       nombre: z.string(),
-      sigla: z.string(),
+      abreviatura: z.string(),
     })
     .nullable()
     .optional(),
