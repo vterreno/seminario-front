@@ -29,12 +29,11 @@ import {
 import { 
     Producto, 
     ProductoForm, 
-    ProductoFormSuperAdmin, 
-    productoFormSchema, 
-    productoFormSuperAdminSchema 
+    productoFormSchema
 } from '../data/schema'
 import { toast } from 'sonner'
 import { useState, useEffect } from 'react'
+import { z } from 'zod'
 import { getStorageItem } from '@/hooks/use-local-storage'
 import { STORAGE_KEYS } from '@/lib/constants'
 import apiEmpresaService, { type Empresa } from '@/service/apiEmpresa.service'
@@ -71,7 +70,8 @@ type ProductosActionDialogProps = {
     onOpenChange: (open: boolean) => void
     onSuccess?: () => void
 }
-export type ProductoFormUnified = Omit<ProductoFormSuperAdmin, 'empresa_id'> & {
+// Tipo extendido para incluir empresa_id temporalmente (solo para el formulario de superadmin)
+export type ProductoFormWithEmpresa = ProductoForm & {
     empresa_id?: number
 }
 export function ProductosActionDialog({
@@ -82,12 +82,13 @@ export function ProductosActionDialog({
 }: ProductosActionDialogProps) {
     const [loading, setLoading] = useState(false)
     const [empresas, setEmpresas] = useState<Empresa[]>([])
+    const [sucursales, setSucursales] = useState<Array<{id: number, nombre: string}>>([])
     const [marcas, setMarcas] = useState<Marca[]>([])
     const [categorias, setCategorias] = useState<Categoria[]>([])
     const [unidadesMedida, setUnidadesMedida] = useState<UnidadMedida[]>([])
     const [precioCostoDisplay, setPrecioCostoDisplay] = useState('')
     const [precioVentaDisplay, setPrecioVentaDisplay] = useState('')
-
+    const [loadingSucursales, setLoadingSucursales] = useState(false)
     const isEdit = !!currentRow
 
     // Detectar si el usuario es superadmin
@@ -95,8 +96,10 @@ export function ProductosActionDialog({
     const userEmpresaId = userData?.empresa?.id
     const isSuperAdmin = !userEmpresaId
 
-    // Usar diferentes schemas según el tipo de usuario
-    const formSchema = isSuperAdmin ? productoFormSuperAdminSchema : productoFormSchema
+    // Crear schema dinámico para superadmin que incluye empresa_id temporal
+    const formSchema = isSuperAdmin && !isEdit
+        ? productoFormSchema.extend({ empresa_id: z.number().min(1, 'Debe seleccionar una empresa') })
+        : productoFormSchema
 
     const form = useForm<any>({
         resolver: zodResolver(formSchema),
@@ -104,6 +107,7 @@ export function ProductosActionDialog({
         ? {
             codigo: currentRow.codigo,
             nombre: currentRow.nombre,
+            sucursal_id: currentRow.sucursal_id,
             marca_id: currentRow.marca_id,
             categoria_id: currentRow.categoria_id,
             unidad_medida_id: currentRow.unidad_medida_id,
@@ -111,12 +115,12 @@ export function ProductosActionDialog({
             precio_venta: currentRow.precio_venta,
             stock_apertura: currentRow.stock_apertura,
             stock: currentRow.stock,
-            ...(isSuperAdmin && { empresa_id: currentRow.empresa_id }),
             estado: currentRow.estado,
             }
         : {
             codigo: '',
             nombre: '',
+            sucursal_id: undefined,
             marca_id: undefined,
             categoria_id: undefined,
             unidad_medida_id: undefined,
@@ -124,7 +128,6 @@ export function ProductosActionDialog({
             precio_venta: 0,
             stock_apertura: 0,
             stock: 0,
-            ...(isSuperAdmin && { empresa_id: undefined }),
             estado: true,
             },
     })
@@ -137,35 +140,20 @@ export function ProductosActionDialog({
             setPrecioVentaDisplay(precioVenta ? formatCurrency(precioVenta) : '')
         }
     }, [open, form])
+    // Cargar empresas si es superadmin, marcas, categorías y sucursales
     useEffect(() => {
-    if (open && isSuperAdmin) {
-        const fetchEmpresas = async () => {
-            try {
-                const empresasResponse = await apiEmpresaService.getAllEmpresas()
-                setEmpresas(empresasResponse)
-            } catch (error) {
-                toast.error("Error al cargar empresas")
-            }
-        }
-        fetchEmpresas()
-    }
-}, [open, isSuperAdmin])
-    useEffect(() => {
-        const selectedEmpresaId = form.watch("empresa_id")
-
-        const fetchData = async () => {
-            try {
-                if (isSuperAdmin) {
-                    // Superadmin: solo cargamos si seleccionó empresa
-                    if (selectedEmpresaId) {
-                        const [marcasResponse, categoriasResponse, unidadesMedidaResponse] = await Promise.all([
-                            apiMarcasService.getMarcasByEmpresa(selectedEmpresaId),
-                            apiCategoriasService.getCategoriasByEmpresa(selectedEmpresaId),
-                            apiUnidadesMedidaService.getUnidadesMedidaByEmpresa(selectedEmpresaId),
-                        ])
-                        setMarcas(marcasResponse)
-                        setCategorias(categoriasResponse)
-                        setUnidadesMedida(unidadesMedidaResponse)
+        if (open) {
+            const fetchData = async () => {
+                try {
+                    // Cargar empresas solo si es superadmin
+                    if (isSuperAdmin) {
+                        const empresasResponse = await apiEmpresaService.getAllEmpresas()
+                        setEmpresas(empresasResponse)
+                    } else if (userEmpresaId) {
+                        // Para usuarios normales, cargar sucursales de su empresa automáticamente
+                        const apiSucursalesService = await import('@/service/apiSucursales.service')
+                        const sucursalesResponse = await apiSucursalesService.default.getSucursalesByEmpresa(userEmpresaId)
+                        setSucursales(sucursalesResponse.map(s => ({ id: s.id!, nombre: s.nombre! })))
                     }
                 } else if (userEmpresaId) {
                     // Usuario común: su empresa es fija, cargamos directo
@@ -183,16 +171,37 @@ export function ProductosActionDialog({
             }
         }
 
-        fetchData()
-    }, [form.watch("empresa_id"), isSuperAdmin, userEmpresaId])
-    const onSubmit = async (_values: ProductoForm | ProductoFormSuperAdmin) => {
+    // Observar cambios en empresa_id para cargar sucursales (solo superadmin)
+    useEffect(() => {
+        if (isSuperAdmin && open) {
+            const subscription = form.watch(async (value, { name }) => {
+                if (name === 'empresa_id' && value.empresa_id) {
+                    try {
+                        setLoadingSucursales(true)
+                        const apiSucursalesService = await import('@/service/apiSucursales.service')
+                        const sucursalesResponse = await apiSucursalesService.default.getSucursalesByEmpresa(value.empresa_id)
+                        setSucursales(sucursalesResponse.map(s => ({ id: s.id!, nombre: s.nombre! })))
+                        // Limpiar sucursal seleccionada al cambiar de empresa
+                        form.setValue('sucursal_id', undefined)
+                    } catch (error) {
+                        toast.error('Error al cargar las sucursales')
+                        setSucursales([])
+                    } finally {
+                        setLoadingSucursales(false)
+                    }
+                }
+            })
+            return () => subscription.unsubscribe()
+        }
+    }, [isSuperAdmin, open, form])
+
+    const onSubmit = async (_values: ProductoFormWithEmpresa) => {
         try {
         setLoading(true)
         
-        // Para usuarios regulares, agregar empresa_id automáticamente
-        let finalValues = isSuperAdmin 
-            ? _values as ProductoFormSuperAdmin
-            : { ..._values as ProductoForm, empresa_id: userEmpresaId! }
+        // Remover empresa_id ya que el backend lo obtiene de la sucursal
+        const { empresa_id, ...valuesWithoutEmpresa } = _values
+        let finalValues = { ...valuesWithoutEmpresa }
 
         // Si es creación, establecer el stock actual igual al stock inicial
         if (!isEdit) {
@@ -219,6 +228,7 @@ export function ProductosActionDialog({
         form.reset()
         setPrecioCostoDisplay('')
         setPrecioVentaDisplay('')
+        setSucursales([])
 
         } catch (error: any) {
             form.reset()
@@ -427,6 +437,91 @@ export function ProductosActionDialog({
                     />
 
                 </div>
+
+                {/* Campo de selección de empresa solo para superadmin */}
+                {isSuperAdmin && !isEdit && (
+                    <FormField
+                    control={form.control}
+                    name="empresa_id"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Empresa *</FormLabel>
+                        <Select 
+                            onValueChange={(value) => field.onChange(Number(value))} 
+                            value={field.value?.toString()}
+                            disabled={loading}
+                        >
+                            <FormControl>
+                            <SelectTrigger className='w-full'>
+                                <SelectValue placeholder="Selecciona una empresa" />
+                            </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                            {empresas
+                                .filter((empresa) => empresa.id != null && empresa.estado)
+                                .map((empresa) => (
+                                    <SelectItem key={empresa.id!} value={empresa.id!.toString()}>
+                                        {empresa.name}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                    />
+                )}
+
+                {/* Campo de selección de sucursal */}
+                {!isEdit && (
+                    <FormField
+                    control={form.control}
+                    name="sucursal_id"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Sucursal *</FormLabel>
+                        <Select 
+                            onValueChange={(value) => field.onChange(Number(value))} 
+                            value={field.value?.toString()}
+                            disabled={loading || loadingSucursales || (isSuperAdmin && !form.watch('empresa_id'))}
+                        >
+                            <FormControl>
+                            <SelectTrigger className='w-full'>
+                                <SelectValue placeholder={
+                                    loadingSucursales 
+                                        ? "Cargando sucursales..." 
+                                        : isSuperAdmin && !form.watch('empresa_id')
+                                            ? "Primero selecciona una empresa"
+                                            : "Selecciona una sucursal"
+                                } />
+                            </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                            {sucursales.length === 0 ? (
+                                <SelectItem value="no-sucursales" disabled>
+                                    {isSuperAdmin && !form.watch('empresa_id') 
+                                        ? "Selecciona una empresa primero"
+                                        : "No hay sucursales disponibles"}
+                                </SelectItem>
+                            ) : (
+                                sucursales.map((sucursal) => (
+                                    <SelectItem key={sucursal.id} value={sucursal.id.toString()}>
+                                        {sucursal.nombre}
+                                    </SelectItem>
+                                ))
+                            )}
+                            </SelectContent>
+                        </Select>
+                        <FormMessage />
+                        {isSuperAdmin && !form.watch('empresa_id') && (
+                            <div className="text-sm text-muted-foreground">
+                                Selecciona una empresa para ver sus sucursales
+                            </div>
+                        )}
+                        </FormItem>
+                    )}
+                    />
+                )}
 
                 <div className="grid grid-cols-2 gap-4">
                     <FormField

@@ -25,6 +25,7 @@ export interface AdvancedSearchFilters {
     stock_max?: number
     estado?: boolean
     empresa_id?: number // Para superadmin
+    sucursal_id?: number // Para filtrar por sucursal
 }
 
 // Interfaz para controlar qué filtros están activados
@@ -37,6 +38,7 @@ export interface ActiveFilters {
     stock: boolean
     estado: boolean
     empresa: boolean
+    sucursal: boolean
 }
 
 interface Marca {
@@ -49,12 +51,18 @@ interface Empresa {
     name: string
 }
 
+interface Sucursal {
+    id: number
+    nombre: string
+}
+
 interface AdvancedSearchSidebarProps {
     open: boolean
     onOpenChange: (open: boolean) => void
     onFiltersChange: (filters: AdvancedSearchFilters) => void
     showEmpresaFilter?: boolean
     empresas?: Empresa[]
+    sucursales?: Sucursal[]
     currentFilters?: AdvancedSearchFilters // Filtros actualmente aplicados
 }
 
@@ -100,6 +108,7 @@ export function AdvancedSearchSidebar({
     onFiltersChange, 
     showEmpresaFilter = false,
     empresas = [],
+    sucursales = [],
     currentFilters = {}
 }: AdvancedSearchSidebarProps) {
     const [filters, setFilters] = useState<AdvancedSearchFilters>({})
@@ -111,10 +120,13 @@ export function AdvancedSearchSidebar({
         precio_venta: false,
         stock: false,
         estado: false,
-        empresa: false
+        empresa: false,
+        sucursal: false
     })
     const [marcas, setMarcas] = useState<Marca[]>([])
     const [loadingMarcas, setLoadingMarcas] = useState(false)
+    const [sucursalesFiltradas, setSucursalesFiltradas] = useState<Sucursal[]>(sucursales)
+    const [loadingSucursales, setLoadingSucursales] = useState(false)
 
     // Cargar marcas al abrir el sidebar
     useEffect(() => {
@@ -136,7 +148,8 @@ export function AdvancedSearchSidebar({
             precio_venta: !!(currentFilters.precio_venta_min !== undefined || currentFilters.precio_venta_max !== undefined),
             stock: !!(currentFilters.stock_min !== undefined || currentFilters.stock_max !== undefined),
             estado: currentFilters.estado !== undefined,
-            empresa: !!currentFilters.empresa_id
+            empresa: !!currentFilters.empresa_id,
+            sucursal: !!currentFilters.sucursal_id
         })
         }
     }, [open, currentFilters])
@@ -153,6 +166,32 @@ export function AdvancedSearchSidebar({
         }
     }
 
+    // Cargar sucursales cuando cambie la empresa seleccionada (solo para superadmin)
+    useEffect(() => {
+        if (showEmpresaFilter && filters.empresa_id) {
+            const fetchSucursales = async () => {
+                try {
+                    setLoadingSucursales(true)
+                    const apiSucursalesService = await import('@/service/apiSucursales.service')
+                    const sucursalesData = await apiSucursalesService.default.getSucursalesByEmpresa(filters.empresa_id!)
+                    setSucursalesFiltradas(sucursalesData.map(s => ({ id: s.id!, nombre: s.nombre! })))
+                } catch (error) {
+                    toast.error('Error al cargar las sucursales')
+                    setSucursalesFiltradas([])
+                } finally {
+                    setLoadingSucursales(false)
+                }
+            }
+            fetchSucursales()
+        } else if (!showEmpresaFilter) {
+            // Para usuarios normales, usar las sucursales que vienen como prop
+            setSucursalesFiltradas(sucursales)
+        } else {
+            // Si no hay empresa seleccionada (superadmin), limpiar sucursales
+            setSucursalesFiltradas([])
+        }
+    }, [filters.empresa_id, showEmpresaFilter, sucursales])
+
     const handleFilterChange = useCallback((key: keyof AdvancedSearchFilters, value: any) => {
         setFilters(prevFilters => {
             const newFilters = { ...prevFilters }
@@ -162,10 +201,15 @@ export function AdvancedSearchSidebar({
             } else {
                 newFilters[key] = value
             }
+
+            // Si se cambia la empresa, limpiar la sucursal seleccionada
+            if (key === 'empresa_id' && showEmpresaFilter) {
+                delete newFilters.sucursal_id
+            }
             
             return newFilters
         })
-    }, [])
+    }, [showEmpresaFilter])
 
     const handleFilterToggle = useCallback((filterKey: keyof ActiveFilters) => {
         setActiveFilters(prevActiveFilters => {
@@ -203,6 +247,10 @@ export function AdvancedSearchSidebar({
                             break
                         case 'empresa':
                             delete newFilters.empresa_id
+                            delete newFilters.sucursal_id // Limpiar también sucursal si se desactiva empresa
+                            break
+                        case 'sucursal':
+                            delete newFilters.sucursal_id
                             break
                     }
                     
@@ -223,6 +271,7 @@ export function AdvancedSearchSidebar({
     const togglePrecioVenta = useCallback(() => handleFilterToggle('precio_venta'), [handleFilterToggle])
     const toggleStock = useCallback(() => handleFilterToggle('stock'), [handleFilterToggle])
     const toggleEmpresa = useCallback(() => handleFilterToggle('empresa'), [handleFilterToggle])
+    const toggleSucursal = useCallback(() => handleFilterToggle('sucursal'), [handleFilterToggle])
 
     const applyFilters = () => {
         // Solo enviar filtros que estén activos
@@ -267,6 +316,9 @@ export function AdvancedSearchSidebar({
         if (activeFilters.empresa && filters.empresa_id) {
         activeFiltersOnly.empresa_id = filters.empresa_id
         }
+        if (activeFilters.sucursal && filters.sucursal_id) {
+        activeFiltersOnly.sucursal_id = filters.sucursal_id
+        }
         
         // Aplicar filtros activos y cerrar sidebar
         onFiltersChange(activeFiltersOnly)
@@ -284,7 +336,8 @@ export function AdvancedSearchSidebar({
         precio_venta: false,
         stock: false,
         estado: false,
-        empresa: false
+        empresa: false,
+        sucursal: false
         })
         onFiltersChange({})
     }
@@ -554,6 +607,56 @@ export function AdvancedSearchSidebar({
                     </FilterSection>
                 </>
                 )}
+
+                {/* Filtro de Sucursal */}
+                <Separator />
+                <FilterSection 
+                    title="Sucursal" 
+                    isActive={activeFilters.sucursal}
+                    onToggle={toggleSucursal}
+                >
+                <div className="space-y-2">
+                    <Label htmlFor="sucursal">Sucursal</Label>
+                    <Select
+                    value={filters.sucursal_id?.toString() || 'all'}
+                    onValueChange={(value) => 
+                        handleFilterChange('sucursal_id', value === 'all' ? undefined : parseInt(value))
+                    }
+                    disabled={!activeFilters.sucursal || loadingSucursales || (showEmpresaFilter && !filters.empresa_id)}
+                    >
+                    <SelectTrigger>
+                        <SelectValue placeholder={
+                            loadingSucursales 
+                                ? "Cargando sucursales..." 
+                                : showEmpresaFilter && !filters.empresa_id
+                                    ? "Primero selecciona una empresa"
+                                    : "Seleccionar sucursal..."
+                        } />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="all">Todas las sucursales</SelectItem>
+                        {sucursalesFiltradas.length === 0 && !loadingSucursales ? (
+                            <SelectItem value="no-sucursales" disabled>
+                                {showEmpresaFilter && !filters.empresa_id 
+                                    ? "Selecciona una empresa primero"
+                                    : "No hay sucursales disponibles"}
+                            </SelectItem>
+                        ) : (
+                            sucursalesFiltradas.map((sucursal) => (
+                                <SelectItem key={sucursal.id} value={sucursal.id.toString()}>
+                                    {sucursal.nombre}
+                                </SelectItem>
+                            ))
+                        )}
+                    </SelectContent>
+                    </Select>
+                    {showEmpresaFilter && !filters.empresa_id && (
+                        <div className="text-sm text-muted-foreground">
+                            Selecciona una empresa primero para ver sus sucursales
+                        </div>
+                    )}
+                </div>
+                </FilterSection>
 
             </div>
             </ScrollArea>

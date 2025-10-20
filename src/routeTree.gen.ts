@@ -52,6 +52,7 @@ import { Route as AuthenticatedSettingsAppearanceRouteImport } from './routes/_a
 import { Route as AuthenticatedSettingsAccountRouteImport } from './routes/_authenticated/settings/account'
 import { Route as AuthenticatedErrorsErrorRouteImport } from './routes/_authenticated/errors/$error'
 import { Route as AuthenticatedVentasVentasIndexRouteImport } from './routes/_authenticated/ventas/ventas/index'
+import { Route as AuthenticatedVentasNuevaVentaIndexRouteImport } from './routes/_authenticated/ventas/nueva-venta/index'
 import { Route as AuthenticatedVentasListaPreciosIndexRouteImport } from './routes/_authenticated/ventas/lista-precios/index'
 import { Route as AuthenticatedProductosProductosIndexRouteImport } from './routes/_authenticated/productos/productos/index'
 import { Route as AuthenticatedProductosMarcasIndexRouteImport } from './routes/_authenticated/productos/marcas/index'
@@ -287,6 +288,10 @@ const AuthenticatedVentasVentasIndexRoute =
     path: '/ventas/',
     getParentRoute: () => AuthenticatedVentasRouteRoute,
   } as any)
+const AuthenticatedVentasNuevaVentaIndexRoute =
+  AuthenticatedVentasNuevaVentaIndexRouteImport.update({
+    id: '/nueva-venta/',
+    path: '/nueva-venta/',
 const AuthenticatedVentasListaPreciosIndexRoute =
   AuthenticatedVentasListaPreciosIndexRouteImport.update({
     id: '/lista-precios/',
@@ -356,6 +361,7 @@ export interface FileRoutesByFullPath {
   '/productos/categorias': typeof AuthenticatedProductosCategoriasIndexRoute
   '/productos/marcas': typeof AuthenticatedProductosMarcasIndexRoute
   '/productos/productos': typeof AuthenticatedProductosProductosIndexRoute
+  '/ventas/nueva-venta': typeof AuthenticatedVentasNuevaVentaIndexRoute
   '/ventas/lista-precios': typeof AuthenticatedVentasListaPreciosIndexRoute
   '/ventas/ventas': typeof AuthenticatedVentasVentasIndexRoute
 }
@@ -401,6 +407,7 @@ export interface FileRoutesByTo {
   '/productos/categorias': typeof AuthenticatedProductosCategoriasIndexRoute
   '/productos/marcas': typeof AuthenticatedProductosMarcasIndexRoute
   '/productos/productos': typeof AuthenticatedProductosProductosIndexRoute
+  '/ventas/nueva-venta': typeof AuthenticatedVentasNuevaVentaIndexRoute
   '/ventas/lista-precios': typeof AuthenticatedVentasListaPreciosIndexRoute
   '/ventas/ventas': typeof AuthenticatedVentasVentasIndexRoute
 }
@@ -451,6 +458,7 @@ export interface FileRoutesById {
   '/_authenticated/productos/categorias/': typeof AuthenticatedProductosCategoriasIndexRoute
   '/_authenticated/productos/marcas/': typeof AuthenticatedProductosMarcasIndexRoute
   '/_authenticated/productos/productos/': typeof AuthenticatedProductosProductosIndexRoute
+  '/_authenticated/ventas/nueva-venta/': typeof AuthenticatedVentasNuevaVentaIndexRoute
   '/_authenticated/ventas/lista-precios/': typeof AuthenticatedVentasListaPreciosIndexRoute
   '/_authenticated/ventas/ventas/': typeof AuthenticatedVentasVentasIndexRoute
 }
@@ -500,6 +508,7 @@ export interface FileRouteTypes {
     | '/productos/categorias'
     | '/productos/marcas'
     | '/productos/productos'
+    | '/ventas/nueva-venta'
     | '/ventas/lista-precios'
     | '/ventas/ventas'
   fileRoutesByTo: FileRoutesByTo
@@ -545,6 +554,7 @@ export interface FileRouteTypes {
     | '/productos/categorias'
     | '/productos/marcas'
     | '/productos/productos'
+    | '/ventas/nueva-venta'
     | '/ventas/lista-precios'
     | '/ventas/ventas'
   id:
@@ -594,6 +604,7 @@ export interface FileRouteTypes {
     | '/_authenticated/productos/categorias/'
     | '/_authenticated/productos/marcas/'
     | '/_authenticated/productos/productos/'
+    | '/_authenticated/ventas/nueva-venta/'
     | '/_authenticated/ventas/lista-precios/'
     | '/_authenticated/ventas/ventas/'
   fileRoutesById: FileRoutesById
@@ -917,6 +928,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedVentasVentasIndexRouteImport
       parentRoute: typeof AuthenticatedVentasRouteRoute
     }
+    '/_authenticated/ventas/nueva-venta/': {
+      id: '/_authenticated/ventas/nueva-venta/'
+      path: '/nueva-venta'
+      fullPath: '/ventas/nueva-venta'
+      preLoaderRoute: typeof AuthenticatedVentasNuevaVentaIndexRouteImport
     '/_authenticated/ventas/lista-precios/': {
       id: '/_authenticated/ventas/lista-precios/'
       path: '/lista-precios'
@@ -997,12 +1013,15 @@ const AuthenticatedSettingsRouteRouteWithChildren =
   )
 
 interface AuthenticatedVentasRouteRouteChildren {
+  AuthenticatedVentasNuevaVentaIndexRoute: typeof AuthenticatedVentasNuevaVentaIndexRoute
   AuthenticatedVentasListaPreciosIndexRoute: typeof AuthenticatedVentasListaPreciosIndexRoute
   AuthenticatedVentasVentasIndexRoute: typeof AuthenticatedVentasVentasIndexRoute
 }
 
 const AuthenticatedVentasRouteRouteChildren: AuthenticatedVentasRouteRouteChildren =
   {
+    AuthenticatedVentasNuevaVentaIndexRoute:
+      AuthenticatedVentasNuevaVentaIndexRoute,
     AuthenticatedVentasListaPreciosIndexRoute:
       AuthenticatedVentasListaPreciosIndexRoute,
     AuthenticatedVentasVentasIndexRoute: AuthenticatedVentasVentasIndexRoute,

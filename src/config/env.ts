@@ -121,6 +121,17 @@ export const rutasBack = {
             bulkStatus: `${baseUrl}/proveedores/bulk/status`,
         },
     },
+    ventas: {
+        getVentas: `${baseUrl}/ventas`,
+        getVentaPorId: `${baseUrl}/ventas`,
+        getVentasBySucursal: `${baseUrl}/ventas/sucursal`,
+        getVentasByEmpresa: `${baseUrl}/ventas/empresa`,
+        postVenta: `${baseUrl}/ventas`,
+        putVenta: `${baseUrl}/ventas`,
+        deleteVenta: `${baseUrl}/ventas`,
+        bulkDeleteVentas: `${baseUrl}/ventas/bulk/delete`,
+    },
+};
     listaPrecios: {
         getListaPrecios: `${baseUrl}/lista-precios`,
         postListaPrecios: `${baseUrl}/lista-precios`,

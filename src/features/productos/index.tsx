@@ -54,6 +54,7 @@ export function Productos() {
     const [allProductos, setAllProductos] = useState<Producto[]>([]) // Guardamos todos los productos sin filtrar
     const [empresas, setEmpresas] = useState<Array<{id: number, name: string}>>([])
     const [marcas, setMarcas] = useState<Array<{id: number, nombre: string}>>([])
+    const [sucursales, setSucursales] = useState<Array<{id: number, nombre: string}>>([])
 
     // Verificar permisos para bulk actions
     const canEdit = hasPermission('producto_modificar')
@@ -99,9 +100,27 @@ export function Productos() {
                 } catch (error) {
                     console.error('Error fetching empresas:', error)
                 }
+                // Cargar sucursales para el filtro
+                try {
+                    const apiSucursalesService = await import('@/service/apiSucursales.service')
+                    const sucursalesData = await apiSucursalesService.default.getAllSucursales()
+                    const mappedSucursales = sucursalesData.map(s => ({ id: s.id!, nombre: s.nombre! }))
+                    setSucursales(mappedSucursales)
+                } catch (error) {
+                    console.error('Error fetching sucursales:', error)
+                }
             } else {
                 // Regular admin: get only productos from their company
                 data = await apiProductosService.getProductosByEmpresa(userEmpresaId!)
+                // Cargar sucursales de la empresa para el filtro
+                try {
+                    const apiSucursalesService = await import('@/service/apiSucursales.service')
+                    const sucursalesData = await apiSucursalesService.default.getSucursalesByEmpresa(userEmpresaId!)
+                    const mappedSucursales = sucursalesData.map(s => ({ id: s.id!, nombre: s.nombre! }))
+                    setSucursales(mappedSucursales)
+                } catch (error) {
+                    console.error('Error fetching sucursales:', error)
+                }
             }
 
             setAllProductos(data) // Guardamos todos los productos
@@ -174,7 +193,12 @@ export function Productos() {
 
         // Filtro por empresa (solo para superadmin)
         if (filters.empresa_id && isSuperAdmin) {
-            filtered = filtered.filter(p => p.empresa_id === filters.empresa_id)
+            filtered = filtered.filter(p => p.sucursal?.empresa?.id === filters.empresa_id)
+        }
+
+        // Filtro por sucursal
+        if (filters.sucursal_id) {
+            filtered = filtered.filter(p => p.sucursal_id === filters.sucursal_id)
         }
 
         setProductos(filtered)
@@ -284,6 +308,7 @@ export function Productos() {
                         onClearAll={handleClearAllFilters}
                         marcas={marcas}
                         empresas={empresas}
+                        sucursales={sucursales}
                     />
                 </div>
             )}
@@ -310,6 +335,7 @@ export function Productos() {
                 onFiltersChange={handleFiltersChange}
                 showEmpresaFilter={isSuperAdmin}
                 empresas={empresas}
+                sucursales={sucursales}
                 currentFilters={activeFilters}
             />
         </Main>
