@@ -21,8 +21,6 @@ import apiSucursalesService from "@/service/apiSucursales.service"
 import type { Sucursal } from "../sucursales/data/schema"
 import { getStorageItem } from "@/hooks/use-local-storage"
 import { STORAGE_KEYS } from "@/lib/constants"
-import { set } from "zod"
-
 const route = getRouteApi('/_authenticated/ventas/ventas/')
 
 interface UserData {
