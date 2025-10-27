@@ -33,6 +33,10 @@ interface UserData {
     id: number
     name: string
   } | null
+  sucursales?: Array<{
+    id: number
+    nombre: string
+  }>
 }
 
 const route = getRouteApi('/_authenticated/roles/')

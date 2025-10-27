@@ -9,6 +9,10 @@ interface UserData {
     id: number | null
     nombre: string | null
   }
+  sucursales?: Array<{
+    id: number
+    nombre: string
+  }>
   roles: Array<{
     id: number
     nombre: string

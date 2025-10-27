@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { Search, Filter, RotateCcw } from 'lucide-react'
+import { Search, Filter, RotateCcw, Check, ChevronsUpDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -10,8 +10,11 @@ import { Separator } from '@/components/ui/separator'
 import { Badge } from '@/components/ui/badge'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command'
 import apiMarcasService from '@/service/apiMarcas.service'
 import { toast } from 'sonner'
+import { cn } from '@/lib/utils'
 
 export interface AdvancedSearchFilters {
     codigo?: string
@@ -25,7 +28,7 @@ export interface AdvancedSearchFilters {
     stock_max?: number
     estado?: boolean
     empresa_id?: number // Para superadmin
-    sucursal_id?: number // Para filtrar por sucursal
+    sucursal_ids?: number[] // Para filtrar por múltiples sucursales
 }
 
 // Interfaz para controlar qué filtros están activados
@@ -60,9 +63,9 @@ interface AdvancedSearchSidebarProps {
     open: boolean
     onOpenChange: (open: boolean) => void
     onFiltersChange: (filters: AdvancedSearchFilters) => void
-    showEmpresaFilter?: boolean
+    isSuperAdmin?: boolean // Si es superadmin puede ver filtro de empresa
     empresas?: Empresa[]
-    sucursales?: Sucursal[]
+    sucursales?: Sucursal[] // Sucursales del usuario o todas si es superadmin
     currentFilters?: AdvancedSearchFilters // Filtros actualmente aplicados
 }
 
@@ -106,7 +109,7 @@ export function AdvancedSearchSidebar({
     open, 
     onOpenChange, 
     onFiltersChange, 
-    showEmpresaFilter = false,
+    isSuperAdmin = false,
     empresas = [],
     sucursales = [],
     currentFilters = {}
@@ -127,6 +130,8 @@ export function AdvancedSearchSidebar({
     const [loadingMarcas, setLoadingMarcas] = useState(false)
     const [sucursalesFiltradas, setSucursalesFiltradas] = useState<Sucursal[]>(sucursales)
     const [loadingSucursales, setLoadingSucursales] = useState(false)
+
+
 
     // Cargar marcas al abrir el sidebar
     useEffect(() => {
@@ -149,10 +154,15 @@ export function AdvancedSearchSidebar({
             stock: !!(currentFilters.stock_min !== undefined || currentFilters.stock_max !== undefined),
             estado: currentFilters.estado !== undefined,
             empresa: !!currentFilters.empresa_id,
-            sucursal: !!currentFilters.sucursal_id
+            sucursal: !!(currentFilters.sucursal_ids && currentFilters.sucursal_ids.length > 0)
         })
+        
+        // Inicializar sucursales filtradas para usuarios no superadmin
+        if (!isSuperAdmin) {
+            setSucursalesFiltradas(sucursales)
         }
-    }, [open, currentFilters])
+        }
+    }, [open, currentFilters, isSuperAdmin, sucursales])
 
     const fetchMarcas = async () => {
         try {
@@ -168,7 +178,7 @@ export function AdvancedSearchSidebar({
 
     // Cargar sucursales cuando cambie la empresa seleccionada (solo para superadmin)
     useEffect(() => {
-        if (showEmpresaFilter && filters.empresa_id) {
+        if (isSuperAdmin && filters.empresa_id) {
             const fetchSucursales = async () => {
                 try {
                     setLoadingSucursales(true)
@@ -183,14 +193,14 @@ export function AdvancedSearchSidebar({
                 }
             }
             fetchSucursales()
-        } else if (!showEmpresaFilter) {
+        } else if (!isSuperAdmin) {
             // Para usuarios normales, usar las sucursales que vienen como prop
             setSucursalesFiltradas(sucursales)
         } else {
             // Si no hay empresa seleccionada (superadmin), limpiar sucursales
             setSucursalesFiltradas([])
         }
-    }, [filters.empresa_id, showEmpresaFilter, sucursales])
+    }, [filters.empresa_id, isSuperAdmin, sucursales])
 
     const handleFilterChange = useCallback((key: keyof AdvancedSearchFilters, value: any) => {
         setFilters(prevFilters => {
@@ -202,14 +212,14 @@ export function AdvancedSearchSidebar({
                 newFilters[key] = value
             }
 
-            // Si se cambia la empresa, limpiar la sucursal seleccionada
-            if (key === 'empresa_id' && showEmpresaFilter) {
-                delete newFilters.sucursal_id
+            // Si se cambia la empresa, limpiar las sucursales seleccionadas
+            if (key === 'empresa_id' && isSuperAdmin) {
+                delete newFilters.sucursal_ids
             }
             
             return newFilters
         })
-    }, [showEmpresaFilter])
+    }, [isSuperAdmin])
 
     const handleFilterToggle = useCallback((filterKey: keyof ActiveFilters) => {
         setActiveFilters(prevActiveFilters => {
@@ -247,10 +257,10 @@ export function AdvancedSearchSidebar({
                             break
                         case 'empresa':
                             delete newFilters.empresa_id
-                            delete newFilters.sucursal_id // Limpiar también sucursal si se desactiva empresa
+                            delete newFilters.sucursal_ids // Limpiar también sucursales si se desactiva empresa
                             break
                         case 'sucursal':
-                            delete newFilters.sucursal_id
+                            delete newFilters.sucursal_ids
                             break
                     }
                     
@@ -316,8 +326,8 @@ export function AdvancedSearchSidebar({
         if (activeFilters.empresa && filters.empresa_id) {
         activeFiltersOnly.empresa_id = filters.empresa_id
         }
-        if (activeFilters.sucursal && filters.sucursal_id) {
-        activeFiltersOnly.sucursal_id = filters.sucursal_id
+        if (activeFilters.sucursal && filters.sucursal_ids && filters.sucursal_ids.length > 0) {
+        activeFiltersOnly.sucursal_ids = filters.sucursal_ids
         }
         
         // Aplicar filtros activos y cerrar sidebar
@@ -574,7 +584,7 @@ export function AdvancedSearchSidebar({
                 </FilterSection>
 
                 {/* Filtro de Empresa para Superadmin */}
-                {showEmpresaFilter && (
+                {isSuperAdmin && (
                 <>
                     <Separator />
                     <FilterSection 
@@ -608,55 +618,105 @@ export function AdvancedSearchSidebar({
                 </>
                 )}
 
-                {/* Filtro de Sucursal */}
-                <Separator />
-                <FilterSection 
-                    title="Sucursal" 
-                    isActive={activeFilters.sucursal}
-                    onToggle={toggleSucursal}
-                >
-                <div className="space-y-2">
-                    <Label htmlFor="sucursal">Sucursal</Label>
-                    <Select
-                    value={filters.sucursal_id?.toString() || 'all'}
-                    onValueChange={(value) => 
-                        handleFilterChange('sucursal_id', value === 'all' ? undefined : parseInt(value))
-                    }
-                    disabled={!activeFilters.sucursal || loadingSucursales || (showEmpresaFilter && !filters.empresa_id)}
+                {/* Filtro de Sucursal - Solo mostrar si es superadmin o usuario con más de 1 sucursal */}
+                {(isSuperAdmin || sucursales.length > 1) && (
+                <>
+                    <Separator />
+                    <FilterSection 
+                        title="Sucursales" 
+                        isActive={activeFilters.sucursal}
+                        onToggle={toggleSucursal}
                     >
-                    <SelectTrigger>
-                        <SelectValue placeholder={
-                            loadingSucursales 
-                                ? "Cargando sucursales..." 
-                                : showEmpresaFilter && !filters.empresa_id
-                                    ? "Primero selecciona una empresa"
-                                    : "Seleccionar sucursal..."
-                        } />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="all">Todas las sucursales</SelectItem>
-                        {sucursalesFiltradas.length === 0 && !loadingSucursales ? (
-                            <SelectItem value="no-sucursales" disabled>
-                                {showEmpresaFilter && !filters.empresa_id 
-                                    ? "Selecciona una empresa primero"
-                                    : "No hay sucursales disponibles"}
-                            </SelectItem>
-                        ) : (
-                            sucursalesFiltradas.map((sucursal) => (
-                                <SelectItem key={sucursal.id} value={sucursal.id.toString()}>
-                                    {sucursal.nombre}
-                                </SelectItem>
-                            ))
+                    <div className="space-y-2">
+                        <Label htmlFor="sucursales">Sucursales</Label>
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button
+                                    variant="outline"
+                                    role="combobox"
+                                    disabled={!activeFilters.sucursal || loadingSucursales || (isSuperAdmin && !filters.empresa_id)}
+                                    className={cn(
+                                        "w-full justify-between",
+                                        !filters.sucursal_ids || filters.sucursal_ids.length === 0 ? "text-muted-foreground" : ""
+                                    )}
+                                >
+                                    {loadingSucursales ? (
+                                        "Cargando sucursales..."
+                                    ) : isSuperAdmin && !filters.empresa_id ? (
+                                        "Primero selecciona una empresa"
+                                    ) : filters.sucursal_ids && filters.sucursal_ids.length > 0 ? (
+                                        `${filters.sucursal_ids.length} sucursal${filters.sucursal_ids.length > 1 ? 'es' : ''} seleccionada${filters.sucursal_ids.length > 1 ? 's' : ''}`
+                                    ) : (
+                                        "Seleccionar sucursales..."
+                                    )}
+                                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-full p-0" align="start">
+                                <Command>
+                                    <CommandInput placeholder="Buscar sucursal..." />
+                                    <CommandList>
+                                        <CommandEmpty>No se encontraron sucursales.</CommandEmpty>
+                                        <CommandGroup>
+                                            {sucursalesFiltradas.length === 0 && !loadingSucursales ? (
+                                                <div className="py-6 text-center text-sm text-muted-foreground">
+                                                    {isSuperAdmin && !filters.empresa_id 
+                                                        ? "Selecciona una empresa primero"
+                                                        : "No hay sucursales disponibles"}
+                                                </div>
+                                            ) : (
+                                                sucursalesFiltradas.map((sucursal) => {
+                                                    const isSelected = filters.sucursal_ids?.includes(sucursal.id) || false
+                                                    return (
+                                                        <CommandItem
+                                                            key={sucursal.id}
+                                                            onSelect={() => {
+                                                                const currentIds = filters.sucursal_ids || []
+                                                                const newIds = isSelected
+                                                                    ? currentIds.filter(id => id !== sucursal.id)
+                                                                    : [...currentIds, sucursal.id]
+                                                                handleFilterChange('sucursal_ids', newIds.length > 0 ? newIds : undefined)
+                                                            }}
+                                                        >
+                                                            <div className={cn(
+                                                                "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
+                                                                isSelected
+                                                                    ? "bg-primary text-primary-foreground"
+                                                                    : "opacity-50 [&_svg]:invisible"
+                                                            )}>
+                                                                <Check className={cn("h-4 w-4")} />
+                                                            </div>
+                                                            <span>{sucursal.nombre}</span>
+                                                        </CommandItem>
+                                                    )
+                                                })
+                                            )}
+                                        </CommandGroup>
+                                    </CommandList>
+                                </Command>
+                            </PopoverContent>
+                        </Popover>
+                        {isSuperAdmin && !filters.empresa_id && (
+                            <div className="text-sm text-muted-foreground">
+                                Selecciona una empresa primero para ver sus sucursales
+                            </div>
                         )}
-                    </SelectContent>
-                    </Select>
-                    {showEmpresaFilter && !filters.empresa_id && (
-                        <div className="text-sm text-muted-foreground">
-                            Selecciona una empresa primero para ver sus sucursales
-                        </div>
-                    )}
-                </div>
-                </FilterSection>
+                        {filters.sucursal_ids && filters.sucursal_ids.length > 0 && (
+                            <div className="flex flex-wrap gap-1 mt-2">
+                                {filters.sucursal_ids.map(id => {
+                                    const sucursal = sucursalesFiltradas.find(s => s.id === id)
+                                    return sucursal ? (
+                                        <Badge key={id} variant="secondary" className="text-xs">
+                                            {sucursal.nombre}
+                                        </Badge>
+                                    ) : null
+                                })}
+                            </div>
+                        )}
+                    </div>
+                    </FilterSection>
+                </>
+                )}
 
             </div>
             </ScrollArea>

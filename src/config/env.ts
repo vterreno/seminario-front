@@ -87,6 +87,7 @@ export const rutasBack = {
         deleteProducto: `${baseUrl}/productos`,
         getProductoPorId: `${baseUrl}/productos`,
         getProductosByEmpresa: `${baseUrl}/productos/empresa`,
+        getProductosBySucursal: `${baseUrl}/productos/sucursal`,
         bulkDeleteProductos: `${baseUrl}/productos/bulk/delete`,
         bulkUpdateStatus: `${baseUrl}/productos/bulk/status`,
     },
@@ -131,7 +132,6 @@ export const rutasBack = {
         deleteVenta: `${baseUrl}/ventas`,
         bulkDeleteVentas: `${baseUrl}/ventas/bulk/delete`,
     },
-};
     listaPrecios: {
         getListaPrecios: `${baseUrl}/lista-precios`,
         postListaPrecios: `${baseUrl}/lista-precios`,

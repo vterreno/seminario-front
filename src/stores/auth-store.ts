@@ -17,11 +17,17 @@ interface Empresa {
   nombre: string
 }
 
+interface Sucursal {
+  id: number
+  nombre: string
+}
+
 interface AuthUser {
   name: string
   email: string
   empresa: Empresa
   roles: AuthRole[]
+  sucursales?: Sucursal[] // Agregar sucursales del usuario
 }
 
 interface AuthState {

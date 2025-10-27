@@ -19,6 +19,7 @@ import {
   History,
   PlusCircle,
   Archive,
+  Scale,
 } from 'lucide-react'
 import { type SidebarData, type NavLink } from '../types'
 import { getStorageItem } from '@/hooks/use-local-storage'
@@ -34,6 +35,10 @@ interface UserData {
     id: number | null
     nombre: string | null
   }
+  sucursales?: Array<{
+    id: number
+    nombre: string
+  }>
   roles: Array<{
     id: number
     nombre: string
@@ -257,7 +262,7 @@ export const getSidebarData = (): SidebarData => {
         textColor: '#ffffff',
       })
     }
-    if (hasPermission(userData, 'lista-precios_ver')) {
+    if (hasPermission(userData, 'modulo_listas_ver')) {
       ventasSubItems.push({
         title: 'Lista de Precios',
         url: '/ventas/lista-precios',

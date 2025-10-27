@@ -52,9 +52,15 @@ export function ActiveFiltersDisplay({
         case 'empresa_id':
             const empresa = empresas.find(e => e.id === value)
             return `Empresa: ${empresa?.name || 'N/A'}`
-        case 'sucursal_id':
-            const sucursal = sucursales.find(s => s.id === value)
-            return `Sucursal: ${sucursal?.nombre || 'N/A'}`
+        case 'sucursal_ids':
+            if (Array.isArray(value) && value.length > 0) {
+                const sucursalesSeleccionadas = value
+                    .map(id => sucursales.find(s => s.id === id)?.nombre)
+                    .filter(Boolean)
+                    .join(', ')
+                return `Sucursales: ${sucursalesSeleccionadas || 'N/A'}`
+            }
+            return `Sucursales: N/A`
         default:
             return `${key}: ${value}`
         }

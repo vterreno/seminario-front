@@ -22,6 +22,10 @@ const userSchema = z.object({
     id: z.number(),
     name: z.string(),
   }).optional(),
+  sucursales: z.array(z.object({
+    id: z.number(),
+    nombre: z.string(),
+  })).optional(),
   created_at: z.coerce.date().optional(),
   updated_at: z.coerce.date().optional(),
   deleted_at: z.coerce.date().optional(),
@@ -38,6 +42,7 @@ export const userFormSchema = z.object({
   password: z.string().optional(),
   role_id: z.number().optional(),
   empresa_id: z.number().optional(),
+  sucursal_ids: z.array(z.number()).optional(),
   status: z.boolean().optional(),
 })
 

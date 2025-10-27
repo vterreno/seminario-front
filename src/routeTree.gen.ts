@@ -292,6 +292,8 @@ const AuthenticatedVentasNuevaVentaIndexRoute =
   AuthenticatedVentasNuevaVentaIndexRouteImport.update({
     id: '/nueva-venta/',
     path: '/nueva-venta/',
+    getParentRoute: () => AuthenticatedVentasRouteRoute,
+  } as any)
 const AuthenticatedVentasListaPreciosIndexRoute =
   AuthenticatedVentasListaPreciosIndexRouteImport.update({
     id: '/lista-precios/',
@@ -361,8 +363,8 @@ export interface FileRoutesByFullPath {
   '/productos/categorias': typeof AuthenticatedProductosCategoriasIndexRoute
   '/productos/marcas': typeof AuthenticatedProductosMarcasIndexRoute
   '/productos/productos': typeof AuthenticatedProductosProductosIndexRoute
-  '/ventas/nueva-venta': typeof AuthenticatedVentasNuevaVentaIndexRoute
   '/ventas/lista-precios': typeof AuthenticatedVentasListaPreciosIndexRoute
+  '/ventas/nueva-venta': typeof AuthenticatedVentasNuevaVentaIndexRoute
   '/ventas/ventas': typeof AuthenticatedVentasVentasIndexRoute
 }
 export interface FileRoutesByTo {
@@ -407,8 +409,8 @@ export interface FileRoutesByTo {
   '/productos/categorias': typeof AuthenticatedProductosCategoriasIndexRoute
   '/productos/marcas': typeof AuthenticatedProductosMarcasIndexRoute
   '/productos/productos': typeof AuthenticatedProductosProductosIndexRoute
-  '/ventas/nueva-venta': typeof AuthenticatedVentasNuevaVentaIndexRoute
   '/ventas/lista-precios': typeof AuthenticatedVentasListaPreciosIndexRoute
+  '/ventas/nueva-venta': typeof AuthenticatedVentasNuevaVentaIndexRoute
   '/ventas/ventas': typeof AuthenticatedVentasVentasIndexRoute
 }
 export interface FileRoutesById {
@@ -458,8 +460,8 @@ export interface FileRoutesById {
   '/_authenticated/productos/categorias/': typeof AuthenticatedProductosCategoriasIndexRoute
   '/_authenticated/productos/marcas/': typeof AuthenticatedProductosMarcasIndexRoute
   '/_authenticated/productos/productos/': typeof AuthenticatedProductosProductosIndexRoute
-  '/_authenticated/ventas/nueva-venta/': typeof AuthenticatedVentasNuevaVentaIndexRoute
   '/_authenticated/ventas/lista-precios/': typeof AuthenticatedVentasListaPreciosIndexRoute
+  '/_authenticated/ventas/nueva-venta/': typeof AuthenticatedVentasNuevaVentaIndexRoute
   '/_authenticated/ventas/ventas/': typeof AuthenticatedVentasVentasIndexRoute
 }
 export interface FileRouteTypes {
@@ -508,8 +510,8 @@ export interface FileRouteTypes {
     | '/productos/categorias'
     | '/productos/marcas'
     | '/productos/productos'
-    | '/ventas/nueva-venta'
     | '/ventas/lista-precios'
+    | '/ventas/nueva-venta'
     | '/ventas/ventas'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -554,8 +556,8 @@ export interface FileRouteTypes {
     | '/productos/categorias'
     | '/productos/marcas'
     | '/productos/productos'
-    | '/ventas/nueva-venta'
     | '/ventas/lista-precios'
+    | '/ventas/nueva-venta'
     | '/ventas/ventas'
   id:
     | '__root__'
@@ -604,8 +606,8 @@ export interface FileRouteTypes {
     | '/_authenticated/productos/categorias/'
     | '/_authenticated/productos/marcas/'
     | '/_authenticated/productos/productos/'
-    | '/_authenticated/ventas/nueva-venta/'
     | '/_authenticated/ventas/lista-precios/'
+    | '/_authenticated/ventas/nueva-venta/'
     | '/_authenticated/ventas/ventas/'
   fileRoutesById: FileRoutesById
 }
@@ -933,6 +935,8 @@ declare module '@tanstack/react-router' {
       path: '/nueva-venta'
       fullPath: '/ventas/nueva-venta'
       preLoaderRoute: typeof AuthenticatedVentasNuevaVentaIndexRouteImport
+      parentRoute: typeof AuthenticatedVentasRouteRoute
+    }
     '/_authenticated/ventas/lista-precios/': {
       id: '/_authenticated/ventas/lista-precios/'
       path: '/lista-precios'
@@ -1013,17 +1017,17 @@ const AuthenticatedSettingsRouteRouteWithChildren =
   )
 
 interface AuthenticatedVentasRouteRouteChildren {
-  AuthenticatedVentasNuevaVentaIndexRoute: typeof AuthenticatedVentasNuevaVentaIndexRoute
   AuthenticatedVentasListaPreciosIndexRoute: typeof AuthenticatedVentasListaPreciosIndexRoute
+  AuthenticatedVentasNuevaVentaIndexRoute: typeof AuthenticatedVentasNuevaVentaIndexRoute
   AuthenticatedVentasVentasIndexRoute: typeof AuthenticatedVentasVentasIndexRoute
 }
 
 const AuthenticatedVentasRouteRouteChildren: AuthenticatedVentasRouteRouteChildren =
   {
-    AuthenticatedVentasNuevaVentaIndexRoute:
-      AuthenticatedVentasNuevaVentaIndexRoute,
     AuthenticatedVentasListaPreciosIndexRoute:
       AuthenticatedVentasListaPreciosIndexRoute,
+    AuthenticatedVentasNuevaVentaIndexRoute:
+      AuthenticatedVentasNuevaVentaIndexRoute,
     AuthenticatedVentasVentasIndexRoute: AuthenticatedVentasVentasIndexRoute,
   }
 

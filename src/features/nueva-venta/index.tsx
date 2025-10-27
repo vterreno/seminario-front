@@ -162,13 +162,12 @@ export function NuevaVenta() {
         try {
           let productosData: Producto[] = []
           
-          if (isSuperAdmin) {
-            // SuperAdmin puede usar el endpoint específico por empresa
-            productosData = await apiProductosService.getProductosByEmpresa(empresaSeleccionada)
+          if (typeof sucursalSeleccionada === 'number') {
+            // SuperAdmin y usuario normal usan el mismo endpoint
+            productosData = await apiProductosService.getProductosBySucursal(sucursalSeleccionada)
+            setProductos(productosData.filter(p => p.estado))
           } else {
-            // Usuario normal obtiene todos sus productos y filtra por empresa
-            const todosLosProductos = await apiProductosService.getAllProductos()
-            productosData = todosLosProductos.filter(p => p.empresa_id === empresaSeleccionada)
+            setProductos([])
           }
           
           setProductos(productosData.filter(p => p.estado))
@@ -183,7 +182,7 @@ export function NuevaVenta() {
     }
 
     cargarClientesYProductos()
-  }, [empresaSeleccionada, isSuperAdmin])
+  }, [empresaSeleccionada, isSuperAdmin, sucursalSeleccionada])
 
   // Calcular monto total
   const montoTotal = useMemo(() => {

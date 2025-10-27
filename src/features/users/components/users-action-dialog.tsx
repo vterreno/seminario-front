@@ -29,10 +29,12 @@ import { type User, type UserForm } from '../data/schema'
 import apiUsersService from '@/service/apiUser.service'
 import apiRolesService from '@/service/apiRoles.service'
 import apiEmpresaService from '@/service/apiEmpresa.service'
+import apiSucursalesService from '@/service/apiSucursales.service'
 import { useState, useEffect } from 'react'
 import { getStorageItem } from '@/hooks/use-local-storage'
 import { STORAGE_KEYS } from '@/lib/constants'
 import { usePermissions } from '@/hooks/use-permissions'
+import { MultiSelect } from '@/components/multi-select'
 
 const formSchema = z
   .object({
@@ -42,6 +44,7 @@ const formSchema = z
     password: z.string().optional(),
     role_id: z.number().optional(),
     empresa_id: z.number().optional(),
+    sucursal_ids: z.array(z.number()).optional(),
     status: z.boolean().optional(),
   })
 
@@ -61,7 +64,10 @@ export function UsersActionDialog({
   const isEdit = !!currentRow
   const [loading, setLoading] = useState(false)
   const [rolesList, setRolesList] = useState<any[]>([])
+  const [allRoles, setAllRoles] = useState<any[]>([])
   const [empresasList, setEmpresasList] = useState<any[]>([])
+  const [sucursalesList, setSucursalesList] = useState<any[]>([])
+  const [selectedEmpresaId, setSelectedEmpresaId] = useState<number | undefined>(undefined)
   const { isSuperAdmin, userEmpresaId } = usePermissions()
 
   const form = useForm<UserForm>({
@@ -74,6 +80,7 @@ export function UsersActionDialog({
           password: '',
           role_id: currentRow.role?.id,
           empresa_id: currentRow.empresa?.id,
+          sucursal_ids: currentRow.sucursales?.map((s) => s.id) || [],
           status: currentRow.status,
         }
       : {
@@ -83,6 +90,7 @@ export function UsersActionDialog({
           password: '',
           role_id: undefined,
           empresa_id: undefined,
+          sucursal_ids: [],
           status: true,
         },
   })
@@ -101,6 +109,7 @@ export function UsersActionDialog({
           roles = await apiRolesService.getRolesByEmpresa(userEmpresaId)
         }
         
+        setAllRoles(roles)
         setRolesList(roles)
       } catch (error) {
         console.error('Error fetching roles:', error)
@@ -126,6 +135,72 @@ export function UsersActionDialog({
       fetchEmpresas()
     }
   }, [open, isSuperAdmin])
+
+  // Cargar sucursales cuando cambia la empresa seleccionada
+  useEffect(() => {
+    const fetchSucursales = async () => {
+      const empresaId = isSuperAdmin ? selectedEmpresaId : userEmpresaId
+      
+      if (empresaId) {
+        try {
+          const sucursales = await apiSucursalesService.getSucursalesByEmpresa(empresaId)
+          setSucursalesList(sucursales)
+        } catch (error) {
+          console.error('Error fetching sucursales:', error)
+          setSucursalesList([])
+        }
+      } else {
+        setSucursalesList([])
+      }
+    }
+
+    if (open) {
+      fetchSucursales()
+    }
+  }, [open, selectedEmpresaId, isSuperAdmin, userEmpresaId])
+
+  // Actualizar selectedEmpresaId cuando cambia empresa_id en el formulario
+  useEffect(() => {
+    const subscription = form.watch((value, { name }) => {
+      if (name === 'empresa_id') {
+        setSelectedEmpresaId(value.empresa_id)
+        // Limpiar sucursales seleccionadas cuando cambia la empresa
+        form.setValue('sucursal_ids', [])
+        // Limpiar rol seleccionado cuando cambia la empresa
+        form.setValue('role_id', undefined)
+        
+        // Filtrar roles por empresa si es superadmin
+        if (isSuperAdmin && value.empresa_id) {
+          const filteredRoles = allRoles.filter(role => role.empresa_id === value.empresa_id)
+          setRolesList(filteredRoles)
+        } else if (isSuperAdmin && !value.empresa_id) {
+          setRolesList(allRoles)
+        }
+      }
+    })
+    return () => subscription.unsubscribe()
+  }, [form, isSuperAdmin, allRoles])
+
+  // Inicializar selectedEmpresaId cuando se abre el diálogo
+  useEffect(() => {
+    if (open) {
+      let empresaId: number | undefined
+      
+      if (isEdit && currentRow?.empresa?.id) {
+        empresaId = currentRow.empresa.id
+        setSelectedEmpresaId(empresaId)
+      } else if (!isSuperAdmin && userEmpresaId) {
+        empresaId = userEmpresaId
+        setSelectedEmpresaId(empresaId)
+      }
+
+      // Filtrar roles cuando se inicializa el diálogo en modo edición
+      if (isSuperAdmin && empresaId && allRoles.length > 0) {
+        const filteredRoles = allRoles.filter(role => role.empresa_id === empresaId)
+        setRolesList(filteredRoles)
+      }
+    }
+  }, [open, isEdit, currentRow, isSuperAdmin, userEmpresaId, allRoles])
 
   const onSubmit = async (values: UserForm) => {
     try {
@@ -246,26 +321,6 @@ export function UsersActionDialog({
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name='role_id'
-                render={({ field }) => (
-                  <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
-                    <FormLabel className='col-span-2 text-end'>Rol</FormLabel>
-                    <SelectDropdown
-                      defaultValue={field.value?.toString()}
-                      onValueChange={(value) => field.onChange(value ? parseInt(value) : undefined)}
-                      placeholder='Selecciona un rol'
-                      className='col-span-4 w-full'
-                      items={rolesList.map((role) => ({
-                        label: role.nombre,
-                        value: role.id.toString(),
-                      }))}
-                    />
-                    <FormMessage className='col-span-4 col-start-3' />
-                  </FormItem>
-                )}
-              />
               {isSuperAdmin && (
                 <FormField
                   control={form.control}
@@ -288,23 +343,61 @@ export function UsersActionDialog({
                   )}
                 />
               )}
+              {sucursalesList.length > 0 && (
+                <FormField
+                  control={form.control}
+                  name='sucursal_ids'
+                  render={({ field }) => (
+                    <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
+                      <FormLabel className='col-span-2 text-end'>
+                        {sucursalesList.length > 1 ? 'Sucursales' : 'Sucursal'}
+                      </FormLabel>
+                      <div className='col-span-4'>
+                        {sucursalesList.length > 1 ? (
+                          <MultiSelect
+                            options={sucursalesList.map((sucursal) => ({
+                              label: sucursal.nombre,
+                              value: sucursal.id.toString(),
+                            }))}
+                            selected={(field.value || []).map(String)}
+                            onChange={(values) => field.onChange(values.map(Number))}
+                            placeholder='Selecciona sucursales'
+                            emptyMessage='No se encontraron sucursales.'
+                          />
+                        ) : (
+                          <SelectDropdown
+                            defaultValue={field.value?.[0]?.toString()}
+                            onValueChange={(value) => field.onChange(value ? [parseInt(value)] : [])}
+                            placeholder='Selecciona una sucursal'
+                            className='w-full'
+                            items={sucursalesList.map((sucursal) => ({
+                              label: sucursal.nombre,
+                              value: sucursal.id.toString(),
+                            }))}
+                          />
+                        )}
+                      </div>
+                      <FormMessage className='col-span-4 col-start-3' />
+                    </FormItem>
+                  )}
+                />
+              )}
               <FormField
                 control={form.control}
-                name='status'
+                name='role_id'
                 render={({ field }) => (
                   <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
-                    <FormLabel className='col-span-2 text-end'>Estado</FormLabel>
-                    <FormControl>
-                      <div className='col-span-4 flex items-center space-x-2'>
-                        <Switch
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                        <span className='text-sm text-muted-foreground'>
-                          {field.value ? 'Activo' : 'Inactivo'}
-                        </span>
-                      </div>
-                    </FormControl>
+                    <FormLabel className='col-span-2 text-end'>Rol</FormLabel>
+                    <SelectDropdown
+                      defaultValue={field.value?.toString()}
+                      onValueChange={(value) => field.onChange(value ? parseInt(value) : undefined)}
+                      placeholder='Selecciona un rol'
+                      className='col-span-4 w-full'
+                      items={rolesList.map((role) => ({
+                        label: role.nombre,
+                        value: role.id.toString(),
+                      }))}
+                    />
                     <FormMessage className='col-span-4 col-start-3' />
                   </FormItem>
                 )}
@@ -323,6 +416,27 @@ export function UsersActionDialog({
                         className='col-span-4'
                         {...field}
                       />
+                    </FormControl>
+                    <FormMessage className='col-span-4 col-start-3' />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name='status'
+                render={({ field }) => (
+                  <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
+                    <FormLabel className='col-span-2 text-end'>Estado</FormLabel>
+                    <FormControl>
+                      <div className='col-span-4 flex items-center space-x-2'>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                        <span className='text-sm text-muted-foreground'>
+                          {field.value ? 'Activo' : 'Inactivo'}
+                        </span>
+                      </div>
                     </FormControl>
                     <FormMessage className='col-span-4 col-start-3' />
                   </FormItem>
