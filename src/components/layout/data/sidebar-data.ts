@@ -19,7 +19,6 @@ import {
   History,
   PlusCircle,
   Archive,
-  Scale,
 } from 'lucide-react'
 import { type SidebarData, type NavLink } from '../types'
 import { getStorageItem } from '@/hooks/use-local-storage'
