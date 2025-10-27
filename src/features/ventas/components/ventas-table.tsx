@@ -41,9 +41,9 @@ export function VentasTable({ data, search, navigate, onSuccess, canBulkAction, 
   
   // Calcular permisos una sola vez
   const permissions = useMemo(() => ({
-    canView: hasPermission('venta_leer'),
-    canEdit: hasPermission('venta_modificar'),
-    canDelete: hasPermission('venta_eliminar'),
+    canView: hasPermission('ventas_ver'),
+    canEdit: hasPermission('ventas_modificar'),
+    canDelete: hasPermission('ventas_eliminar'),
   }), [hasPermission])
   
   // Configurar columnas con las opciones

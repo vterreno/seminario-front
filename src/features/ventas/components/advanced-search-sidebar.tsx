@@ -56,6 +56,7 @@ interface AdvancedSearchSidebarProps {
     onOpenChange: (open: boolean) => void
     onFiltersChange: (filters: AdvancedSearchFilters) => void
     showEmpresaFilter?: boolean
+    showSucursalFilter?: boolean
     empresas?: Empresa[]
     sucursales?: Sucursal[]
     currentFilters?: AdvancedSearchFilters // Filtros actualmente aplicados
@@ -102,6 +103,7 @@ export function AdvancedSearchSidebar({
     onOpenChange, 
     onFiltersChange, 
     showEmpresaFilter = false,
+    showSucursalFilter = false,
     empresas = [],
     sucursales = [],
     currentFilters = {}
@@ -115,10 +117,22 @@ export function AdvancedSearchSidebar({
         sucursal: false
     })
 
-    // Filtrar sucursales por empresa seleccionada
-    const filteredSucursales = filters.empresa_id 
-        ? sucursales.filter(s => s.empresa_id === filters.empresa_id)
-        : sucursales
+    // Filtrar sucursales por empresa seleccionada solo si hay filtro de empresa
+    let filteredSucursales: Sucursal[] = [];
+    if (showEmpresaFilter) {
+        if (filters.empresa_id) {
+            filteredSucursales = sucursales.filter(s => s.empresa_id === filters.empresa_id);
+        } else if (showSucursalFilter) {
+            // Si también hay showSucursalFilter, mostrar todas las sucursales
+            filteredSucursales = sucursales;
+        } else {
+            filteredSucursales = [];
+        }
+    } else if (showSucursalFilter) {
+        filteredSucursales = sucursales;
+    } else {
+        filteredSucursales = [];
+    }
 
     // Sincronizar filtros cuando se abra el sidebar
     useEffect(() => {
@@ -311,8 +325,12 @@ export function AdvancedSearchSidebar({
                                 </FilterSection>
 
                                 <Separator />
+                            </>
+                        )}
 
-                                {/* Filtro por Sucursal (solo para superadmin) */}
+                        {/* Filtro por Sucursal (para superadmin o usuario con varias sucursales) */}
+                        {(showEmpresaFilter || showSucursalFilter) && (
+                            <>
                                 <FilterSection 
                                     title="Sucursal" 
                                     isActive={activeFilters.sucursal}
@@ -325,11 +343,14 @@ export function AdvancedSearchSidebar({
                                             onValueChange={(value) => 
                                                 handleFilterChange('sucursal_id', value === '' ? undefined : parseInt(value))
                                             }
-                                            disabled={!activeFilters.sucursal || !filters.empresa_id}
+                                            disabled={
+                                                !activeFilters.sucursal ||
+                                                (showEmpresaFilter && !filters.empresa_id)
+                                            }
                                         >
                                             <SelectTrigger className='w-full'>
                                                 <SelectValue placeholder={
-                                                    !filters.empresa_id 
+                                                    showEmpresaFilter && !filters.empresa_id 
                                                         ? "Primero seleccione una empresa..." 
                                                         : "Seleccionar sucursal..."
                                                 } />
@@ -342,14 +363,13 @@ export function AdvancedSearchSidebar({
                                                 ))}
                                             </SelectContent>
                                         </Select>
-                                        {!filters.empresa_id && activeFilters.sucursal && (
+                                        {showEmpresaFilter && !filters.empresa_id && activeFilters.sucursal && (
                                             <p className="text-xs text-muted-foreground">
                                                 Seleccione una empresa primero para ver las sucursales
                                             </p>
                                         )}
                                     </div>
                                 </FilterSection>
-
                                 <Separator />
                             </>
                         )}

@@ -62,6 +62,10 @@ interface UserData {
         id: number
         name: string
     } | null
+    sucursales?: Array<{
+        id: number
+        nombre: string
+    }>
 }
 
 type ProductosActionDialogProps = {
@@ -155,8 +159,53 @@ export function ProductosActionDialog({
                         const sucursalesResponse = await apiSucursalesService.default.getSucursalesByEmpresa(userEmpresaId)
                         setSucursales(sucursalesResponse.map(s => ({ id: s.id!, nombre: s.nombre! })))
                     }
-                } else if (userEmpresaId) {
-                    // Usuario común: su empresa es fija, cargamos directo
+                } catch (error) {
+                    toast.error("Error al cargar sucursales")
+                }
+            }
+            fetchData()
+        }
+    }, [open, isSuperAdmin, userEmpresaId])
+
+    // Nuevo useEffect para cargar marcas, categorías y unidades de medida dinámicamente
+    useEffect(() => {
+        // Si es superadmin, cargar cuando cambie empresa_id
+        if (isSuperAdmin && open) {
+            const subscription = form.watch((value, { name }) => {
+                if (name === 'empresa_id' || !name) {
+                    const empresaId = value.empresa_id
+                    if (empresaId) {
+                        const fetchData = async () => {
+                            try {
+                                const [marcasResponse, categoriasResponse, unidadesMedidaResponse] = await Promise.all([
+                                    apiMarcasService.getMarcasByEmpresa(empresaId),
+                                    apiCategoriasService.getCategoriasByEmpresa(empresaId),
+                                    apiUnidadesMedidaService.getUnidadesMedidaByEmpresa(empresaId),
+                                ])
+                                setMarcas(marcasResponse)
+                                setCategorias(categoriasResponse)
+                                setUnidadesMedida(unidadesMedidaResponse)
+                            } catch (error) {
+                                toast.error("Error al cargar marcas/categorías/unidades")
+                                setMarcas([])
+                                setCategorias([])
+                                setUnidadesMedida([])
+                            }
+                        }
+                        fetchData()
+                    } else {
+                        setMarcas([])
+                        setCategorias([])
+                        setUnidadesMedida([])
+                    }
+                }
+            })
+            return () => subscription.unsubscribe()
+        }
+        // Si es usuario normal, cargar con la empresa del usuario al abrir el diálogo
+        if (!isSuperAdmin && userEmpresaId && open) {
+            const fetchData = async () => {
+                try {
                     const [marcasResponse, categoriasResponse, unidadesMedidaResponse] = await Promise.all([
                         apiMarcasService.getMarcasByEmpresa(userEmpresaId),
                         apiCategoriasService.getCategoriasByEmpresa(userEmpresaId),
@@ -165,11 +214,16 @@ export function ProductosActionDialog({
                     setMarcas(marcasResponse)
                     setCategorias(categoriasResponse)
                     setUnidadesMedida(unidadesMedidaResponse)
+                } catch (error) {
+                    toast.error("Error al cargar marcas/categorías/unidades")
+                    setMarcas([])
+                    setCategorias([])
+                    setUnidadesMedida([])
                 }
-            } catch (error) {
-                toast.error("Error al cargar marcas/categorías")
             }
+            fetchData()
         }
+    }, [open, isSuperAdmin, userEmpresaId, form])
 
     // Observar cambios en empresa_id para cargar sucursales (solo superadmin)
     useEffect(() => {
@@ -303,8 +357,9 @@ export function ProductosActionDialog({
                     )}
                     />
                 </div>
-                {/* Campo de selección de empresa solo para superadmin */}
-                {isSuperAdmin && (
+
+                 {/* Campo de selección de empresa solo para superadmin */}
+                {isSuperAdmin && !isEdit && (
                     <FormField
                     control={form.control}
                     name="empresa_id"
@@ -323,7 +378,7 @@ export function ProductosActionDialog({
                             </FormControl>
                             <SelectContent>
                             {empresas
-                                .filter((empresa) => empresa.id != null)
+                                .filter((empresa) => empresa.id != null && empresa.estado)
                                 .map((empresa) => (
                                     <SelectItem key={empresa.id!} value={empresa.id!.toString()}>
                                         {empresa.name}
@@ -337,6 +392,56 @@ export function ProductosActionDialog({
                     />
                 )}
 
+                {/* Campo de selección de sucursal */}
+                {!isEdit && (
+                    <FormField
+                    control={form.control}
+                    name="sucursal_id"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Sucursal *</FormLabel>
+                        <Select 
+                            onValueChange={(value) => field.onChange(Number(value))} 
+                            value={field.value?.toString()}
+                            disabled={loading || loadingSucursales || (isSuperAdmin && !form.watch('empresa_id'))}
+                        >
+                            <FormControl>
+                            <SelectTrigger className='w-full'>
+                                <SelectValue placeholder={
+                                    loadingSucursales 
+                                        ? "Cargando sucursales..." 
+                                        : isSuperAdmin && !form.watch('empresa_id')
+                                            ? "Primero selecciona una empresa"
+                                            : "Selecciona una sucursal"
+                                } />
+                            </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                            {sucursales.length === 0 ? (
+                                <SelectItem value="no-sucursales" disabled>
+                                    {isSuperAdmin && !form.watch('empresa_id') 
+                                        ? "Selecciona una empresa primero"
+                                        : "No hay sucursales disponibles"}
+                                </SelectItem>
+                            ) : (
+                                sucursales.map((sucursal) => (
+                                    <SelectItem key={sucursal.id} value={sucursal.id.toString()}>
+                                        {sucursal.nombre}
+                                    </SelectItem>
+                                ))
+                            )}
+                            </SelectContent>
+                        </Select>
+                        <FormMessage />
+                        {isSuperAdmin && !form.watch('empresa_id') && (
+                            <div className="text-sm text-muted-foreground">
+                                Selecciona una empresa para ver sus sucursales
+                            </div>
+                        )}
+                        </FormItem>
+                    )}
+                    />
+                )}
                 <div className="grid grid-cols-2 gap-4">
                     <FormField
                     control={form.control}
@@ -437,91 +542,6 @@ export function ProductosActionDialog({
                     />
 
                 </div>
-
-                {/* Campo de selección de empresa solo para superadmin */}
-                {isSuperAdmin && !isEdit && (
-                    <FormField
-                    control={form.control}
-                    name="empresa_id"
-                    render={({ field }) => (
-                        <FormItem>
-                        <FormLabel>Empresa *</FormLabel>
-                        <Select 
-                            onValueChange={(value) => field.onChange(Number(value))} 
-                            value={field.value?.toString()}
-                            disabled={loading}
-                        >
-                            <FormControl>
-                            <SelectTrigger className='w-full'>
-                                <SelectValue placeholder="Selecciona una empresa" />
-                            </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                            {empresas
-                                .filter((empresa) => empresa.id != null && empresa.estado)
-                                .map((empresa) => (
-                                    <SelectItem key={empresa.id!} value={empresa.id!.toString()}>
-                                        {empresa.name}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                        <FormMessage />
-                        </FormItem>
-                    )}
-                    />
-                )}
-
-                {/* Campo de selección de sucursal */}
-                {!isEdit && (
-                    <FormField
-                    control={form.control}
-                    name="sucursal_id"
-                    render={({ field }) => (
-                        <FormItem>
-                        <FormLabel>Sucursal *</FormLabel>
-                        <Select 
-                            onValueChange={(value) => field.onChange(Number(value))} 
-                            value={field.value?.toString()}
-                            disabled={loading || loadingSucursales || (isSuperAdmin && !form.watch('empresa_id'))}
-                        >
-                            <FormControl>
-                            <SelectTrigger className='w-full'>
-                                <SelectValue placeholder={
-                                    loadingSucursales 
-                                        ? "Cargando sucursales..." 
-                                        : isSuperAdmin && !form.watch('empresa_id')
-                                            ? "Primero selecciona una empresa"
-                                            : "Selecciona una sucursal"
-                                } />
-                            </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                            {sucursales.length === 0 ? (
-                                <SelectItem value="no-sucursales" disabled>
-                                    {isSuperAdmin && !form.watch('empresa_id') 
-                                        ? "Selecciona una empresa primero"
-                                        : "No hay sucursales disponibles"}
-                                </SelectItem>
-                            ) : (
-                                sucursales.map((sucursal) => (
-                                    <SelectItem key={sucursal.id} value={sucursal.id.toString()}>
-                                        {sucursal.nombre}
-                                    </SelectItem>
-                                ))
-                            )}
-                            </SelectContent>
-                        </Select>
-                        <FormMessage />
-                        {isSuperAdmin && !form.watch('empresa_id') && (
-                            <div className="text-sm text-muted-foreground">
-                                Selecciona una empresa para ver sus sucursales
-                            </div>
-                        )}
-                        </FormItem>
-                    )}
-                    />
-                )}
 
                 <div className="grid grid-cols-2 gap-4">
                     <FormField

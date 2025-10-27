@@ -114,7 +114,7 @@ export function DetallesVenta({
     <div className="space-y-4">
       {/* Formulario para agregar productos */}
       <div className="p-4 border rounded-lg bg-card">
-        <Label className="text-sm font-medium mb-3 block">Agregar Productos a la Venta</Label>
+        <h2 className='mb-4'>Productos</h2>
         
         <div className="space-y-3">
           {/* Buscador de Producto */}
@@ -143,7 +143,7 @@ export function DetallesVenta({
                 value={productoSeleccionado}
                 onValueChange={setProductoSeleccionado}
               >
-                <SelectTrigger id="producto" className="h-10">
+                <SelectTrigger id="producto" className="h-10 w-full">
                   <SelectValue placeholder="Seleccione un producto" />
                 </SelectTrigger>
                 <SelectContent className="max-h-[300px]">

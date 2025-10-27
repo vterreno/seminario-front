@@ -38,6 +38,7 @@ export const DatosUsuariosProvider = ({ children }: DatosUsuariosProviderProps) 
                 email: userData.email,
                 empresa: userData.empresa,
                 roles: userData.roles,
+                sucursales: userData.sucursales || [], // Agregar sucursales del usuario
             });
         } catch (error) {
             console.error('Error refreshing user data:', error);
@@ -57,6 +58,7 @@ export const DatosUsuariosProvider = ({ children }: DatosUsuariosProviderProps) 
                 email: userData.email,
                 empresa: userData.empresa,
                 roles: userData.roles,
+                sucursales: userData.sucursales || [], // Agregar sucursales del usuario
             });
             setAuthenticated(true);
         } catch (error: any) {     

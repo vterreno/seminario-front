@@ -38,6 +38,10 @@ interface UserData {
         id: number
         name: string
     } | null
+    sucursales?: Array<{
+        id: number
+        nombre: string
+    }>
 }
 
 export function Productos() {
@@ -79,10 +83,20 @@ export function Productos() {
         </>
         )
     }
-    // Detectar si el usuario es superadmin
+    // Detectar si el usuario es superadmin y obtener sus sucursales
     const userData = getStorageItem(STORAGE_KEYS.USER_DATA, null) as UserData | null
     const userEmpresaId = userData?.empresa?.id
     const isSuperAdmin = !userEmpresaId // If user doesn't have empresa_id, they are superadmin
+    const userSucursales = userData?.sucursales || []
+
+    // Inicializar sucursales inmediatamente si no es superadmin
+    useEffect(() => {
+        if (!isSuperAdmin && userSucursales.length > 0) {
+            const mappedSucursales = userSucursales.map(s => ({ id: s.id, nombre: s.nombre }))
+            setSucursales(mappedSucursales)
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isSuperAdmin, userSucursales.length])
 
     const fetchProductos = async () => {
         try {
@@ -100,27 +114,12 @@ export function Productos() {
                 } catch (error) {
                     console.error('Error fetching empresas:', error)
                 }
-                // Cargar sucursales para el filtro
-                try {
-                    const apiSucursalesService = await import('@/service/apiSucursales.service')
-                    const sucursalesData = await apiSucursalesService.default.getAllSucursales()
-                    const mappedSucursales = sucursalesData.map(s => ({ id: s.id!, nombre: s.nombre! }))
-                    setSucursales(mappedSucursales)
-                } catch (error) {
-                    console.error('Error fetching sucursales:', error)
-                }
+                // Para superadmin, las sucursales se cargarán dinámicamente al seleccionar empresa
+                setSucursales([])
             } else {
                 // Regular admin: get only productos from their company
                 data = await apiProductosService.getProductosByEmpresa(userEmpresaId!)
-                // Cargar sucursales de la empresa para el filtro
-                try {
-                    const apiSucursalesService = await import('@/service/apiSucursales.service')
-                    const sucursalesData = await apiSucursalesService.default.getSucursalesByEmpresa(userEmpresaId!)
-                    const mappedSucursales = sucursalesData.map(s => ({ id: s.id!, nombre: s.nombre! }))
-                    setSucursales(mappedSucursales)
-                } catch (error) {
-                    console.error('Error fetching sucursales:', error)
-                }
+                // Las sucursales ya fueron inicializadas en el useEffect anterior
             }
 
             setAllProductos(data) // Guardamos todos los productos
@@ -196,9 +195,9 @@ export function Productos() {
             filtered = filtered.filter(p => p.sucursal?.empresa?.id === filters.empresa_id)
         }
 
-        // Filtro por sucursal
-        if (filters.sucursal_id) {
-            filtered = filtered.filter(p => p.sucursal_id === filters.sucursal_id)
+        // Filtro por sucursales (múltiples)
+        if (filters.sucursal_ids && filters.sucursal_ids.length > 0) {
+            filtered = filtered.filter(p => p.sucursal_id && filters.sucursal_ids!.includes(p.sucursal_id))
         }
 
         setProductos(filtered)
@@ -333,7 +332,7 @@ export function Productos() {
                 open={isAdvancedSearchOpen}
                 onOpenChange={setIsAdvancedSearchOpen}
                 onFiltersChange={handleFiltersChange}
-                showEmpresaFilter={isSuperAdmin}
+                isSuperAdmin={isSuperAdmin}
                 empresas={empresas}
                 sucursales={sucursales}
                 currentFilters={activeFilters}

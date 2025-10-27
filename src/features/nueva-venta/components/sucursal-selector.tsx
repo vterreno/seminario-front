@@ -23,7 +23,7 @@ export function SucursalSelector({
       value={sucursalSeleccionada?.toString() || ''}
       onValueChange={(value) => onSucursalChange(Number(value))}
     >
-      <SelectTrigger id="sucursal">
+      <SelectTrigger id="sucursal" className="w-full">
         <SelectValue placeholder="Seleccione una sucursal" />
       </SelectTrigger>
       <SelectContent>

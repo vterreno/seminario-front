@@ -8,4 +8,4 @@ export const Route = createFileRoute('/_authenticated/dashboard')({
 function RouteComponent() {
   return <Dashboard />
 }
-    
+  

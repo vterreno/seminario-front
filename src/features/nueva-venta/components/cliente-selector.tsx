@@ -43,9 +43,7 @@ export function ClienteSelector({
   }, [clientes, busqueda])
 
   return (
-    <div className="space-y-2">
-      <Label htmlFor="cliente">Cliente *</Label>
-      
+    <div className="space-y-2">      
       <div className="relative">
         <Search className="absolute left-2 top-3 h-4 w-4 text-muted-foreground" />
         <Input
@@ -61,7 +59,7 @@ export function ClienteSelector({
         value={clienteSeleccionado?.toString() || ''}
         onValueChange={(value) => onClienteChange(Number(value))}
       >
-        <SelectTrigger id="cliente">
+        <SelectTrigger id="cliente" className="w-full">
           <SelectValue placeholder="Seleccione un cliente" />
         </SelectTrigger>
         <SelectContent>

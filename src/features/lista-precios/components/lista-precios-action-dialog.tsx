@@ -155,7 +155,7 @@ export function ListaPreciosActionDialog({ mode, onSuccess }: ListaPreciosAction
             >
                 <DialogHeader>
                     <DialogTitle>
-                        {mode === 'add' ? 'Nueva Lista de Precios' : 'Editar Lista de Precios'}
+                        {mode === 'add' ? 'Nueva lista de precios' : 'Editar lista de precios'}
                     </DialogTitle>
                 </DialogHeader>
                 <Form {...form}>
@@ -164,7 +164,7 @@ export function ListaPreciosActionDialog({ mode, onSuccess }: ListaPreciosAction
                             control={form.control}
                             name="nombre"
                             render={({ field }) => (
-                                <FormItem>
+                                <FormItem className='mt-4'>
                                     <FormLabel>Nombre *</FormLabel>
                                     <FormControl>
                                         <Input placeholder="Ej: Lista Minorista" {...field} />
@@ -200,7 +200,7 @@ export function ListaPreciosActionDialog({ mode, onSuccess }: ListaPreciosAction
                                             value={field.value?.toString()}
                                         >
                                             <FormControl>
-                                                <SelectTrigger>
+                                                <SelectTrigger className='w-full'>
                                                     <SelectValue placeholder="Seleccionar empresa" />
                                                 </SelectTrigger>
                                             </FormControl>
@@ -274,7 +274,7 @@ export function ListaPreciosActionDialog({ mode, onSuccess }: ListaPreciosAction
                             render={({ field }) => (
                                 <FormItem className="flex items-center justify-between rounded-lg border p-4">
                                     <div className="space-y-0.5">
-                                        <FormLabel className="text-base">Estado Activo</FormLabel>
+                                        <FormLabel className="text-base">Estado activo</FormLabel>
                                         <div className="text-sm text-muted-foreground">
                                             La lista estará disponible para usar
                                         </div>

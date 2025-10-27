@@ -25,6 +25,17 @@ class ApiProductosService {
         }
     }
 
+    async getProductosBySucursal(sucursalId: number): Promise<Producto[]> {
+        try {
+            const response = await axiosService.get(`${rutasBack.productos.getProductosBySucursal}/${sucursalId}`);
+            return response.data.map((producto: ProductoBackend) => mapBackendProductoToFrontend(producto));
+        } catch (error: any) {
+            const backendMessage = error.response?.data?.message;
+            const errorMessage = backendMessage || "Fallo al obtener productos por sucursal";
+            throw new Error(errorMessage);
+        }
+    }
+
     async getProductoById(id: number): Promise<Producto> {
         try {
             const response = await axiosService.get(`${rutasBack.productos.getProductoPorId}/${id}`);

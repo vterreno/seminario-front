@@ -45,6 +45,10 @@ interface UserData {
         id: number
         name: string
     } | null
+    sucursales?: Array<{
+        id: number
+        nombre: string
+    }>
 }
 
 export function ListasPreciosPage() {
@@ -168,7 +172,7 @@ export function ListasPreciosPage() {
             <Main>
                 <div className='mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between'>
                     <div>
-                        <h1 className='text-3xl font-bold tracking-tight'>Listas de Precios</h1>
+                        <h1 className='text-3xl font-bold tracking-tight'>Listas de precios</h1>
                         <p className='text-muted-foreground mt-1'>
                             Gestiona las listas de precios y sus productos asociados
                         </p>

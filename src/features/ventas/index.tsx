@@ -19,8 +19,31 @@ import { Badge } from "@/components/ui/badge"
 import apiEmpresaService, { type Empresa } from "@/service/apiEmpresa.service"
 import apiSucursalesService from "@/service/apiSucursales.service"
 import type { Sucursal } from "../sucursales/data/schema"
-
+import { getStorageItem } from "@/hooks/use-local-storage"
+import { STORAGE_KEYS } from "@/lib/constants"
 const route = getRouteApi('/_authenticated/ventas/ventas/')
+
+interface UserData {
+    id: number
+    nombre: string
+    apellido: string
+    email: string
+    role: {
+        id: number
+        nombre: string
+        permisos?: {
+        [key: string]: boolean
+        }
+    }
+    empresa?: {
+        id: number
+        name: string
+    } | null
+    sucursales?: Array<{
+        id: number
+        nombre: string
+    }>
+}
 
 export function Ventas() {
     return (
@@ -31,7 +54,7 @@ export function Ventas() {
 }
 
 function VentasContent() {
-    const { hasPermission, isSuperAdmin } = usePermissions()
+    const { hasPermission } = usePermissions()
     const search = route.useSearch()
     const navigate = route.useNavigate()
     const [ventas, setVentas] = useState<Venta[]>([])
@@ -58,14 +81,25 @@ function VentasContent() {
         )
     }
 
+    // Detectar si el usuario es superadmin y obtener sus sucursales
+    const userData = getStorageItem(STORAGE_KEYS.USER_DATA, null) as UserData | null
+    const userEmpresaId = userData?.empresa?.id
+    const isSuperAdmin = !userEmpresaId // If user doesn't have empresa_id, they are superadmin
+    const userSucursales = userData?.sucursales || []
+    
+
     const fetchVentas = async (filters?: AdvancedSearchFilters) => {
         try {
             setLoading(true)
-            // TODO: Modificar el servicio para aceptar filtros cuando el backend esté listo
-            // Por ahora solo cargamos todas las ventas
-            const data = await apiVentasService.getAllVentas()
-            
-            // Filtrado local temporal hasta que el backend implemente los filtros
+            let data: Venta[] = []
+
+            if(isSuperAdmin) {
+                data = await apiVentasService.getAllVentas()
+            } else {
+                data = await apiVentasService.getVentasByEmpresa(userEmpresaId!)
+                setSucursales(userData?.sucursales as Sucursal[])
+            }
+
             let filteredData = data
             
             if (filters && Object.keys(filters).length > 0) {
@@ -246,6 +280,7 @@ function VentasContent() {
                     onOpenChange={setAdvancedSearchOpen}
                     onFiltersChange={handleFiltersChange}
                     showEmpresaFilter={isSuperAdmin}
+                    showSucursalFilter={isSuperAdmin || userSucursales.length > 1}
                     currentFilters={activeFilters}
                     empresas={empresas}
                     sucursales={sucursales}

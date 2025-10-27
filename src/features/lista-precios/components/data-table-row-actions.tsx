@@ -13,6 +13,7 @@ import { useListaPreciosContext } from './lista-precios-provider'
 import { usePermissions } from '@/hooks/use-permissions'
 import apiListaPreciosService from '@/service/apiListaPrecios.service'
 import { toast } from 'sonner'
+import { Eye, Pencil, Trash2 } from 'lucide-react'
 
 interface DataTableRowActionsProps {
     row: Row<ListaPrecios>
@@ -61,13 +62,15 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
                             setIsManagePreciosDialogOpen(true)
                         }}
                     >
-                        Gestionar Precios
+                        <Eye size={16} />
+                        Gestionar precios
                     </DropdownMenuItem>
                 )}
                 {canEdit && (
                     <>
                         {canManage && <DropdownMenuSeparator />}
                         <DropdownMenuItem onClick={handleEdit}>
+                            <Pencil size={16} />
                             Editar
                         </DropdownMenuItem>
                     </>
@@ -82,6 +85,7 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
                             }}
                             className='text-destructive'
                         >
+                            <Trash2 size={16} color='red' />
                             Eliminar
                         </DropdownMenuItem>
                     </>
