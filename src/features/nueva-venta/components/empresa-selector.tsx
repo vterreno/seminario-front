@@ -23,7 +23,7 @@ export function EmpresaSelector({
       value={empresaSeleccionada?.toString() || ''}
       onValueChange={(value) => onEmpresaChange(Number(value))}
     >
-      <SelectTrigger id="empresa">
+      <SelectTrigger id="empresa" className="w-full">
         <SelectValue placeholder="Seleccione una empresa" />
       </SelectTrigger>
       <SelectContent>

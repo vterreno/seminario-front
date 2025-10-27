@@ -54,7 +54,6 @@ export function DataTableRowActions({ row, canView = false, canEdit = false, can
             Ver detalle
           </DropdownMenuItem>
         )}
-        {canView && (canEdit || canDelete) && <DropdownMenuSeparator />}
         {canEdit && canDelete && <DropdownMenuSeparator />}
         {canDelete && (
           <DropdownMenuItem

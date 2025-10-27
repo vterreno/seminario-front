@@ -207,7 +207,7 @@ export function ProductWithPriceSelectorDialog({
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
                         <Package className="h-5 w-5" />
-                        Seleccionar Productos y Asignar Precios
+                        Seleccionar productos y asignar precios
                     </DialogTitle>
                     <DialogDescription>
                         Selecciona los productos y define sus precios específicos para esta lista.
@@ -220,7 +220,7 @@ export function ProductWithPriceSelectorDialog({
                 </DialogHeader>
 
                 {/* Barra de búsqueda */}
-                <div className="relative">
+                <div className="relative my-4">
                     <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                     <Input
                         placeholder="Buscar por nombre, código, marca o categoría..."
@@ -241,11 +241,11 @@ export function ProductWithPriceSelectorDialog({
                 </div>
 
                 {/* Controles de ajuste porcentual */}
-                <div className="rounded-lg border p-4 bg-primary/10 border-primary">
+                <div className="rounded-lg border p-4 bg-primary/10 border-primary my-4">
                     <div className="mb-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                         <Label className="flex items-center gap-2 text-sm font-semibold">
                             <Percent className="h-4 w-4" />
-                            Ajuste Porcentual Global (sobre productos seleccionados)
+                            Ajuste porcentual global (sobre productos seleccionados)
                         </Label>
                         <div className="flex items-center gap-2">
                             <span className="text-xs text-primary font-medium animate-pulse">
@@ -400,7 +400,7 @@ export function ProductWithPriceSelectorDialog({
                             <span>No hay productos seleccionados</span>
                         )}
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 my-4">
                         <Button type="button" variant="outline" onClick={handleCancel}>
                             Cancelar
                         </Button>

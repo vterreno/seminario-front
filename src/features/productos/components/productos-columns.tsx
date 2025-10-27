@@ -192,7 +192,7 @@ export const productosColumns = (options: ProductosColumnsOptions = {}): ColumnD
         },
         meta: {
             className: 'w-24',
-            displayName: 'Precio Costo'
+            displayName: 'Costo unitario'
         },
         },
         {
@@ -212,7 +212,7 @@ export const productosColumns = (options: ProductosColumnsOptions = {}): ColumnD
         },
         meta: {
             className: 'w-24',
-            displayName: 'Precio Venta'
+            displayName: 'Precio venta'
         },
         }
     )

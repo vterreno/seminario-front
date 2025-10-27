@@ -13,14 +13,13 @@ import {
   MapPin,
   Building2,
   Layers,
-  LucideShoppingCart,
   Box,
   Tag,
-  History,
   PlusCircle,
   Archive,
+  Scale,
 } from 'lucide-react'
-import { type SidebarData, type NavLink } from '../types'
+import { type SidebarData, type NavLink, BaseNavItem } from '../types'
 import { getStorageItem } from '@/hooks/use-local-storage'
 import { STORAGE_KEYS } from '@/lib/constants'
 
@@ -245,7 +244,7 @@ export const getSidebarData = (): SidebarData => {
   if (hasPermission(userData, 'ventas_ver')) {
     if (hasPermission(userData, 'ventas_agregar')) {
       ventasSubItems.push({
-        title: 'Nueva Venta',
+        title: 'Nueva venta',
         url: '/ventas/nueva-venta',
         icon: PlusCircle,
         backgroundColor: '#f7c33b',
@@ -254,7 +253,7 @@ export const getSidebarData = (): SidebarData => {
     }
     if (hasPermission(userData, 'ventas_ver')) {
       ventasSubItems.push({
-        title: 'Historial de Ventas',
+        title: 'Historial de ventas',
         url: '/ventas/ventas',
         icon: Archive,
         backgroundColor: '#f7c33b',
@@ -263,7 +262,7 @@ export const getSidebarData = (): SidebarData => {
     }
     if (hasPermission(userData, 'modulo_listas_ver')) {
       ventasSubItems.push({
-        title: 'Lista de Precios',
+        title: 'Lista de precios',
         url: '/ventas/lista-precios',
         icon: CreditCard,
         backgroundColor: '#f7c33b',

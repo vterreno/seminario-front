@@ -170,7 +170,6 @@ export function NuevaVenta() {
             setProductos([])
           }
           
-          setProductos(productosData.filter(p => p.estado))
         } catch (error) {
           console.error('Error al cargar productos:', error)
           toast.error('No tienes permisos para ver los productos')
@@ -325,7 +324,7 @@ export function NuevaVenta() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Nueva Venta</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Nueva venta</h1>
         <p className="text-muted-foreground">
           Complete los datos para registrar una nueva venta
         </p>
@@ -337,10 +336,8 @@ export function NuevaVenta() {
           {/* Empresa (Solo SuperAdmin) */}
           {isSuperAdmin && (
             <Card className="shadow-sm">
-              <CardHeader className="p-3 pb-2">
-                <CardTitle className="text-xs font-medium">Empresa</CardTitle>
-              </CardHeader>
-              <CardContent className="px-3 pb-3 pt-0">
+              <CardContent>
+                <h2>Empresa</h2>
                 <EmpresaSelector
                   empresas={empresas}
                   empresaSeleccionada={empresaSeleccionada}
@@ -353,10 +350,8 @@ export function NuevaVenta() {
           {/* Sucursal */}
           {empresaSeleccionada && (
             <Card className="shadow-sm">
-              <CardHeader className="p-3 pb-2">
-                <CardTitle className="text-xs font-medium">Sucursal</CardTitle>
-              </CardHeader>
-              <CardContent className="px-3 pb-3 pt-0">
+              <CardContent>
+                <h2>Sucursal</h2>
                 {sucursales.length === 1 ? (
                   <div className="h-9 flex items-center px-3 border rounded-md bg-muted text-xs">
                     <p className="font-medium">{sucursales[0].nombre}</p>
@@ -375,10 +370,8 @@ export function NuevaVenta() {
           {/* Cliente */}
           {sucursalSeleccionada && (
             <Card className="shadow-sm">
-              <CardHeader className="p-3 pb-2">
-                <CardTitle className="text-xs font-medium">Cliente</CardTitle>
-              </CardHeader>
-              <CardContent className="px-3 pb-3 pt-0">
+              <CardContent>
+                <h2>Cliente</h2>
                 <ClienteSelector
                   clientes={clientes}
                   clienteSeleccionado={clienteSeleccionado}
@@ -404,13 +397,13 @@ export function NuevaVenta() {
             {/* Método de Pago y Acciones - Siempre visible cuando hay cliente */}
             <Card>
               <CardHeader className="pb-3">
-                <CardTitle className="text-base">Finalizar Venta</CardTitle>
+                <CardTitle className="text-base">Finalizar venta</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {/* Método de Pago */}
                   <div>
-                    <Label className="mb-2 block text-sm font-medium">Método de Pago</Label>
+                    <Label className="mb-2 block text-sm font-medium">Método de pago</Label>
                     <MetodoPagoSelector
                       metodoPago={metodoPago}
                       onMetodoPagoChange={setMetodoPago}
@@ -420,7 +413,7 @@ export function NuevaVenta() {
                   {/* Resumen del Total */}
                   <div>
                     <div className="w-full bg-green-50 dark:bg-green-950 rounded-lg p-4 border-2 border-green-600 dark:border-green-700 h-full flex flex-col justify-center">
-                      <p className="text-sm text-green-700 dark:text-green-400 font-medium mb-1">Total a pagar</p>
+                      <p className="text-sm text-green-700 dark:text-green-400 font-medium mb-1">Total a cobrar</p>
                       <p className="text-3xl font-bold text-green-700 dark:text-green-400">
                         ${Number(montoTotal || 0).toFixed(2)}
                       </p>
@@ -456,7 +449,7 @@ export function NuevaVenta() {
                         Procesando...
                       </>
                     ) : (
-                      'Confirmar Venta'
+                      'Confirmar venta'
                     )}
                   </Button>
                 </div>

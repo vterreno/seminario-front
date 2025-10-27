@@ -239,7 +239,7 @@ export function ListaPreciosTable({
                                                                         <TableHead>Nombre</TableHead>
                                                                         <TableHead className="w-32">Marca</TableHead>
                                                                         <TableHead className="w-32">Categoría</TableHead>
-                                                                        <TableHead className="w-32 text-right">Precio Venta</TableHead>
+                                                                        <TableHead className="w-32 text-right">Precio venta</TableHead>
                                                                         <TableHead className="w-24">Estado</TableHead>
                                                                     </TableRow>
                                                                 </TableHeader>

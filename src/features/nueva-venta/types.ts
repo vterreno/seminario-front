@@ -1,5 +1,5 @@
 /**
- * Tipos y interfaces para el módulo de Nueva Venta
+ * Tipos y interfaces para el módulo de nueva venta
  */
 
 import { Producto } from '@/features/productos/data/schema'

@@ -171,31 +171,36 @@ export function ProductosActionDialog({
     useEffect(() => {
         // Si es superadmin, cargar cuando cambie empresa_id
         if (isSuperAdmin && open) {
-            const empresaId = form.watch('empresa_id')
-            if (empresaId) {
-                const fetchData = async () => {
-                    try {
-                        const [marcasResponse, categoriasResponse, unidadesMedidaResponse] = await Promise.all([
-                            apiMarcasService.getMarcasByEmpresa(empresaId),
-                            apiCategoriasService.getCategoriasByEmpresa(empresaId),
-                            apiUnidadesMedidaService.getUnidadesMedidaByEmpresa(empresaId),
-                        ])
-                        setMarcas(marcasResponse)
-                        setCategorias(categoriasResponse)
-                        setUnidadesMedida(unidadesMedidaResponse)
-                    } catch (error) {
-                        toast.error("Error al cargar marcas/categorías/unidades")
+            const subscription = form.watch((value, { name }) => {
+                if (name === 'empresa_id' || !name) {
+                    const empresaId = value.empresa_id
+                    if (empresaId) {
+                        const fetchData = async () => {
+                            try {
+                                const [marcasResponse, categoriasResponse, unidadesMedidaResponse] = await Promise.all([
+                                    apiMarcasService.getMarcasByEmpresa(empresaId),
+                                    apiCategoriasService.getCategoriasByEmpresa(empresaId),
+                                    apiUnidadesMedidaService.getUnidadesMedidaByEmpresa(empresaId),
+                                ])
+                                setMarcas(marcasResponse)
+                                setCategorias(categoriasResponse)
+                                setUnidadesMedida(unidadesMedidaResponse)
+                            } catch (error) {
+                                toast.error("Error al cargar marcas/categorías/unidades")
+                                setMarcas([])
+                                setCategorias([])
+                                setUnidadesMedida([])
+                            }
+                        }
+                        fetchData()
+                    } else {
                         setMarcas([])
                         setCategorias([])
                         setUnidadesMedida([])
                     }
                 }
-                fetchData()
-            } else {
-                setMarcas([])
-                setCategorias([])
-                setUnidadesMedida([])
-            }
+            })
+            return () => subscription.unsubscribe()
         }
         // Si es usuario normal, cargar con la empresa del usuario al abrir el diálogo
         if (!isSuperAdmin && userEmpresaId && open) {
@@ -218,7 +223,7 @@ export function ProductosActionDialog({
             }
             fetchData()
         }
-    }, [form.watch('empresa_id'), open, isSuperAdmin, userEmpresaId])
+    }, [open, isSuperAdmin, userEmpresaId, form])
 
     // Observar cambios en empresa_id para cargar sucursales (solo superadmin)
     useEffect(() => {
