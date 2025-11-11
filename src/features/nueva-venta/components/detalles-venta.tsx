@@ -186,7 +186,7 @@ export function DetallesVenta({
     
     if (productoExistente) {
       const nuevaCantidad = productoExistente.cantidad + cantidadNum
-      if (stockDisponible < cantidadNum) {
+      if (nuevaCantidad > stockDisponible) {
         toast.error(`Stock insuficiente. Disponible: ${stockDisponible}`)
         return
       }
