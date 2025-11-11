@@ -213,7 +213,25 @@ export function UsersActionDialog({
       }
       
       if (isEdit && currentRow) {
-        await apiUsersService.updateUser(currentRow.id, submitValues)
+        // Solo enviar los campos que han cambiado
+        const changedValues: Partial<UserForm> = {}
+        
+        if (values.nombre !== currentRow.nombre) changedValues.nombre = values.nombre
+        if (values.apellido !== currentRow.apellido) changedValues.apellido = values.apellido
+        if (values.email !== currentRow.email) changedValues.email = values.email
+        if (values.password && values.password !== '') changedValues.password = values.password
+        if (values.role_id !== currentRow.role?.id) changedValues.role_id = values.role_id
+        if (submitValues.empresa_id !== currentRow.empresa?.id) changedValues.empresa_id = submitValues.empresa_id
+        if (values.status !== currentRow.status) changedValues.status = values.status
+        
+        // Comparar sucursales
+        const currentSucursalIds = (currentRow.sucursales?.map((s) => s.id) || []).sort()
+        const newSucursalIds = (values.sucursal_ids || []).sort()
+        if (JSON.stringify(currentSucursalIds) !== JSON.stringify(newSucursalIds)) {
+          changedValues.sucursal_ids = values.sucursal_ids
+        }
+        
+        await apiUsersService.updateUser(currentRow.id, changedValues)
         toast.success('Usuario actualizado correctamente')
       } else {
         await apiUsersService.createUser(submitValues)
