@@ -32,9 +32,8 @@ export function CategoriasDeleteDialog({
         onOpenChange(false)
         onSuccess?.()
       }
-    } catch (error) {
-      console.error('Error deleting categoria:', error)
-      toast.error('Error al eliminar la categoría')
+    } catch (error: any) {
+      toast.error(error?.message || 'Error al eliminar la categoría')
     }
   }
 

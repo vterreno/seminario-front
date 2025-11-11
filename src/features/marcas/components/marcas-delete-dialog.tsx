@@ -39,8 +39,7 @@ export function MarcasDeleteDialog({
         onOpenChange(false)
         onSuccess?.()
         } catch (error: any) {
-        console.error('Error deleting marca:', error)
-        toast.error(error.message || 'Error al eliminar la marca')
+            toast.error(error.message || 'Error al eliminar la marca')
         } finally {
         setLoading(false)
         }

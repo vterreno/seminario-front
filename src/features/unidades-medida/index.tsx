@@ -31,7 +31,6 @@ export function UnidadesMedida() {
         // Ensure each item has the required `estado` boolean for the state type
         setUnidadesMedida(data.map(d => ({ ...d, estado: (d as any).estado ?? true })))
         } catch (error) {
-        console.error('Error fetching unidades de medida:', error)
         toast.error('Error al cargar las unidades de medida')
         } finally {
         setLoading(false)

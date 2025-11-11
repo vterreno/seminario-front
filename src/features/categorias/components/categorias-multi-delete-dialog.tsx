@@ -39,9 +39,8 @@ export function CategoriasMultiDeleteDialog<TData>({
       onOpenChange(false)
       toast.success(`${selectedCategorias.length} categoría${selectedCategorias.length > 1 ? 's' : ''} eliminada${selectedCategorias.length > 1 ? 's' : ''} exitosamente`)
       onSuccess?.()
-    } catch (error) {
-      console.error('Error deleting categorias:', error)
-      toast.error('Error al eliminar las categorías')
+    } catch (error: any) {
+      toast.error(error?.message || 'Error al eliminar las categorías')
     }
   }
 

@@ -31,20 +31,14 @@ export function UnidadMedidaMultiDeleteDialog<TData>({
   const handleDelete = async () => {
     try {
       const ids = selectedUnidades.map((unidad) => unidad.id!).filter(Boolean)
-      const response = await apiUnidadesMedida.deleteUnidadesMedida(ids)
-
-      if (response.message && response.message.includes('en uso')) {
-        toast.error('Algunas unidades de medida están siendo utilizadas por productos y no se pueden eliminar')
-        return
-      }
+      await apiUnidadesMedida.bulkDeleteUnidadesMedida(ids)
 
       table.resetRowSelection()
       onOpenChange(false)
       toast.success(`${selectedUnidades.length} unidad${selectedUnidades.length > 1 ? 'es' : ''} de medida eliminada${selectedUnidades.length > 1 ? 's' : ''} exitosamente`)
       onSuccess?.()
-    } catch (error) {
-      console.error('Error deleting unidades de medida:', error)
-      toast.error('Error al eliminar las unidades de medida')
+    } catch (error: any) {
+      toast.error(error?.message || 'Error al eliminar las unidades de medida')
     }
   }
 
