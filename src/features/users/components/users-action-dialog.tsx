@@ -221,7 +221,7 @@ export function UsersActionDialog({
         if (values.email !== currentRow.email) changedValues.email = values.email
         if (values.password && values.password !== '') changedValues.password = values.password
         if (values.role_id !== currentRow.role?.id) changedValues.role_id = values.role_id
-        if (values.empresa_id !== currentRow.empresa?.id) changedValues.empresa_id = values.empresa_id
+        if (submitValues.empresa_id !== currentRow.empresa?.id) changedValues.empresa_id = submitValues.empresa_id
         if (values.status !== currentRow.status) changedValues.status = values.status
         
         // Comparar sucursales
