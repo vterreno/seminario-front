@@ -191,7 +191,7 @@ export const getSidebarData = (): SidebarData => {
       title: 'Contactos',
       url: '/contactos',
       icon: Users,
-      backgroundColor: '#f7c33b',
+      backgroundColor: '#40ba22',
       textColor: '#ffffff',
     })
   }
@@ -206,7 +206,7 @@ export const getSidebarData = (): SidebarData => {
         title: 'Productos',
         url: '/productos/productos/',
         icon: Package,
-        backgroundColor: '#f7c33b',
+        backgroundColor: '#40ba22',
         textColor: '#ffffff',
       })
     }
@@ -215,7 +215,7 @@ export const getSidebarData = (): SidebarData => {
         title: 'Marcas',
         url: '/productos/marcas',
         icon: Tag,
-        backgroundColor: '#f7c33b',
+        backgroundColor: '#40ba22',
         textColor: '#ffffff',
       })
     }
@@ -225,7 +225,7 @@ export const getSidebarData = (): SidebarData => {
         title: 'Categorías',
         url: '/productos/categorias',
         icon: Layers,
-        backgroundColor: '#f7c33b',
+        backgroundColor: '#40ba22',
         textColor: '#ffffff',
       })
     }
@@ -233,7 +233,7 @@ export const getSidebarData = (): SidebarData => {
     generalItems.push({
       title: 'Productos',
       icon: Box,
-      backgroundColor: '#f7c33b',
+      backgroundColor: '#40ba22',
       textColor: '#ffffff',
       items: productosSubItems,
     })
@@ -247,7 +247,7 @@ export const getSidebarData = (): SidebarData => {
         title: 'Nueva venta',
         url: '/ventas/nueva-venta',
         icon: PlusCircle,
-        backgroundColor: '#f7c33b',
+        backgroundColor: '#40ba22',
         textColor: '#ffffff',
       })
     }
@@ -256,7 +256,7 @@ export const getSidebarData = (): SidebarData => {
         title: 'Historial de ventas',
         url: '/ventas/ventas',
         icon: Archive,
-        backgroundColor: '#f7c33b',
+        backgroundColor: '#40ba22',
         textColor: '#ffffff',
       })
     }
@@ -265,7 +265,7 @@ export const getSidebarData = (): SidebarData => {
         title: 'Lista de precios',
         url: '/ventas/lista-precios',
         icon: CreditCard,
-        backgroundColor: '#f7c33b',
+        backgroundColor: '#40ba22',
         textColor: '#ffffff',
       })
     }
@@ -273,7 +273,7 @@ export const getSidebarData = (): SidebarData => {
     generalItems.push({
       title: 'Ventas',
       icon: ShoppingCart,
-      backgroundColor: '#f7c33b',
+      backgroundColor: '#40ba22',
       textColor: '#ffffff',
       items: ventasSubItems,
     })
