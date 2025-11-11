@@ -53,7 +53,6 @@ export function DetallesVenta({
   const [productoSeleccionado, setProductoSeleccionado] = useState<string>('')
   const [cantidad, setCantidad] = useState<string>('1')
   const [openProducto, setOpenProducto] = useState(false)
-  const [openListaPrecios, setOpenListaPrecios] = useState(false)
   
   const [listasPrecios, setListasPrecios] = useState<ListaPrecios[]>([])
   const [listasDisponibles, setListasDisponibles] = useState<Array<{lista: ListaPrecios, precio: number}>>([])
