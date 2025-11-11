@@ -30,6 +30,7 @@ import { Route as ClerkauthRouteRouteImport } from './routes/clerk/(auth)/route'
 import { Route as AuthenticatedVentasRouteRouteImport } from './routes/_authenticated/ventas/route'
 import { Route as AuthenticatedSettingsRouteRouteImport } from './routes/_authenticated/settings/route'
 import { Route as AuthenticatedProductosRouteRouteImport } from './routes/_authenticated/productos/route'
+import { Route as AuthenticatedComprasRouteRouteImport } from './routes/_authenticated/compras/route'
 import { Route as AuthenticatedUsersIndexRouteImport } from './routes/_authenticated/users/index'
 import { Route as AuthenticatedUnidadesMedidaIndexRouteImport } from './routes/_authenticated/unidades-medida/index'
 import { Route as AuthenticatedTasksIndexRouteImport } from './routes/_authenticated/tasks/index'
@@ -38,7 +39,6 @@ import { Route as AuthenticatedRolesIndexRouteImport } from './routes/_authentic
 import { Route as AuthenticatedHelpCenterIndexRouteImport } from './routes/_authenticated/help-center/index'
 import { Route as AuthenticatedEmpresaIndexRouteImport } from './routes/_authenticated/empresa/index'
 import { Route as AuthenticatedContactosIndexRouteImport } from './routes/_authenticated/contactos/index'
-import { Route as AuthenticatedComprasIndexRouteImport } from './routes/_authenticated/compras/index'
 import { Route as AuthenticatedChatsIndexRouteImport } from './routes/_authenticated/chats/index'
 import { Route as AuthenticatedAppsIndexRouteImport } from './routes/_authenticated/apps/index'
 import { Route as ClerkAuthenticatedUserManagementRouteImport } from './routes/clerk/_authenticated/user-management'
@@ -57,6 +57,8 @@ import { Route as AuthenticatedVentasListaPreciosIndexRouteImport } from './rout
 import { Route as AuthenticatedProductosProductosIndexRouteImport } from './routes/_authenticated/productos/productos/index'
 import { Route as AuthenticatedProductosMarcasIndexRouteImport } from './routes/_authenticated/productos/marcas/index'
 import { Route as AuthenticatedProductosCategoriasIndexRouteImport } from './routes/_authenticated/productos/categorias/index'
+import { Route as AuthenticatedComprasNuevaCompraIndexRouteImport } from './routes/_authenticated/compras/nueva-compra/index'
+import { Route as AuthenticatedComprasComprasIndexRouteImport } from './routes/_authenticated/compras/compras/index'
 
 const ClerkRouteRoute = ClerkRouteRouteImport.update({
   id: '/clerk',
@@ -163,6 +165,12 @@ const AuthenticatedProductosRouteRoute =
     path: '/productos',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedComprasRouteRoute =
+  AuthenticatedComprasRouteRouteImport.update({
+    id: '/compras',
+    path: '/compras',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedUsersIndexRoute = AuthenticatedUsersIndexRouteImport.update({
   id: '/users/',
   path: '/users/',
@@ -206,12 +214,6 @@ const AuthenticatedContactosIndexRoute =
   AuthenticatedContactosIndexRouteImport.update({
     id: '/contactos/',
     path: '/contactos/',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedComprasIndexRoute =
-  AuthenticatedComprasIndexRouteImport.update({
-    id: '/compras/',
-    path: '/compras/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedChatsIndexRoute = AuthenticatedChatsIndexRouteImport.update({
@@ -318,9 +320,22 @@ const AuthenticatedProductosCategoriasIndexRoute =
     path: '/categorias/',
     getParentRoute: () => AuthenticatedProductosRouteRoute,
   } as any)
+const AuthenticatedComprasNuevaCompraIndexRoute =
+  AuthenticatedComprasNuevaCompraIndexRouteImport.update({
+    id: '/nueva-compra/',
+    path: '/nueva-compra/',
+    getParentRoute: () => AuthenticatedComprasRouteRoute,
+  } as any)
+const AuthenticatedComprasComprasIndexRoute =
+  AuthenticatedComprasComprasIndexRouteImport.update({
+    id: '/compras/',
+    path: '/compras/',
+    getParentRoute: () => AuthenticatedComprasRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/clerk': typeof ClerkAuthenticatedRouteRouteWithChildren
+  '/compras': typeof AuthenticatedComprasRouteRouteWithChildren
   '/productos': typeof AuthenticatedProductosRouteRouteWithChildren
   '/settings': typeof AuthenticatedSettingsRouteRouteWithChildren
   '/ventas': typeof AuthenticatedVentasRouteRouteWithChildren
@@ -351,7 +366,6 @@ export interface FileRoutesByFullPath {
   '/clerk/user-management': typeof ClerkAuthenticatedUserManagementRoute
   '/apps': typeof AuthenticatedAppsIndexRoute
   '/chats': typeof AuthenticatedChatsIndexRoute
-  '/compras': typeof AuthenticatedComprasIndexRoute
   '/contactos': typeof AuthenticatedContactosIndexRoute
   '/empresa': typeof AuthenticatedEmpresaIndexRoute
   '/help-center': typeof AuthenticatedHelpCenterIndexRoute
@@ -360,6 +374,8 @@ export interface FileRoutesByFullPath {
   '/tasks': typeof AuthenticatedTasksIndexRoute
   '/unidades-medida': typeof AuthenticatedUnidadesMedidaIndexRoute
   '/users': typeof AuthenticatedUsersIndexRoute
+  '/compras/compras': typeof AuthenticatedComprasComprasIndexRoute
+  '/compras/nueva-compra': typeof AuthenticatedComprasNuevaCompraIndexRoute
   '/productos/categorias': typeof AuthenticatedProductosCategoriasIndexRoute
   '/productos/marcas': typeof AuthenticatedProductosMarcasIndexRoute
   '/productos/productos': typeof AuthenticatedProductosProductosIndexRoute
@@ -368,6 +384,7 @@ export interface FileRoutesByFullPath {
   '/ventas/ventas': typeof AuthenticatedVentasVentasIndexRoute
 }
 export interface FileRoutesByTo {
+  '/compras': typeof AuthenticatedComprasRouteRouteWithChildren
   '/productos': typeof AuthenticatedProductosRouteRouteWithChildren
   '/ventas': typeof AuthenticatedVentasRouteRouteWithChildren
   '/clerk': typeof ClerkAuthenticatedRouteRouteWithChildren
@@ -397,7 +414,6 @@ export interface FileRoutesByTo {
   '/clerk/user-management': typeof ClerkAuthenticatedUserManagementRoute
   '/apps': typeof AuthenticatedAppsIndexRoute
   '/chats': typeof AuthenticatedChatsIndexRoute
-  '/compras': typeof AuthenticatedComprasIndexRoute
   '/contactos': typeof AuthenticatedContactosIndexRoute
   '/empresa': typeof AuthenticatedEmpresaIndexRoute
   '/help-center': typeof AuthenticatedHelpCenterIndexRoute
@@ -406,6 +422,8 @@ export interface FileRoutesByTo {
   '/tasks': typeof AuthenticatedTasksIndexRoute
   '/unidades-medida': typeof AuthenticatedUnidadesMedidaIndexRoute
   '/users': typeof AuthenticatedUsersIndexRoute
+  '/compras/compras': typeof AuthenticatedComprasComprasIndexRoute
+  '/compras/nueva-compra': typeof AuthenticatedComprasNuevaCompraIndexRoute
   '/productos/categorias': typeof AuthenticatedProductosCategoriasIndexRoute
   '/productos/marcas': typeof AuthenticatedProductosMarcasIndexRoute
   '/productos/productos': typeof AuthenticatedProductosProductosIndexRoute
@@ -417,6 +435,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/clerk': typeof ClerkRouteRouteWithChildren
+  '/_authenticated/compras': typeof AuthenticatedComprasRouteRouteWithChildren
   '/_authenticated/productos': typeof AuthenticatedProductosRouteRouteWithChildren
   '/_authenticated/settings': typeof AuthenticatedSettingsRouteRouteWithChildren
   '/_authenticated/ventas': typeof AuthenticatedVentasRouteRouteWithChildren
@@ -448,7 +467,6 @@ export interface FileRoutesById {
   '/clerk/_authenticated/user-management': typeof ClerkAuthenticatedUserManagementRoute
   '/_authenticated/apps/': typeof AuthenticatedAppsIndexRoute
   '/_authenticated/chats/': typeof AuthenticatedChatsIndexRoute
-  '/_authenticated/compras/': typeof AuthenticatedComprasIndexRoute
   '/_authenticated/contactos/': typeof AuthenticatedContactosIndexRoute
   '/_authenticated/empresa/': typeof AuthenticatedEmpresaIndexRoute
   '/_authenticated/help-center/': typeof AuthenticatedHelpCenterIndexRoute
@@ -457,6 +475,8 @@ export interface FileRoutesById {
   '/_authenticated/tasks/': typeof AuthenticatedTasksIndexRoute
   '/_authenticated/unidades-medida/': typeof AuthenticatedUnidadesMedidaIndexRoute
   '/_authenticated/users/': typeof AuthenticatedUsersIndexRoute
+  '/_authenticated/compras/compras/': typeof AuthenticatedComprasComprasIndexRoute
+  '/_authenticated/compras/nueva-compra/': typeof AuthenticatedComprasNuevaCompraIndexRoute
   '/_authenticated/productos/categorias/': typeof AuthenticatedProductosCategoriasIndexRoute
   '/_authenticated/productos/marcas/': typeof AuthenticatedProductosMarcasIndexRoute
   '/_authenticated/productos/productos/': typeof AuthenticatedProductosProductosIndexRoute
@@ -468,6 +488,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/clerk'
+    | '/compras'
     | '/productos'
     | '/settings'
     | '/ventas'
@@ -498,7 +519,6 @@ export interface FileRouteTypes {
     | '/clerk/user-management'
     | '/apps'
     | '/chats'
-    | '/compras'
     | '/contactos'
     | '/empresa'
     | '/help-center'
@@ -507,6 +527,8 @@ export interface FileRouteTypes {
     | '/tasks'
     | '/unidades-medida'
     | '/users'
+    | '/compras/compras'
+    | '/compras/nueva-compra'
     | '/productos/categorias'
     | '/productos/marcas'
     | '/productos/productos'
@@ -515,6 +537,7 @@ export interface FileRouteTypes {
     | '/ventas/ventas'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/compras'
     | '/productos'
     | '/ventas'
     | '/clerk'
@@ -544,7 +567,6 @@ export interface FileRouteTypes {
     | '/clerk/user-management'
     | '/apps'
     | '/chats'
-    | '/compras'
     | '/contactos'
     | '/empresa'
     | '/help-center'
@@ -553,6 +575,8 @@ export interface FileRouteTypes {
     | '/tasks'
     | '/unidades-medida'
     | '/users'
+    | '/compras/compras'
+    | '/compras/nueva-compra'
     | '/productos/categorias'
     | '/productos/marcas'
     | '/productos/productos'
@@ -563,6 +587,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/_authenticated'
     | '/clerk'
+    | '/_authenticated/compras'
     | '/_authenticated/productos'
     | '/_authenticated/settings'
     | '/_authenticated/ventas'
@@ -594,7 +619,6 @@ export interface FileRouteTypes {
     | '/clerk/_authenticated/user-management'
     | '/_authenticated/apps/'
     | '/_authenticated/chats/'
-    | '/_authenticated/compras/'
     | '/_authenticated/contactos/'
     | '/_authenticated/empresa/'
     | '/_authenticated/help-center/'
@@ -603,6 +627,8 @@ export interface FileRouteTypes {
     | '/_authenticated/tasks/'
     | '/_authenticated/unidades-medida/'
     | '/_authenticated/users/'
+    | '/_authenticated/compras/compras/'
+    | '/_authenticated/compras/nueva-compra/'
     | '/_authenticated/productos/categorias/'
     | '/_authenticated/productos/marcas/'
     | '/_authenticated/productos/productos/'
@@ -776,6 +802,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProductosRouteRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/compras': {
+      id: '/_authenticated/compras'
+      path: '/compras'
+      fullPath: '/compras'
+      preLoaderRoute: typeof AuthenticatedComprasRouteRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/users/': {
       id: '/_authenticated/users/'
       path: '/users'
@@ -830,13 +863,6 @@ declare module '@tanstack/react-router' {
       path: '/contactos'
       fullPath: '/contactos'
       preLoaderRoute: typeof AuthenticatedContactosIndexRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/compras/': {
-      id: '/_authenticated/compras/'
-      path: '/compras'
-      fullPath: '/compras'
-      preLoaderRoute: typeof AuthenticatedComprasIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/chats/': {
@@ -965,8 +991,40 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProductosCategoriasIndexRouteImport
       parentRoute: typeof AuthenticatedProductosRouteRoute
     }
+    '/_authenticated/compras/nueva-compra/': {
+      id: '/_authenticated/compras/nueva-compra/'
+      path: '/nueva-compra'
+      fullPath: '/compras/nueva-compra'
+      preLoaderRoute: typeof AuthenticatedComprasNuevaCompraIndexRouteImport
+      parentRoute: typeof AuthenticatedComprasRouteRoute
+    }
+    '/_authenticated/compras/compras/': {
+      id: '/_authenticated/compras/compras/'
+      path: '/compras'
+      fullPath: '/compras/compras'
+      preLoaderRoute: typeof AuthenticatedComprasComprasIndexRouteImport
+      parentRoute: typeof AuthenticatedComprasRouteRoute
+    }
   }
 }
+
+interface AuthenticatedComprasRouteRouteChildren {
+  AuthenticatedComprasComprasIndexRoute: typeof AuthenticatedComprasComprasIndexRoute
+  AuthenticatedComprasNuevaCompraIndexRoute: typeof AuthenticatedComprasNuevaCompraIndexRoute
+}
+
+const AuthenticatedComprasRouteRouteChildren: AuthenticatedComprasRouteRouteChildren =
+  {
+    AuthenticatedComprasComprasIndexRoute:
+      AuthenticatedComprasComprasIndexRoute,
+    AuthenticatedComprasNuevaCompraIndexRoute:
+      AuthenticatedComprasNuevaCompraIndexRoute,
+  }
+
+const AuthenticatedComprasRouteRouteWithChildren =
+  AuthenticatedComprasRouteRoute._addFileChildren(
+    AuthenticatedComprasRouteRouteChildren,
+  )
 
 interface AuthenticatedProductosRouteRouteChildren {
   AuthenticatedProductosCategoriasIndexRoute: typeof AuthenticatedProductosCategoriasIndexRoute
@@ -1037,6 +1095,7 @@ const AuthenticatedVentasRouteRouteWithChildren =
   )
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedComprasRouteRoute: typeof AuthenticatedComprasRouteRouteWithChildren
   AuthenticatedProductosRouteRoute: typeof AuthenticatedProductosRouteRouteWithChildren
   AuthenticatedSettingsRouteRoute: typeof AuthenticatedSettingsRouteRouteWithChildren
   AuthenticatedVentasRouteRoute: typeof AuthenticatedVentasRouteRouteWithChildren
@@ -1046,7 +1105,6 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedErrorsErrorRoute: typeof AuthenticatedErrorsErrorRoute
   AuthenticatedAppsIndexRoute: typeof AuthenticatedAppsIndexRoute
   AuthenticatedChatsIndexRoute: typeof AuthenticatedChatsIndexRoute
-  AuthenticatedComprasIndexRoute: typeof AuthenticatedComprasIndexRoute
   AuthenticatedContactosIndexRoute: typeof AuthenticatedContactosIndexRoute
   AuthenticatedEmpresaIndexRoute: typeof AuthenticatedEmpresaIndexRoute
   AuthenticatedHelpCenterIndexRoute: typeof AuthenticatedHelpCenterIndexRoute
@@ -1057,6 +1115,7 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedComprasRouteRoute: AuthenticatedComprasRouteRouteWithChildren,
   AuthenticatedProductosRouteRoute:
     AuthenticatedProductosRouteRouteWithChildren,
   AuthenticatedSettingsRouteRoute: AuthenticatedSettingsRouteRouteWithChildren,
@@ -1067,7 +1126,6 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedErrorsErrorRoute: AuthenticatedErrorsErrorRoute,
   AuthenticatedAppsIndexRoute: AuthenticatedAppsIndexRoute,
   AuthenticatedChatsIndexRoute: AuthenticatedChatsIndexRoute,
-  AuthenticatedComprasIndexRoute: AuthenticatedComprasIndexRoute,
   AuthenticatedContactosIndexRoute: AuthenticatedContactosIndexRoute,
   AuthenticatedEmpresaIndexRoute: AuthenticatedEmpresaIndexRoute,
   AuthenticatedHelpCenterIndexRoute: AuthenticatedHelpCenterIndexRoute,
