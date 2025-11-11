@@ -37,8 +37,8 @@ export function MarcasMultiDeleteDialog<TData>({
         onOpenChange(false)
         toast.success(`${selectedMarcas.length} marca${selectedMarcas.length > 1 ? 's' : ''} eliminada${selectedMarcas.length > 1 ? 's' : ''} exitosamente`)
         onSuccess?.()
-        } catch (error) {
-        toast.error('Error al eliminar las marcas')
+        } catch (error: any) {
+            toast.error(error?.message || 'Error al eliminar las marcas')
         }
     }
 

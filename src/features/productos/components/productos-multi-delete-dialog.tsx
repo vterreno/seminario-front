@@ -37,8 +37,8 @@ export function ProductosMultiDeleteDialog<TData>({
         onOpenChange(false)
         toast.success(`${selectedProductos.length} producto${selectedProductos.length > 1 ? 's' : ''} eliminado${selectedProductos.length > 1 ? 's' : ''} exitosamente`)
         onSuccess?.()
-        } catch (error) {
-        toast.error('Error al eliminar los productos. Por favor, intenta nuevamente.')
+        } catch (error: any) {
+        toast.error(error?.message || 'Error al eliminar los productos. Por favor, intenta nuevamente.')
         }
     }
 

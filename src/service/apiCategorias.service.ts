@@ -97,9 +97,10 @@ class ApiCategoriasService {
     async deleteCategoria(id: number): Promise<void> {
         try {
             await axiosService.delete(`${rutasBack.categorias.deleteCategoria}/${id}`);
-        } catch (error) {
-            console.error('Error deleting categoria:', error);
-            throw new Error('Failed to delete categoria');
+        } catch (error: any) {
+            const backendMessage = error.response?.data?.message;
+            const errorMessage = backendMessage || "Fallo al eliminar marca";
+            throw new Error(errorMessage);
         }
     }
 
@@ -108,9 +109,10 @@ class ApiCategoriasService {
             await axiosService.delete(rutasBack.categorias.bulkDeleteCategorias, {
                 data: { ids }
             })
-        } catch (error) {
-            console.error('Error bulk deleting categorias:', error)
-            throw new Error('Failed to bulk delete categorias')
+        } catch (error: any) {
+            const backendMessage = error.response?.data?.message;
+            const errorMessage = backendMessage || "Fallo al eliminar categoría";
+            throw new Error(errorMessage);
         }
     }
 

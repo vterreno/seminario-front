@@ -389,6 +389,7 @@ export function NuevaVenta() {
             <DetallesVenta
               productos={productos}
               detalles={detalles}
+              empresaId={empresaSeleccionada || null}
               onAgregarDetalle={agregarDetalle}
               onEliminarDetalle={eliminarDetalle}
               onActualizarCantidad={actualizarCantidad}

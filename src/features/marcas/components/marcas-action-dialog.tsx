@@ -209,7 +209,7 @@ export function MarcasActionDialog({
                             {empresas
                                 .filter((empresa) => empresa.id != null)
                                 .map((empresa) => (
-                                    <SelectItem key={empresa.id} value={empresa.id.toString()}>
+                                    <SelectItem key={empresa.id!} value={empresa.id!.toString()}>
                                         {empresa.name}
                                     </SelectItem>
                                 ))}
