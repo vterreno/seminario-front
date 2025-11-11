@@ -111,7 +111,7 @@ class ApiCategoriasService {
             })
         } catch (error: any) {
             const backendMessage = error.response?.data?.message;
-            const errorMessage = backendMessage || "Fallo al eliminar marca";
+            const errorMessage = backendMessage || "Fallo al eliminar categoría";
             throw new Error(errorMessage);
         }
     }
