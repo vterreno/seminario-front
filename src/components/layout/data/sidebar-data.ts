@@ -279,14 +279,34 @@ export const getSidebarData = (): SidebarData => {
     })
   }
 
+  const comprasSubItems: SidebarItem[] = []
   // Solo agregar si tiene permisos para ver compras
   if (hasPermission(userData, 'compras_ver')) {
+    if (hasPermission(userData, 'compras_agregar')) {
+      comprasSubItems.push({
+        title: 'Nueva compra',
+        url: '/compras/nueva-compra',
+        icon: PlusCircle,
+        backgroundColor: '#f7c33b',
+        textColor: '#ffffff',
+      })
+    }
+    if (hasPermission(userData, 'compras_ver')) {
+      comprasSubItems.push({
+        title: 'Historial de compras',
+        url: '/compras/compras',
+        icon: Archive,
+        backgroundColor: '#f7c33b',
+        textColor: '#ffffff',
+      })
+    }
+    
     generalItems.push({
       title: 'Compras',
-      url: '/compras',
-      icon: CreditCard,
+      icon: ShoppingCart,
       backgroundColor: '#f7c33b',
       textColor: '#ffffff',
+      items: comprasSubItems,
     })
   }
 
