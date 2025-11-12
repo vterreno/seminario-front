@@ -61,7 +61,7 @@ class ApiComprasService {
             return response.data
         } catch (error: any) {
             const backendMessage = error.response?.data?.message;
-            const errorMessage = backendMessage || "Fallo al obtener todos los compras";
+            const errorMessage = backendMessage || "Fallo al obtener todas las compras";
             throw new Error(errorMessage);
         }
     }
