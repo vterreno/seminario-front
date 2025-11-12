@@ -431,7 +431,7 @@ export function DetallesVenta({
         <div className="border rounded-lg bg-card">
           <div className="p-4 border-b bg-muted/30">
             <h3 className="font-semibold text-sm">
-              Productos en la venta ({detalles.length} {detalles.length === 1 ? 'producto' : 'productos'})
+              Productos en la compra ({detalles.length} {detalles.length === 1 ? 'producto' : 'productos'})
             </h3>
           </div>
           <div className="overflow-x-auto">
