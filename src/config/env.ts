@@ -143,4 +143,14 @@ export const rutasBack = {
         bulkDeleteListaPrecios: `${baseUrl}/lista-precios/bulk/delete`,
         bulkUpdateStatus: `${baseUrl}/lista-precios/bulk/status`,
     },
+    compras : {
+        getCompras: `${baseUrl}/compras`,
+        getCompraPorId: `${baseUrl}/compras`,
+        getComprasBySucursal: `${baseUrl}/compras/sucursal`,
+        getComprasByEmpresa: `${baseUrl}/compras/empresa`,
+        postCompra: `${baseUrl}/compras`,
+        putCompra: `${baseUrl}/compras`,
+        deleteCompra: `${baseUrl}/compras`,
+        bulkDeleteCompras: `${baseUrl}/compras/bulk/delete`,
+    }
 };
