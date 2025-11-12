@@ -72,7 +72,7 @@ export function ProveedorSelector({
                   <p className="text-xs">No hay proveedores registrados para esta empresa</p>
                 </div>
               ) : (
-                <p>No se encontraron clientes</p>
+                <p>No se encontraron proveedores</p>
               )}
             </div>
           ) : (
