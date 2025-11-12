@@ -172,21 +172,12 @@ export function DetallesCompra({
       return
     }
 
-    // ============= USAR getStockDisponible aquí =============
-    const stockDisponible = getStockDisponible(producto.id!)
-    if (stockDisponible < cantidadNum) {
-      toast.error(`Stock insuficiente. Disponible: ${stockDisponible}`)
-      return
-    }
+    // En compras, no se valida el stock disponible antes de agregar productos
 
     const productoExistente = detalles.find(d => d.producto.id === producto.id)
     
     if (productoExistente) {
       const nuevaCantidad = productoExistente.cantidad + cantidadNum
-      if (nuevaCantidad > stockDisponible) {
-        toast.error(`Stock insuficiente. Disponible: ${stockDisponible}`)
-        return
-      }
       onActualizarCantidad(productoExistente.id, nuevaCantidad)
       toast.success('Cantidad actualizada')
     } else {
