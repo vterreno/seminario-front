@@ -47,7 +47,7 @@ export function ProveedorSelector({
         <Search className="absolute left-2 top-3 h-4 w-4 text-muted-foreground" />
         <Input
           type="text"
-          placeholder="Buscar cliente por nombre, email o teléfono..."
+          placeholder="Buscar proveedor por nombre, email o teléfono..."
           value={busqueda}
           onChange={(e) => setBusqueda(e.target.value)}
           className="pl-8"
