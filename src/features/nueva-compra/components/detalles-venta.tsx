@@ -21,35 +21,33 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { cn } from '@/lib/utils'
-import apiListaPreciosService from '@/service/apiListaPrecios.service'
-import type { ListaPrecios } from '@/features/lista-precios/data/schema'
 
-export interface DetalleVenta {
+
+export interface DetalleCompra {
   id: string
   producto: Producto
   cantidad: number
   precio_unitario: number
   subtotal: number
-  lista_precio_nombre?: string
 }
 
-interface DetallesVentaProps {
+interface DetallesCompraProps {
   productos: Producto[]
-  detalles: DetalleVenta[]
+  detalles: DetalleCompra[]
   empresaId: number | null
-  onAgregarDetalle: (producto: Producto, cantidad: number, precioUnitario: number, listaPrecioNombre?: string) => void
+  onAgregarDetalle: (producto: Producto, cantidad: number, precioUnitario: number) => void
   onEliminarDetalle: (id: string) => void
   onActualizarCantidad: (id: string, cantidad: number) => void
 }
 
-export function DetallesVenta({
+export function DetallesCompra({
   productos,
   detalles,
   empresaId,
   onAgregarDetalle,
   onEliminarDetalle,
   onActualizarCantidad,
-}: DetallesVentaProps) {
+}: DetallesCompraProps) {
   const [productoSeleccionado, setProductoSeleccionado] = useState<string>('')
   const [cantidad, setCantidad] = useState<string>('1')
   const [openProducto, setOpenProducto] = useState(false)
