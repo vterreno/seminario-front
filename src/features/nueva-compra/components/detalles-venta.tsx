@@ -228,7 +228,7 @@ export function DetallesCompra({
     <div className="space-y-4">
       <div className="p-4 border rounded-lg bg-card space-y-4">
         <Label className="text-sm font-medium block">
-          Agregar Productos a la Venta
+          Agregar Productos a la Compra
         </Label>
         
         <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
