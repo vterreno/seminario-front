@@ -151,11 +151,7 @@ export function NuevaCompra() {
         try {
           let proveedoresData: Contacto[] = []
           
-          if (isSuperAdmin) {
-            proveedoresData = await apiContactosService.getProveedoresAll()
-          } else {
-            proveedoresData = await apiContactosService.getProveedoresAll()
-          }
+          proveedoresData = await apiContactosService.getProveedoresAll()
           
           const proveedoresFiltrados = proveedoresData.filter(c => 
             c.estado && 
