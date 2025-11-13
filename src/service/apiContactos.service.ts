@@ -31,7 +31,6 @@ import { rutasBack } from '@/config/env'
 const apiContactosService = {
   // Obtener por ID
   getContactoById: async (id: number) => (await axiosService.get(`${rutasBack.contactos.proveedores.getAll}/${id}`)).data as Contacto,
-  
   // Clientes
   getClientesAll: async () => (await axiosService.get(rutasBack.contactos.clientes.getAll)).data as Contacto[],
   createCliente: async (data: Contacto) => (await axiosService.post(rutasBack.contactos.clientes.post, data)).data as Contacto,
