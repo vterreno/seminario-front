@@ -23,6 +23,7 @@ import { EmpresaSelector } from '../nueva-venta/components/empresa-selector'
 import { SucursalSelector } from '../nueva-venta/components/sucursal-selector'
 import { ProveedorSelector } from './components/proveedor-selector'
 import { DetallesCompra } from './components/detalles-compra'
+import { NuevoProductoProveedorDialog } from './components/nuevo-producto-proveedor-dialog'
 import { 
   DetalleCompra, 
   CostoAdicional, 
@@ -54,6 +55,10 @@ export function NuevaCompra() {
   
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
+  
+  // Estado para el diálogo de nuevo producto proveedor
+  const [openNuevoProductoDialog, setOpenNuevoProductoDialog] = useState(false)
+  const [nuevosProductos, setNuevosProductos] = useState<any[]>([])
 
   // Función para reiniciar el formulario
   const reiniciarFormulario = () => {
@@ -63,12 +68,43 @@ export function NuevaCompra() {
     setFechaCompra(new Date().toISOString().split('T')[0])
     setNumeroFactura('')
     setObservaciones('')
+    setNuevosProductos([])
     
     // Si no es superadmin, mantener la empresa y sucursal
     if (isSuperAdmin) {
       setEmpresaSeleccionada(null)
       setSucursalSeleccionada(null)
     }
+  }
+  
+  // Handler para agregar nuevo producto proveedor temporalmente
+  const handleNuevoProductoProveedor = (nuevoProducto: any) => {
+    // Crear un producto temporal para agregar a la lista
+    const productoTemporal = {
+      id: -Date.now(), // ID temporal negativo para identificarlo
+      codigo: nuevoProducto.codigo,
+      nombre: nuevoProducto.nombre,
+      precio_costo: nuevoProducto.precio_proveedor,
+      precio_venta: nuevoProducto.precio_proveedor * 1.3,
+      stock: 0,
+      stock_apertura: 0,
+      estado: true,
+      marca_id: nuevoProducto.marca_id,
+      categoria_id: nuevoProducto.categoria_id,
+      unidad_medida_id: nuevoProducto.unidad_medida_id,
+      sucursal_id: sucursalSeleccionada!,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      _esNuevo: true, // Flag para identificar que es un producto nuevo
+    }
+    
+    // Agregar a la lista de productos para que se pueda seleccionar
+    setProductos(prev => [...prev, productoTemporal as any])
+    
+    // Guardar en la lista de nuevos productos
+    setNuevosProductos(prev => [...prev, nuevoProducto])
+    
+    toast.success('Producto temporal creado. Se guardará en el stock cuando se registre la compra.')
   }
 
   useEffect(() => {
@@ -325,12 +361,22 @@ export function NuevaCompra() {
     try {
       setSubmitting(true)
 
-      const detallesBackend: DetalleCompraBackend[] = detalles.map(d => ({
-        producto_id: d.producto.id!,
-        cantidad: d.cantidad,
-        precio_unitario: d.costo_unitario,
-        subtotal: d.subtotal,
-      }))
+      const detallesBackend: DetalleCompraBackend[] = detalles.map(d => {
+        const detalle: any = {
+          cantidad: d.cantidad,
+          precio_unitario: d.costo_unitario,
+          subtotal: d.subtotal,
+        }
+        
+        // Si el producto tiene ID negativo, es un producto nuevo
+        if ((d.producto as any)._esNuevo) {
+          detalle.codigo_producto_temp = d.producto.codigo
+        } else {
+          detalle.producto_id = d.producto.id!
+        }
+        
+        return detalle
+      })
 
       const compraData = {
         fecha_compra: fechaCompra,
@@ -341,6 +387,7 @@ export function NuevaCompra() {
         detalles: detallesBackend,
         numero_factura: numeroFactura || undefined,
         observaciones: observaciones || undefined,
+        nuevos_productos: nuevosProductos.length > 0 ? nuevosProductos : undefined,
       }
       
       // Llamar al servicio de API para crear la compra
@@ -503,6 +550,7 @@ export function NuevaCompra() {
               onActualizarCantidad={actualizarCantidad}
               onActualizarCosto={actualizarCosto}
               onActualizarIva={actualizarIva}
+              onOpenNuevoProducto={() => setOpenNuevoProductoDialog(true)}
             />
 
             {/* Costos Adicionales */}
@@ -644,6 +692,16 @@ export function NuevaCompra() {
           </div>
         )}
       </div>
+      
+      {/* Dialog para nuevo producto proveedor */}
+      {proveedorSeleccionado && (
+        <NuevoProductoProveedorDialog
+          open={openNuevoProductoDialog}
+          onOpenChange={setOpenNuevoProductoDialog}
+          proveedorId={proveedorSeleccionado}
+          onSuccess={handleNuevoProductoProveedor}
+        />
+      )}
     </div>
   )
 }

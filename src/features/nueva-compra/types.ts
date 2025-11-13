@@ -100,6 +100,7 @@ export interface DetallesCompraProps {
   onActualizarCantidad: (id: string, cantidad: number) => void
   onActualizarCosto: (id: string, costoUnitario: number) => void
   onActualizarIva: (id: string, ivaPorcentaje: number) => void
+  onOpenNuevoProducto: () => void
 }
 
 /**

@@ -12,7 +12,8 @@ import { cn } from '@/lib/utils'
 export function ContactosTable({ 
   data, 
   onEdit, 
-  onDelete, 
+  onDelete,
+  onViewProducts,
   canBulkAction, 
   tipo = 'cliente', 
   onSuccess,
@@ -22,7 +23,8 @@ export function ContactosTable({
 }: { 
   data: Contacto[], 
   onEdit: (c: Contacto) => void, 
-  onDelete: (c: Contacto) => void, 
+  onDelete: (c: Contacto) => void,
+  onViewProducts?: (c: Contacto) => void,
   canBulkAction?: boolean, 
   tipo?: 'cliente' | 'proveedor', 
   onSuccess?: () => void,
@@ -35,10 +37,10 @@ export function ContactosTable({
       ...getContactosColumns(isSuperAdmin),
       {
         id: 'actions',
-        cell: ({ row }) => <DataTableRowActions row={row} onEdit={onEdit} onDelete={onDelete} canEdit={canEdit} canDelete={canDelete} />,
+        cell: ({ row }) => <DataTableRowActions row={row} onEdit={onEdit} onDelete={onDelete} onViewProducts={onViewProducts} isProveedor={tipo === 'proveedor'} canEdit={canEdit} canDelete={canDelete} />,
       },
     ]
-  }, [onEdit, onDelete, isSuperAdmin, canEdit, canDelete])
+  }, [onEdit, onDelete, onViewProducts, tipo, isSuperAdmin, canEdit, canDelete])
 
   const [rowSelection, setRowSelection] = useState({})
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})

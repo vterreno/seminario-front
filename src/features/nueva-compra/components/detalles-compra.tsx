@@ -37,6 +37,7 @@ export function DetallesCompra({
   onActualizarCantidad,
   onActualizarCosto,
   onActualizarIva,
+  onOpenNuevoProducto,
 }: DetallesCompraProps) {
   const [productoSeleccionado, setProductoSeleccionado] = useState<Producto | null>(null)
   const [cantidad, setCantidad] = useState<number>(1)
@@ -70,10 +71,22 @@ export function DetallesCompra({
         <div className="space-y-6">
           {/* Formulario de agregar producto - Mejorado */}
           <div className="bg-muted/50 p-4 rounded-lg border-2 border-dashed border-muted-foreground/20">
-            <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
-              <Plus className="h-4 w-4" />
-              Agregar Producto a la Compra
-            </h3>
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-sm font-semibold flex items-center gap-2">
+                <Plus className="h-4 w-4" />
+                Agregar Producto a la Compra
+              </h3>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={onOpenNuevoProducto}
+                className="text-xs"
+              >
+                <Plus className="h-3 w-3 mr-1" />
+                Nuevo Producto
+              </Button>
+            </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
               <div className="sm:col-span-2 lg:col-span-2">
                 <Label htmlFor="producto" className="text-sm font-medium">
@@ -131,11 +144,12 @@ export function DetallesCompra({
                   step="0.01"
                   min="0"
                   value={costoUnitario}
-                  onChange={(e) => setCostoUnitario(Number(e.target.value))}
+                  readOnly
+                  disabled
                   placeholder="0.00"
-                  className="mt-1"
+                  className="mt-1 bg-gray-50 cursor-not-allowed"
                 />
-                <p className="text-xs text-muted-foreground mt-0.5">Sin IVA</p>
+                <p className="text-xs text-muted-foreground mt-0.5">Sin IVA (no editable)</p>
               </div>
 
               <div>
@@ -218,10 +232,9 @@ export function DetallesCompra({
                           step="0.01"
                           min="0"
                           value={detalle.costo_unitario}
-                          onChange={(e) =>
-                            onActualizarCosto(detalle.id, Number(e.target.value))
-                          }
-                          className="w-24 text-right"
+                          readOnly
+                          disabled
+                          className="w-24 text-right bg-gray-50 cursor-not-allowed"
                         />
                       </TableCell>
                       <TableCell className="text-center">

@@ -12,9 +12,11 @@ import { Button } from '@/components/ui/button'
 import { ContactosTable } from './components/contactos-table'
 import { ContactoDialog } from './components/contacto-dialog'
 import { ConfirmDialog } from '@/components/confirm-dialog'
+import { useNavigate } from '@tanstack/react-router'
 
 export function Contactos() {
   const { hasPermission, isSuperAdmin } = usePermissions()
+  const navigate = useNavigate()
   const [tab, setTab] = useState<'clientes' | 'proveedores'>('clientes')
   const [clientes, setClientes] = useState<Contacto[]>([])
   const [proveedores, setProveedores] = useState<Contacto[]>([])
@@ -34,6 +36,14 @@ export function Contactos() {
   const canModificarProveedores = hasPermission('proveedor_modificar')
   const canEliminarClientes = hasPermission('cliente_eliminar')
   const canEliminarProveedores = hasPermission('proveedor_eliminar')
+
+  // Función para navegar a la vista de productos del proveedor
+  const handleViewProducts = (contacto: Contacto) => {
+    navigate({ 
+      to: '/productos-proveedor/$proveedorId', 
+      params: { proveedorId: contacto.id!.toString() }
+    })
+  }
 
   // Función para refrescar ambas tablas
   const refreshTables = async () => {
@@ -161,6 +171,7 @@ export function Contactos() {
                 data={proveedores}
                 onEdit={(c) => { setDialogValue({...c}); setOpenDialog(true) }}
                 onDelete={handleDelete}
+                onViewProducts={handleViewProducts}
                 canBulkAction={canModificarProveedores || canEliminarProveedores}
                 tipo='proveedor'
                 onSuccess={refreshTables}

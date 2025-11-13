@@ -1,19 +1,23 @@
 import { Row } from '@tanstack/react-table'
 import { Button } from '@/components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu'
-import { MoreHorizontal, Edit, Trash2 } from 'lucide-react'
+import { MoreHorizontal, Edit, Trash2, Package } from 'lucide-react'
 import { Contacto } from '@/service/apiContactos.service'
 
 export function DataTableRowActions({ 
   row, 
   onEdit, 
-  onDelete, 
+  onDelete,
+  onViewProducts,
+  isProveedor = false,
   canEdit = true, 
   canDelete = true 
 }: { 
   row: Row<Contacto>, 
   onEdit: (c: Contacto) => void, 
   onDelete: (c: Contacto) => void,
+  onViewProducts?: (c: Contacto) => void,
+  isProveedor?: boolean,
   canEdit?: boolean,
   canDelete?: boolean
 }) {
@@ -25,7 +29,7 @@ export function DataTableRowActions({
   }
   
   // Si no tiene permisos, no mostrar nada
-  if (!canEdit && !canDelete) {
+  if (!canEdit && !canDelete && !isProveedor) {
     return null
   }
   
@@ -37,7 +41,16 @@ export function DataTableRowActions({
           <MoreHorizontal className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-[160px]">
+      <DropdownMenuContent align="end" className="w-[180px]">
+        {isProveedor && onViewProducts && (
+          <>
+            <DropdownMenuItem onClick={() => onViewProducts(contacto)}>
+              <Package className="mr-2 h-4 w-4" />
+              Ver Productos
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+          </>
+        )}
         {canEdit && (
           <DropdownMenuItem onClick={() => onEdit(contacto)}>
             <Edit className="mr-2 h-4 w-4" />
