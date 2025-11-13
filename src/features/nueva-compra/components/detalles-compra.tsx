@@ -144,7 +144,6 @@ export function DetallesCompra({
                   step="0.01"
                   min="0"
                   value={costoUnitario}
-                  readOnly
                   disabled
                   placeholder="0.00"
                   className="mt-1 bg-gray-50 cursor-not-allowed"
