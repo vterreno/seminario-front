@@ -58,7 +58,13 @@ export function NuevaCompra() {
   
   // Estado para el diálogo de nuevo producto proveedor
   const [openNuevoProductoDialog, setOpenNuevoProductoDialog] = useState(false)
-  const [nuevosProductos, setNuevosProductos] = useState<any[]>([])
+  interface NuevoProductoProveedor {
+    codigo: string;
+    nombre: string;
+    precio_proveedor: number;
+    [key: string]: any; // Add other properties as needed, or specify them explicitly
+  }
+  const [nuevosProductos, setNuevosProductos] = useState<NuevoProductoProveedor[]>([])
 
   // Función para reiniciar el formulario
   const reiniciarFormulario = () => {
