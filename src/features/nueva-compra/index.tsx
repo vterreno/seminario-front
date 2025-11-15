@@ -18,6 +18,7 @@ import apiSucursalesService from '@/service/apiSucursales.service'
 import apiContactosService from '@/service/apiContactos.service'
 import apiProductosService from '@/service/apiProductos.service'
 import apiComprasService from '@/service/apiCompras.service'
+import apiProductoProveedorService, { ProductoProveedor } from '@/service/apiProductoProveedor.service'
 import { Loader2, Plus, Trash2 } from 'lucide-react'
 import { EmpresaSelector } from '../nueva-venta/components/empresa-selector'
 import { SucursalSelector } from '../nueva-venta/components/sucursal-selector'
@@ -43,6 +44,7 @@ export function NuevaCompra() {
   const [sucursales, setSucursales] = useState<Sucursal[]>([])
   const [proveedores, setProveedores] = useState<Contacto[]>([])
   const [productos, setProductos] = useState<Producto[]>([])
+  const [productosProveedor, setProductosProveedor] = useState<ProductoProveedor[]>([])
   
   const [empresaSeleccionada, setEmpresaSeleccionada] = useState<number | null>(null)
   const [sucursalSeleccionada, setSucursalSeleccionada] = useState<number | null>(null)
@@ -240,6 +242,51 @@ export function NuevaCompra() {
     cargarProveedoresYProductos()
   }, [empresaSeleccionada, isSuperAdmin, sucursalSeleccionada])
 
+  // Cargar productos del proveedor seleccionado
+  useEffect(() => {
+    const cargarProductosProveedor = async () => {
+      if (!proveedorSeleccionado) {
+        setProductosProveedor([])
+        setProductos([])
+        return
+      }
+
+      try {
+        const productosProvData = await apiProductoProveedorService.getProductosByProveedor(proveedorSeleccionado)
+        setProductosProveedor(productosProvData)
+        
+        // Actualizar la lista de productos con los del proveedor
+        // Mapear a la estructura Producto esperada
+        const productosDelProveedor: Producto[] = productosProvData
+          .filter(pp => pp.producto)
+          .map(pp => ({
+            id: pp.producto!.id,
+            codigo: pp.producto!.codigo,
+            nombre: pp.producto!.nombre,
+            precio_costo: pp.producto!.precio_costo,
+            precio_venta: pp.producto!.precio_venta,
+            stock: pp.producto!.stock,
+            stock_apertura: 0, // No disponible en esta respuesta
+            estado: pp.producto!.estado,
+            created_at: '', // No disponible en esta respuesta
+            updated_at: '', // No disponible en esta respuesta
+            marca: pp.producto!.marca,
+            categoria: pp.producto!.categoria,
+            unidadMedida: pp.producto!.unidadMedida,
+          } as Producto))
+        
+        setProductos(productosDelProveedor)
+      } catch (error) {
+        console.error('Error al cargar productos del proveedor:', error)
+        toast.error('Error al cargar los productos del proveedor')
+        setProductosProveedor([])
+        setProductos([])
+      }
+    }
+
+    cargarProductosProveedor()
+  }, [proveedorSeleccionado])
+
   const totales = useMemo<TotalesCompra>(() => {
     const subtotal = detalles.reduce((sum, d) => sum + d.subtotal, 0)
     const totalIva = detalles.reduce((sum, d) => sum + d.iva_monto, 0)
@@ -387,7 +434,16 @@ export function NuevaCompra() {
         if ((d.producto as any)._esNuevo) {
           detalle.codigo_producto_temp = d.producto.codigo
         } else {
-          detalle.producto_id = d.producto.id!
+          // Buscar el producto_proveedor_id correspondiente
+          const productoProveedor = productosProveedor.find(pp => pp.producto?.id === d.producto.id)
+          
+          if (productoProveedor) {
+            detalle.producto_proveedor_id = productoProveedor.id
+          } else {
+            // Fallback: usar producto_id si no se encuentra la relación
+            // (esto puede pasar con productos nuevos agregados temporalmente)
+            detalle.producto_id = d.producto.id!
+          }
         }
         
         return detalle
