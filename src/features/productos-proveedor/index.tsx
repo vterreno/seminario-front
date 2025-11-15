@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
@@ -25,7 +25,7 @@ export function ProductosProveedor({ proveedorId }: { proveedorId: number }) {
   const [productoToDelete, setProductoToDelete] = useState<ProductoProveedor | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
       setLoading(true)
       const [proveedorData, productosData] = await Promise.all([
@@ -40,11 +40,11 @@ export function ProductosProveedor({ proveedorId }: { proveedorId: number }) {
     } finally {
       setLoading(false)
     }
-  }
+  }, [proveedorId])
 
   useEffect(() => {
     loadData()
-  }, [proveedorId])
+  }, [loadData])
 
   const handleEdit = (producto: ProductoProveedor) => {
     setSelectedProducto(producto)

@@ -7,7 +7,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { toast } from 'sonner'
 import apiMarcasService from '@/service/apiMarcas.service'
 import apiCategoriasService from '@/service/apiCategorias.service'
-import apiUnidadesMedidaService from '@/service/apiUnidadesMedida.service'
+import apiUnidadesMedidaService, { UnidadMedida } from '@/service/apiUnidadesMedida.service'
+import { Marca } from '@/features/marcas/data/schema'
+import { Categoria } from '@/features/categorias/data/schema'
 
 interface NuevoProductoProveedorDialogProps {
   open: boolean
@@ -31,9 +33,9 @@ export function NuevoProductoProveedorDialog({
   const [codigoProveedor, setCodigoProveedor] = useState('')
   const [submitting, setSubmitting] = useState(false)
 
-  const [marcas, setMarcas] = useState<any[]>([])
-  const [categorias, setCategorias] = useState<any[]>([])
-  const [unidadesMedida, setUnidadesMedida] = useState<any[]>([])
+  const [marcas, setMarcas] = useState<Marca[]>([])
+  const [categorias, setCategorias] = useState<Categoria[]>([])
+  const [unidadesMedida, setUnidadesMedida] = useState<UnidadMedida[]>([])
 
   useEffect(() => {
     if (open) {
@@ -170,8 +172,8 @@ export function NuevoProductoProveedorDialog({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value='0'>Sin categoría</SelectItem>
-                  {categorias.map((c) => (
-                    <SelectItem key={c.id} value={c.id.toString()}>
+                  {categorias.filter(c => c.id !== undefined).map((c) => (
+                    <SelectItem key={c.id} value={c.id!.toString()}>
                       {c.nombre}
                     </SelectItem>
                   ))}
@@ -187,8 +189,8 @@ export function NuevoProductoProveedorDialog({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value='0'>Sin unidad</SelectItem>
-                  {unidadesMedida.map((u) => (
-                    <SelectItem key={u.id} value={u.id.toString()}>
+                  {unidadesMedida.filter(u => u.id !== undefined).map((u) => (
+                    <SelectItem key={u.id} value={u.id!.toString()}>
                       {u.nombre} ({u.abreviatura})
                     </SelectItem>
                   ))}

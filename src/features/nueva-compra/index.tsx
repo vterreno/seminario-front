@@ -31,6 +31,9 @@ import {
   TotalesCompra 
 } from './types'
 
+// Constante para el margen de ganancia por defecto (30%)
+const DEFAULT_PRICE_MARKUP = 1.3
+
 export function NuevaCompra() {
   const navigate = useNavigate()
   const { isSuperAdmin } = usePermissions()
@@ -85,20 +88,26 @@ export function NuevaCompra() {
   
   // Handler para agregar nuevo producto proveedor temporalmente
   const handleNuevoProductoProveedor = (nuevoProducto: any) => {
+    // Validar que hay una sucursal seleccionada
+    if (!sucursalSeleccionada) {
+      toast.error('Debe seleccionar una sucursal antes de agregar productos')
+      return
+    }
+
     // Crear un producto temporal para agregar a la lista
     const productoTemporal = {
       id: -Date.now(), // ID temporal negativo para identificarlo
       codigo: nuevoProducto.codigo,
       nombre: nuevoProducto.nombre,
       precio_costo: nuevoProducto.precio_proveedor,
-      precio_venta: nuevoProducto.precio_proveedor * 1.3,
+      precio_venta: nuevoProducto.precio_proveedor * DEFAULT_PRICE_MARKUP,
       stock: 0,
       stock_apertura: 0,
       estado: true,
       marca_id: nuevoProducto.marca_id,
       categoria_id: nuevoProducto.categoria_id,
       unidad_medida_id: nuevoProducto.unidad_medida_id,
-      sucursal_id: sucursalSeleccionada!,
+      sucursal_id: sucursalSeleccionada,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
       _esNuevo: true, // Flag para identificar que es un producto nuevo
