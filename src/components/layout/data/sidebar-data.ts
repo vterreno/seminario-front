@@ -18,6 +18,8 @@ import {
   PlusCircle,
   Archive,
   Scale,
+  PackagePlus,
+  Truck,
 } from 'lucide-react'
 import { type SidebarData, type NavLink, BaseNavItem } from '../types'
 import { getStorageItem } from '@/hooks/use-local-storage'
@@ -303,7 +305,7 @@ export const getSidebarData = (): SidebarData => {
     
     generalItems.push({
       title: 'Compras',
-      icon: ShoppingCart,
+      icon: Truck,
       backgroundColor: '#f7c33b',
       textColor: '#ffffff',
       items: comprasSubItems,
