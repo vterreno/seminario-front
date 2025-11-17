@@ -59,6 +59,7 @@ import { Route as AuthenticatedProductosMarcasIndexRouteImport } from './routes/
 import { Route as AuthenticatedProductosCategoriasIndexRouteImport } from './routes/_authenticated/productos/categorias/index'
 import { Route as AuthenticatedComprasNuevaCompraIndexRouteImport } from './routes/_authenticated/compras/nueva-compra/index'
 import { Route as AuthenticatedComprasComprasIndexRouteImport } from './routes/_authenticated/compras/compras/index'
+import { Route as AuthenticatedComprasEditarCompraCompraIdRouteImport } from './routes/_authenticated/compras/editar-compra/$compraId'
 
 const ClerkRouteRoute = ClerkRouteRouteImport.update({
   id: '/clerk',
@@ -332,6 +333,12 @@ const AuthenticatedComprasComprasIndexRoute =
     path: '/compras/',
     getParentRoute: () => AuthenticatedComprasRouteRoute,
   } as any)
+const AuthenticatedComprasEditarCompraCompraIdRoute =
+  AuthenticatedComprasEditarCompraCompraIdRouteImport.update({
+    id: '/editar-compra/$compraId',
+    path: '/editar-compra/$compraId',
+    getParentRoute: () => AuthenticatedComprasRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/clerk': typeof ClerkAuthenticatedRouteRouteWithChildren
@@ -374,6 +381,7 @@ export interface FileRoutesByFullPath {
   '/tasks': typeof AuthenticatedTasksIndexRoute
   '/unidades-medida': typeof AuthenticatedUnidadesMedidaIndexRoute
   '/users': typeof AuthenticatedUsersIndexRoute
+  '/compras/editar-compra/$compraId': typeof AuthenticatedComprasEditarCompraCompraIdRoute
   '/compras/compras': typeof AuthenticatedComprasComprasIndexRoute
   '/compras/nueva-compra': typeof AuthenticatedComprasNuevaCompraIndexRoute
   '/productos/categorias': typeof AuthenticatedProductosCategoriasIndexRoute
@@ -422,6 +430,7 @@ export interface FileRoutesByTo {
   '/tasks': typeof AuthenticatedTasksIndexRoute
   '/unidades-medida': typeof AuthenticatedUnidadesMedidaIndexRoute
   '/users': typeof AuthenticatedUsersIndexRoute
+  '/compras/editar-compra/$compraId': typeof AuthenticatedComprasEditarCompraCompraIdRoute
   '/compras/compras': typeof AuthenticatedComprasComprasIndexRoute
   '/compras/nueva-compra': typeof AuthenticatedComprasNuevaCompraIndexRoute
   '/productos/categorias': typeof AuthenticatedProductosCategoriasIndexRoute
@@ -475,6 +484,7 @@ export interface FileRoutesById {
   '/_authenticated/tasks/': typeof AuthenticatedTasksIndexRoute
   '/_authenticated/unidades-medida/': typeof AuthenticatedUnidadesMedidaIndexRoute
   '/_authenticated/users/': typeof AuthenticatedUsersIndexRoute
+  '/_authenticated/compras/editar-compra/$compraId': typeof AuthenticatedComprasEditarCompraCompraIdRoute
   '/_authenticated/compras/compras/': typeof AuthenticatedComprasComprasIndexRoute
   '/_authenticated/compras/nueva-compra/': typeof AuthenticatedComprasNuevaCompraIndexRoute
   '/_authenticated/productos/categorias/': typeof AuthenticatedProductosCategoriasIndexRoute
@@ -527,6 +537,7 @@ export interface FileRouteTypes {
     | '/tasks'
     | '/unidades-medida'
     | '/users'
+    | '/compras/editar-compra/$compraId'
     | '/compras/compras'
     | '/compras/nueva-compra'
     | '/productos/categorias'
@@ -575,6 +586,7 @@ export interface FileRouteTypes {
     | '/tasks'
     | '/unidades-medida'
     | '/users'
+    | '/compras/editar-compra/$compraId'
     | '/compras/compras'
     | '/compras/nueva-compra'
     | '/productos/categorias'
@@ -627,6 +639,7 @@ export interface FileRouteTypes {
     | '/_authenticated/tasks/'
     | '/_authenticated/unidades-medida/'
     | '/_authenticated/users/'
+    | '/_authenticated/compras/editar-compra/$compraId'
     | '/_authenticated/compras/compras/'
     | '/_authenticated/compras/nueva-compra/'
     | '/_authenticated/productos/categorias/'
@@ -1005,16 +1018,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedComprasComprasIndexRouteImport
       parentRoute: typeof AuthenticatedComprasRouteRoute
     }
+    '/_authenticated/compras/editar-compra/$compraId': {
+      id: '/_authenticated/compras/editar-compra/$compraId'
+      path: '/editar-compra/$compraId'
+      fullPath: '/compras/editar-compra/$compraId'
+      preLoaderRoute: typeof AuthenticatedComprasEditarCompraCompraIdRouteImport
+      parentRoute: typeof AuthenticatedComprasRouteRoute
+    }
   }
 }
 
 interface AuthenticatedComprasRouteRouteChildren {
+  AuthenticatedComprasEditarCompraCompraIdRoute: typeof AuthenticatedComprasEditarCompraCompraIdRoute
   AuthenticatedComprasComprasIndexRoute: typeof AuthenticatedComprasComprasIndexRoute
   AuthenticatedComprasNuevaCompraIndexRoute: typeof AuthenticatedComprasNuevaCompraIndexRoute
 }
 
 const AuthenticatedComprasRouteRouteChildren: AuthenticatedComprasRouteRouteChildren =
   {
+    AuthenticatedComprasEditarCompraCompraIdRoute:
+      AuthenticatedComprasEditarCompraCompraIdRoute,
     AuthenticatedComprasComprasIndexRoute:
       AuthenticatedComprasComprasIndexRoute,
     AuthenticatedComprasNuevaCompraIndexRoute:

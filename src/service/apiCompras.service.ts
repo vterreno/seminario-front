@@ -46,18 +46,39 @@ export interface CreateCompraPayload {
   numero_factura?: string;
   observaciones?: string;
   detalles: {
-    producto_id: number;
+    producto_proveedor_id: number;
     cantidad: number;
     precio_unitario: number;
     subtotal: number;
   }[];
 }
 
+export interface UpdateCompraPayload {
+  fecha_compra?: string;
+  monto_total?: number;
+  numero_factura?: string;
+  observaciones?: string;
+  detalles?: {
+    compra_id: number;
+    producto_proveedor_id: number;
+    cantidad: number;
+    precio_unitario: number;
+    subtotal: number;
+  }[];
+}
+
+export interface AsociarPagoPayload {
+  fecha_pago: string;
+  monto_pago: number;
+  metodo_pago: 'efectivo' | 'transferencia';
+  sucursal_id: number;
+}
+
 class ApiComprasService {
     async getAllCompras(): Promise<Compra[]> {
         try {
             const response = await axiosService.get(rutasBack.compras.getCompras);
-            console.log('Response data:', response.data); // Log the response data for debugging
+            console.log('data', response.data)
             return response.data
         } catch (error: any) {
             const backendMessage = error.response?.data?.message;
@@ -91,6 +112,7 @@ class ApiComprasService {
     async getCompraById(id: number): Promise<Compra> {
         try {
             const response = await axiosService.get(`${rutasBack.compras.getCompraPorId}/${id}`);
+            console.log('detalle', response.data)
             return response.data;
         } catch (error: any) {
             const backendMessage = error.response?.data?.message;
@@ -110,7 +132,7 @@ class ApiComprasService {
         }
     }
 
-    async updateCompra(id: number, compraData: Partial<CreateCompraPayload>): Promise<Compra> {
+    async updateCompra(id: number, compraData: UpdateCompraPayload): Promise<Compra> {
         try {
             const response = await axiosService.put(`${rutasBack.compras.putCompra}/${id}`, compraData);
             return response.data;
@@ -143,6 +165,16 @@ class ApiComprasService {
         }
     }
 
+    async asociarPagoACompra(id: number, pagoData: AsociarPagoPayload): Promise<Compra> {
+        try {
+            const response = await axiosService.patch(`${rutasBack.compras.asociarPago}/${id}/asociar-pago`, pagoData);
+            return response.data;
+        } catch (error: any) {
+            const backendMessage = error.response?.data?.message;
+            const errorMessage = backendMessage || "Fallo al asociar el pago a la compra";
+            throw new Error(errorMessage);
+        }
+    }
 
 }
 
