@@ -50,6 +50,7 @@ import { Route as AuthenticatedSettingsDisplayRouteImport } from './routes/_auth
 import { Route as AuthenticatedSettingsCompanyRouteImport } from './routes/_authenticated/settings/company'
 import { Route as AuthenticatedSettingsAppearanceRouteImport } from './routes/_authenticated/settings/appearance'
 import { Route as AuthenticatedSettingsAccountRouteImport } from './routes/_authenticated/settings/account'
+import { Route as AuthenticatedProductosProveedorProveedorIdRouteImport } from './routes/_authenticated/productos-proveedor/$proveedorId'
 import { Route as AuthenticatedErrorsErrorRouteImport } from './routes/_authenticated/errors/$error'
 import { Route as AuthenticatedVentasVentasIndexRouteImport } from './routes/_authenticated/ventas/ventas/index'
 import { Route as AuthenticatedVentasNuevaVentaIndexRouteImport } from './routes/_authenticated/ventas/nueva-venta/index'
@@ -279,6 +280,12 @@ const AuthenticatedSettingsAccountRoute =
     path: '/account',
     getParentRoute: () => AuthenticatedSettingsRouteRoute,
   } as any)
+const AuthenticatedProductosProveedorProveedorIdRoute =
+  AuthenticatedProductosProveedorProveedorIdRouteImport.update({
+    id: '/productos-proveedor/$proveedorId',
+    path: '/productos-proveedor/$proveedorId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedErrorsErrorRoute =
   AuthenticatedErrorsErrorRouteImport.update({
     id: '/errors/$error',
@@ -362,6 +369,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/': typeof AuthenticatedIndexRoute
   '/errors/$error': typeof AuthenticatedErrorsErrorRoute
+  '/productos-proveedor/$proveedorId': typeof AuthenticatedProductosProveedorProveedorIdRoute
   '/settings/account': typeof AuthenticatedSettingsAccountRoute
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
   '/settings/company': typeof AuthenticatedSettingsCompanyRoute
@@ -411,6 +419,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/': typeof AuthenticatedIndexRoute
   '/errors/$error': typeof AuthenticatedErrorsErrorRoute
+  '/productos-proveedor/$proveedorId': typeof AuthenticatedProductosProveedorProveedorIdRoute
   '/settings/account': typeof AuthenticatedSettingsAccountRoute
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
   '/settings/company': typeof AuthenticatedSettingsCompanyRoute
@@ -465,6 +474,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/errors/$error': typeof AuthenticatedErrorsErrorRoute
+  '/_authenticated/productos-proveedor/$proveedorId': typeof AuthenticatedProductosProveedorProveedorIdRoute
   '/_authenticated/settings/account': typeof AuthenticatedSettingsAccountRoute
   '/_authenticated/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
   '/_authenticated/settings/company': typeof AuthenticatedSettingsCompanyRoute
@@ -518,6 +528,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/'
     | '/errors/$error'
+    | '/productos-proveedor/$proveedorId'
     | '/settings/account'
     | '/settings/appearance'
     | '/settings/company'
@@ -567,6 +578,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/'
     | '/errors/$error'
+    | '/productos-proveedor/$proveedorId'
     | '/settings/account'
     | '/settings/appearance'
     | '/settings/company'
@@ -620,6 +632,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/_authenticated/'
     | '/_authenticated/errors/$error'
+    | '/_authenticated/productos-proveedor/$proveedorId'
     | '/_authenticated/settings/account'
     | '/_authenticated/settings/appearance'
     | '/_authenticated/settings/company'
@@ -955,6 +968,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSettingsAccountRouteImport
       parentRoute: typeof AuthenticatedSettingsRouteRoute
     }
+    '/_authenticated/productos-proveedor/$proveedorId': {
+      id: '/_authenticated/productos-proveedor/$proveedorId'
+      path: '/productos-proveedor/$proveedorId'
+      fullPath: '/productos-proveedor/$proveedorId'
+      preLoaderRoute: typeof AuthenticatedProductosProveedorProveedorIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/errors/$error': {
       id: '/_authenticated/errors/$error'
       path: '/errors/$error'
@@ -1126,6 +1146,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
   AuthenticatedErrorsErrorRoute: typeof AuthenticatedErrorsErrorRoute
+  AuthenticatedProductosProveedorProveedorIdRoute: typeof AuthenticatedProductosProveedorProveedorIdRoute
   AuthenticatedAppsIndexRoute: typeof AuthenticatedAppsIndexRoute
   AuthenticatedChatsIndexRoute: typeof AuthenticatedChatsIndexRoute
   AuthenticatedContactosIndexRoute: typeof AuthenticatedContactosIndexRoute
@@ -1147,6 +1168,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
   AuthenticatedErrorsErrorRoute: AuthenticatedErrorsErrorRoute,
+  AuthenticatedProductosProveedorProveedorIdRoute:
+    AuthenticatedProductosProveedorProveedorIdRoute,
   AuthenticatedAppsIndexRoute: AuthenticatedAppsIndexRoute,
   AuthenticatedChatsIndexRoute: AuthenticatedChatsIndexRoute,
   AuthenticatedContactosIndexRoute: AuthenticatedContactosIndexRoute,
