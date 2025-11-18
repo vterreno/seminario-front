@@ -134,8 +134,8 @@ export const getSidebarData = (): SidebarData => {
           title: 'Dashboard',
           url: '/dashboard',
           icon: LayoutDashboard,
-          backgroundColor: '#f7c33b',
-          textColor: '#ffffff',
+          backgroundColor: '#ffffffff',
+          textColor: '#000000',
         },
       ],
     })
@@ -147,8 +147,8 @@ export const getSidebarData = (): SidebarData => {
           title: 'Bienvenida',
           url: '/bienvenida',
           icon: LayoutDashboard,
-          backgroundColor: '#40ba22',
-          textColor: '#ffffff', 
+          backgroundColor: '#ffffffff',
+          textColor: '#000000', 
         },
       ],
     })
@@ -162,8 +162,8 @@ export const getSidebarData = (): SidebarData => {
       title: 'Usuarios',
       url: '/users',
       icon: Users,
-      backgroundColor: '#40ba22',
-      textColor: '#ffffff',
+      backgroundColor: '#ffffffff',
+      textColor: '#000000',
     })
   }
   
@@ -172,8 +172,8 @@ export const getSidebarData = (): SidebarData => {
       title: 'Roles',
       url: '/roles',
       icon: UserCheck,
-      backgroundColor: '#40ba22',
-      textColor: '#ffffff',
+      backgroundColor: '#ffffffff',
+      textColor: '#000000',
     })
   }
 
@@ -193,8 +193,8 @@ export const getSidebarData = (): SidebarData => {
       title: 'Contactos',
       url: '/contactos',
       icon: Users,
-      backgroundColor: '#40ba22',
-      textColor: '#ffffff',
+      backgroundColor: '#ffffffff',
+      textColor: '#000000',
     })
   }
   
@@ -208,8 +208,8 @@ export const getSidebarData = (): SidebarData => {
         title: 'Productos',
         url: '/productos/productos/',
         icon: Package,
-        backgroundColor: '#40ba22',
-        textColor: '#ffffff',
+        backgroundColor: '#ffffffff',
+        textColor: '#000000',
       })
     }
     if (hasPermission(userData, 'marca_ver')) {
@@ -217,8 +217,8 @@ export const getSidebarData = (): SidebarData => {
         title: 'Marcas',
         url: '/productos/marcas',
         icon: Tag,
-        backgroundColor: '#40ba22',
-        textColor: '#ffffff',
+        backgroundColor: '#ffffffff',
+        textColor: '#000000',
       })
     }
 
@@ -227,16 +227,16 @@ export const getSidebarData = (): SidebarData => {
         title: 'Categorías',
         url: '/productos/categorias',
         icon: Layers,
-        backgroundColor: '#40ba22',
-        textColor: '#ffffff',
+        backgroundColor: '#ffffffff',
+        textColor: '#000000',
       })
     }
 
     generalItems.push({
       title: 'Productos',
       icon: Box,
-      backgroundColor: '#40ba22',
-      textColor: '#ffffff',
+      backgroundColor: '#ffffffff',
+      textColor: '#000000',
       items: productosSubItems,
     })
   }
@@ -249,8 +249,8 @@ export const getSidebarData = (): SidebarData => {
         title: 'Nueva venta',
         url: '/ventas/nueva-venta',
         icon: PlusCircle,
-        backgroundColor: '#40ba22',
-        textColor: '#ffffff',
+        backgroundColor: '#ffffffff',
+        textColor: '#000000',
       })
     }
     if (hasPermission(userData, 'ventas_ver')) {
@@ -258,8 +258,8 @@ export const getSidebarData = (): SidebarData => {
         title: 'Historial de ventas',
         url: '/ventas/ventas',
         icon: Archive,
-        backgroundColor: '#40ba22',
-        textColor: '#ffffff',
+        backgroundColor: '#ffffffff',
+        textColor: '#000000',
       })
     }
     if (hasPermission(userData, 'modulo_listas_ver')) {
@@ -267,16 +267,16 @@ export const getSidebarData = (): SidebarData => {
         title: 'Lista de precios',
         url: '/ventas/lista-precios',
         icon: CreditCard,
-        backgroundColor: '#40ba22',
-        textColor: '#ffffff',
+        backgroundColor: '#ffffffff',
+        textColor: '#000000',
       })
     }
     
     generalItems.push({
       title: 'Ventas',
       icon: ShoppingCart,
-      backgroundColor: '#40ba22',
-      textColor: '#ffffff',
+      backgroundColor: '#ffffffff',
+      textColor: '#000000',
       items: ventasSubItems,
     })
   }
@@ -289,8 +289,8 @@ export const getSidebarData = (): SidebarData => {
         title: 'Nueva compra',
         url: '/compras/nueva-compra',
         icon: PlusCircle,
-        backgroundColor: '#f7c33b',
-        textColor: '#ffffff',
+        backgroundColor: '#ffffffff',
+        textColor: '#000000',
       })
     }
     if (hasPermission(userData, 'compras_ver')) {
@@ -298,8 +298,8 @@ export const getSidebarData = (): SidebarData => {
         title: 'Historial de compras',
         url: '/compras/compras',
         icon: Archive,
-        backgroundColor: '#f7c33b',
-        textColor: '#ffffff',
+        backgroundColor: '#ffffffff',
+        textColor: '#000000',
       })
     }
     
@@ -307,8 +307,8 @@ export const getSidebarData = (): SidebarData => {
     generalItems.push({
       title: 'Compras',
       icon: Truck,
-      backgroundColor: '#f7c33b',
-      textColor: '#ffffff',
+      backgroundColor: '#ffffffff',
+      textColor: '#000000',
       items: comprasSubItems,
     })
   }
@@ -329,8 +329,8 @@ export const getSidebarData = (): SidebarData => {
       title: 'Sucursales',
       url: '/settings/sucursales',
       icon: MapPin,
-      backgroundColor: '#40ba22',
-      textColor: '#ffffff',
+      backgroundColor: '#ffffffff',
+      textColor: '#000000',
     })
   }
 
@@ -339,8 +339,8 @@ export const getSidebarData = (): SidebarData => {
     title: 'Unidades de medida',
     url: '/unidades-medida',
     icon: Scale,
-    backgroundColor: '#40ba22',
-    textColor: '#ffffff',
+    backgroundColor: '#ffffffff',
+    textColor: '#000000',
   })
 
   if (hasPermission(userData, 'configuracion_empresa')) {
@@ -348,8 +348,8 @@ export const getSidebarData = (): SidebarData => {
       title: 'Configuración de empresa',
       url: '/settings/company',
       icon: Building2,
-      backgroundColor: '#40ba22',
-      textColor: '#ffffff',
+      backgroundColor: '#ffffffff',
+      textColor: '#000000',
     })
   }
 
@@ -361,8 +361,8 @@ export const getSidebarData = (): SidebarData => {
         {
           title: 'Ajustes',
           icon: Settings,
-          backgroundColor: '#40ba22',
-          textColor: '#ffffff',
+          backgroundColor: '#ffffffff',
+          textColor: '#000000',
           items: configuracionItems,
         },
       ],
@@ -378,8 +378,8 @@ export const getSidebarData = (): SidebarData => {
           title: 'Empresas',
           url: '/empresa',
           icon: Briefcase,
-          backgroundColor: '#40ba22',
-          textColor: '#ffffff',
+          backgroundColor: '#ffffffff',
+          textColor: '#000000',
         },
       ],
     },

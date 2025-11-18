@@ -1,4 +1,4 @@
-import { type ReactNode } from 'react'
+import { type CSSProperties, type ReactNode } from 'react'
 import { Link, useLocation } from '@tanstack/react-router'
 import { ChevronRight } from 'lucide-react'
 import {
@@ -31,7 +31,35 @@ import {
   type NavItem,
   type NavLink,
   type NavGroup as NavGroupProps,
+  type BaseNavItem,
 } from './types'
+import { useTheme } from '@/context/theme-provider'
+
+const DARK_MODE_STYLE: CSSProperties = {
+  backgroundColor: 'transparent',
+  color: '#ffffff',
+}
+
+const getNavItemStyle = (
+  item: BaseNavItem,
+  resolvedTheme: 'light' | 'dark'
+): CSSProperties => {
+  if (resolvedTheme === 'dark') {
+    return { ...DARK_MODE_STYLE }
+  }
+
+  const style: CSSProperties = {}
+
+  if (item.backgroundColor) {
+    style.backgroundColor = item.backgroundColor
+  }
+
+  if (item.textColor) {
+    style.color = item.textColor
+  }
+
+  return style
+}
 
 export function NavGroup({ title, items }: NavGroupProps) {
   const { state, isMobile } = useSidebar()
@@ -64,11 +92,8 @@ function NavBadge({ children }: { children: ReactNode }) {
 
 function SidebarMenuLink({ item, href }: { item: NavLink; href: string }) {
   const { setOpenMobile } = useSidebar()
-  
-  const customStyle = item.backgroundColor || item.textColor ? {
-    backgroundColor: item.backgroundColor,
-    color: item.textColor,
-  } : {}
+  const { resolvedTheme } = useTheme()
+  const customStyle = getNavItemStyle(item, resolvedTheme)
   
   return (
     <SidebarMenuItem>
@@ -96,11 +121,8 @@ function SidebarMenuCollapsible({
   href: string
 }) {
   const { setOpenMobile } = useSidebar()
-  
-  const customStyle = item.backgroundColor || item.textColor ? {
-    backgroundColor: item.backgroundColor,
-    color: item.textColor,
-  } : {}
+  const { resolvedTheme } = useTheme()
+  const customStyle = getNavItemStyle(item, resolvedTheme)
   
   return (
     <Collapsible
@@ -120,10 +142,7 @@ function SidebarMenuCollapsible({
         <CollapsibleContent className='CollapsibleContent'>
           <SidebarMenuSub>
             {item.items.map((subItem) => {
-              const subCustomStyle = subItem.backgroundColor || subItem.textColor ? {
-                backgroundColor: subItem.backgroundColor,
-                color: subItem.textColor,
-              } : {}
+              const subCustomStyle = getNavItemStyle(subItem, resolvedTheme)
               
               return (
                 <SidebarMenuSubItem key={subItem.title}>
@@ -155,6 +174,8 @@ function SidebarMenuCollapsedDropdown({
   item: NavCollapsible
   href: string
 }) {
+  const { resolvedTheme } = useTheme()
+  const customStyle = getNavItemStyle(item, resolvedTheme)
   return (
     <SidebarMenuItem>
       <DropdownMenu>
@@ -162,6 +183,7 @@ function SidebarMenuCollapsedDropdown({
           <SidebarMenuButton
             tooltip={item.title}
             isActive={checkIsActive(href, item)}
+            style={customStyle}
           >
             {item.icon && <item.icon />}
             <span>{item.title}</span>
