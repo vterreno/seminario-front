@@ -152,5 +152,6 @@ export const rutasBack = {
         putCompra: `${baseUrl}/compras`,
         deleteCompra: `${baseUrl}/compras`,
         bulkDeleteCompras: `${baseUrl}/compras/bulk/delete`,
+        asociarPago: `${baseUrl}/compras`,
     }
 };

@@ -25,11 +25,13 @@ import { SucursalSelector } from '../nueva-venta/components/sucursal-selector'
 import { ProveedorSelector } from './components/proveedor-selector'
 import { DetallesCompra } from './components/detalles-compra'
 import { NuevoProductoProveedorDialog } from './components/nuevo-producto-proveedor-dialog'
+import { MetodoPagoSelector } from './components/metodo-pago-selector'
 import { 
   DetalleCompra, 
   CostoAdicional, 
   DetalleCompraBackend,
-  TotalesCompra 
+  TotalesCompra,
+  MetodoPago
 } from './types'
 
 // Constante para el margen de ganancia por defecto (30%)
@@ -51,6 +53,8 @@ export function NuevaCompra() {
   const [proveedorSeleccionado, setProveedorSeleccionado] = useState<number | null>(null)
   const [detalles, setDetalles] = useState<DetalleCompra[]>([])
   const [costosAdicionales, setCostosAdicionales] = useState<CostoAdicional[]>([])
+  const [metodoPago, setMetodoPago] = useState<MetodoPago | null>(null)
+  const [pagarAhora, setPagarAhora] = useState<boolean>(false)
   
   const [fechaCompra, setFechaCompra] = useState<string>(
     new Date().toISOString().split('T')[0]
@@ -76,6 +80,8 @@ export function NuevaCompra() {
     setProveedorSeleccionado(null)
     setDetalles([])
     setCostosAdicionales([])
+    setMetodoPago(null)
+    setPagarAhora(false)
     setFechaCompra(new Date().toISOString().split('T')[0])
     setNumeroFactura('')
     setObservaciones('')
@@ -420,6 +426,12 @@ export function NuevaCompra() {
       return
     }
 
+    // Validar que si se quiere pagar ahora, se haya seleccionado un método de pago
+    if (pagarAhora && !metodoPago) {
+      toast.error('Debe seleccionar un método de pago')
+      return
+    }
+
     try {
       setSubmitting(true)
 
@@ -427,6 +439,8 @@ export function NuevaCompra() {
         const detalle: any = {
           cantidad: d.cantidad,
           precio_unitario: d.costo_unitario,
+          iva_porcentaje: d.iva_porcentaje,
+          iva_monto: d.iva_monto,
           subtotal: d.subtotal,
         }
         
@@ -449,22 +463,44 @@ export function NuevaCompra() {
         return detalle
       })
 
-      const compraData = {
+      const compraData: any = {
         fecha_compra: fechaCompra,
         contacto_id: proveedorSeleccionado,
         sucursal_id: sucursalSeleccionada,
         monto_total: totales.total,
-        estado: 'PENDIENTE_PAGO', // Estado inicial: mercadería recibida, pendiente de pago
+        estado: pagarAhora ? 'PAGADO' : 'PENDIENTE_PAGO',
         detalles: detallesBackend,
         numero_factura: numeroFactura || undefined,
         observaciones: observaciones || undefined,
         nuevos_productos: nuevosProductos.length > 0 ? nuevosProductos : undefined,
       }
+
+      // Si se paga ahora, agregar los datos del pago
+      if (pagarAhora && metodoPago) {
+        const fechaPago = new Date().toISOString()
+        compraData.pago = {
+          fecha_pago: fechaPago,
+          monto_pago: totales.total,
+          metodo_pago: metodoPago,
+          sucursal_id: sucursalSeleccionada
+        }
+      }
+
+      // Si hay costos adicionales, agregarlos
+      if (costosAdicionales.length > 0) {
+        compraData.costos_adicionales = costosAdicionales
+          .filter(c => c.concepto && c.monto > 0)
+          .map(c => ({
+            concepto: c.concepto,
+            monto: c.monto
+          }))
+      }
       
       // Llamar al servicio de API para crear la compra
-      const compraCreada = await apiComprasService.createCompra(compraData as any)
+      const compraCreada = await apiComprasService.createCompra(compraData)
       
-      toast.success(`¡Compra #${compraCreada.numero_compra} registrada exitosamente! Stock actualizado.`)
+      const mensajeEstado = pagarAhora ? 'registrada y pagada' : 'registrada'
+      toast.success(`¡Compra #${compraCreada.numero_compra} ${mensajeEstado} exitosamente! Stock actualizado.`)
       
       // Reiniciar el formulario para permitir otra compra
       reiniciarFormulario()
@@ -690,6 +726,39 @@ export function NuevaCompra() {
                 <CardTitle className="text-base">Finalizar compra</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
+                {/* Método de Pago */}
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="pagarAhora"
+                      checked={pagarAhora}
+                      onChange={(e) => {
+                        setPagarAhora(e.target.checked)
+                        if (!e.target.checked) {
+                          setMetodoPago(null)
+                        }
+                      }}
+                      className="h-4 w-4 rounded border-gray-300"
+                    />
+                    <Label htmlFor="pagarAhora" className="text-sm font-medium cursor-pointer">
+                      Pagar esta compra ahora
+                    </Label>
+                  </div>
+                  
+                  {pagarAhora && (
+                    <div className="space-y-2 pl-6">
+                      <Label className="text-sm text-muted-foreground">Método de pago</Label>
+                      <MetodoPagoSelector
+                        metodoPago={metodoPago}
+                        onMetodoPagoChange={setMetodoPago}
+                      />
+                    </div>
+                  )}
+                </div>
+
+                <Separator />
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {/* Resumen de Totales */}
                   <div className="space-y-2">

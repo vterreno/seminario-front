@@ -40,6 +40,21 @@ export interface CostoAdicional {
 }
 
 /**
+ * Tipos de métodos de pago disponibles
+ */
+export type MetodoPago = 'efectivo' | 'transferencia'
+
+/**
+ * Datos del pago de la compra
+ */
+export interface PagoCompraData {
+  fecha_pago: string
+  monto_pago: number
+  metodo_pago: MetodoPago
+  sucursal_id: number
+}
+
+/**
  * Datos para crear una nueva compra
  */
 export interface NuevaCompraData {
@@ -52,6 +67,8 @@ export interface NuevaCompraData {
   detalles: DetalleCompraBackend[]
   numero_factura?: string
   observaciones?: string
+  pago?: PagoCompraData
+  costos_adicionales?: Array<{ concepto: string; monto: number }>
 }
 
 /**

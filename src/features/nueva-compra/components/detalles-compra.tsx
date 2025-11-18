@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -18,9 +18,23 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Trash2, Plus } from 'lucide-react'
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover'
+import { Trash2, Plus, Check, ChevronsUpDown } from 'lucide-react'
 import { DetallesCompraProps } from '../types'
-import { Producto } from '@/features/productos/data/schema'
+import { cn } from '@/lib/utils'
+import { toast } from 'sonner'
 
 const IVA_OPTIONS = [
   { value: 0, label: '0%' },
@@ -39,21 +53,44 @@ export function DetallesCompra({
   onActualizarIva,
   onOpenNuevoProducto,
 }: DetallesCompraProps) {
-  const [productoSeleccionado, setProductoSeleccionado] = useState<Producto | null>(null)
-  const [cantidad, setCantidad] = useState<number>(1)
+  const [productoSeleccionado, setProductoSeleccionado] = useState<string>('')
+  const [cantidad, setCantidad] = useState<string>('1')
   const [costoUnitario, setCostoUnitario] = useState<number>(0)
   const [ivaPorcentaje, setIvaPorcentaje] = useState<number>(21)
+  const [openProducto, setOpenProducto] = useState(false)
+
+  const productoActual = useMemo(() => {
+    return productos.find(p => p.id?.toString() === productoSeleccionado)
+  }, [productos, productoSeleccionado])
 
   const handleAgregar = () => {
-    if (!productoSeleccionado || cantidad <= 0 || costoUnitario <= 0) {
+    if (!productoSeleccionado) {
+      toast.error('Debe seleccionar un producto')
       return
     }
 
-    onAgregarDetalle(productoSeleccionado, cantidad, costoUnitario, ivaPorcentaje)
+    const cantidadNum = Number(cantidad)
+    if (isNaN(cantidadNum) || cantidadNum <= 0) {
+      toast.error('La cantidad debe ser mayor a 0')
+      return
+    }
+
+    if (costoUnitario <= 0) {
+      toast.error('El costo unitario debe ser mayor a 0')
+      return
+    }
+
+    const producto = productos.find((p) => p.id?.toString() === productoSeleccionado)
+    if (!producto) {
+      toast.error('Producto no encontrado')
+      return
+    }
+
+    onAgregarDetalle(producto, cantidadNum, costoUnitario, ivaPorcentaje)
     
     // Resetear formulario
-    setProductoSeleccionado(null)
-    setCantidad(1)
+    setProductoSeleccionado('')
+    setCantidad('1')
     setCostoUnitario(0)
     setIvaPorcentaje(21)
   }
@@ -92,31 +129,60 @@ export function DetallesCompra({
                 <Label htmlFor="producto" className="text-sm font-medium">
                   Producto *
                 </Label>
-                <Select
-                  value={productoSeleccionado?.id?.toString() || ''}
-                  onValueChange={(value) => {
-                    const producto = productos.find((p) => p.id?.toString() === value)
-                    setProductoSeleccionado(producto || null)
-                    // Autocompletar con el precio de costo del producto
-                    if (producto?.precio_costo) {
-                      setCostoUnitario(Number(producto.precio_costo))
-                    }
-                  }}
-                >
-                  <SelectTrigger id="producto" className="mt-1">
-                    <SelectValue placeholder="Seleccione un producto" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {productos.map((producto) => (
-                      <SelectItem key={producto.id} value={producto.id?.toString() || ''}>
-                        <div className="flex flex-col">
-                          <span className="font-medium">{producto.nombre}</span>
-                          <span className="text-xs text-muted-foreground">Código: {producto.codigo}</span>
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Popover open={openProducto} onOpenChange={setOpenProducto}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      aria-expanded={openProducto}
+                      className="w-full justify-between mt-1"
+                    >
+                      <span className="truncate">
+                        {productoActual ? productoActual.nombre : "Seleccione un producto"}
+                      </span>
+                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[400px] p-0" align="start">
+                    <Command>
+                      <CommandInput placeholder="Buscar producto..." />
+                      <CommandList>
+                        <CommandEmpty>No se encontraron productos.</CommandEmpty>
+                        <CommandGroup>
+                          {productos.map((producto) => (
+                            <CommandItem
+                              key={producto.id}
+                              value={`${producto.nombre} ${producto.codigo}`}
+                              onSelect={() => {
+                                setProductoSeleccionado(producto.id?.toString() || '')
+                                setOpenProducto(false)
+                                // Autocompletar con el precio de costo del producto
+                                if (producto?.precio_costo) {
+                                  setCostoUnitario(Number(producto.precio_costo))
+                                }
+                              }}
+                            >
+                              <Check
+                                className={cn(
+                                  "mr-2 h-4 w-4",
+                                  productoSeleccionado === producto.id?.toString()
+                                    ? "opacity-100"
+                                    : "opacity-0"
+                                )}
+                              />
+                              <div className="flex flex-col">
+                                <span className="font-medium">{producto.nombre}</span>
+                                <span className="text-xs text-muted-foreground">
+                                  Código: {producto.codigo}
+                                </span>
+                              </div>
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
               </div>
 
               <div>
@@ -128,7 +194,7 @@ export function DetallesCompra({
                   type="number"
                   min="1"
                   value={cantidad}
-                  onChange={(e) => setCantidad(Number(e.target.value))}
+                  onChange={(e) => setCantidad(e.target.valueAsNumber)}
                   className="mt-1"
                   placeholder="1"
                 />
