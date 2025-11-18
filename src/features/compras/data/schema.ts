@@ -50,6 +50,30 @@ export const SucursalSchema = z.object({
 
 export type Sucursal = z.infer<typeof SucursalSchema>
 
+// Schema de Pago (simplificado)
+export const PagoSchema = z.object({
+  id: z.number(),
+  fecha_pago: z.string().or(z.date()),
+  monto_pago: z.number(),
+  metodo_pago: z.enum(['efectivo', 'transferencia']),
+  created_at: z.string().optional(),
+  updated_at: z.string().optional(),
+})
+
+export type Pago = z.infer<typeof PagoSchema>
+
+// Schema de Costo Adicional
+export const CostoAdicionalSchema = z.object({
+  id: z.number().optional(),
+  concepto: z.string(),
+  monto: z.number(),
+  compra_id: z.number().optional(),
+  created_at: z.string().optional(),
+  updated_at: z.string().optional(),
+})
+
+export type CostoAdicional = z.infer<typeof CostoAdicionalSchema>
+
 // ============================================
 // SCHEMAS DE ESTADO COMPRA
 // ============================================
@@ -109,6 +133,8 @@ export const CompraSchema = z.object({
   sucursal_id: z.number().optional(),
   sucursal: SucursalSchema.optional(),
   estado: z.string(), // Acepta cualquier string del backend
+  pago: PagoSchema.optional().nullable(),
+  costosAdicionales: z.array(CostoAdicionalSchema).optional().nullable(),
   numero_factura: z.string().optional().nullable(),
   observaciones: z.string().optional().nullable(),
   created_at: z.string().optional(),

@@ -188,9 +188,30 @@ export function ComprasViewDialog({
           {/* Resumen */}
           <div className="bg-muted/50 rounded-lg p-4 space-y-2">
             <div className="flex justify-between items-center">
-              <span className="text-sm text-muted-foreground">Total de items:</span>
-              <span className="font-medium">{compra.detalles?.length || 0}</span>
+              <span className="text-sm text-muted-foreground">Subtotal de items:</span>
+              <span className="font-medium">
+                ${formatCurrency(compra.detalles?.reduce((sum, d) => sum + (typeof d.subtotal === 'string' ? parseFloat(d.subtotal) : d.subtotal), 0) || 0)}
+              </span>
             </div>
+            {Array.isArray(compra.costosAdicionales) && compra.costosAdicionales.length > 0 ? (
+              <>
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-muted-foreground mb-1">Costos adicionales:</p>
+                  {compra.costosAdicionales.map((costo, index) => (
+                    <div key={costo.id || index} className="flex justify-between items-center text-sm pl-4">
+                      <span className="text-muted-foreground">{costo.concepto}</span>
+                      <span className="font-medium">${formatCurrency(costo.monto)}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-muted-foreground">Total costos adicionales:</span>
+                  <span className="font-medium">
+                    ${formatCurrency(compra.costosAdicionales.reduce((sum, c) => sum + (typeof c.monto === 'string' ? parseFloat(c.monto) : c.monto), 0))}
+                  </span>
+                </div>
+              </>
+            ) : null}
             <div className="flex justify-between items-center pt-2 border-t">
               <span className="text-lg font-semibold">Monto total:</span>
               <span className="text-2xl font-bold">${formatCurrency(compra.monto_total)}</span>

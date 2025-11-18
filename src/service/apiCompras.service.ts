@@ -2,6 +2,12 @@ import axiosService from "@/api/apiClient";
 import { rutasBack } from "@/config/env";
 
 
+export interface CostoAdicional {
+  id?: number;
+  concepto: string;
+  monto: number;
+}
+
 export interface Compra {
   id: number;
   numero_compra: number;
@@ -21,6 +27,7 @@ export interface Compra {
     nombre: string;
   };
   detalles?: DetalleCompra[];
+  costosAdicionales?: CostoAdicional[];
   created_at?: string;
   updated_at?: string;
 }
@@ -65,6 +72,10 @@ export interface UpdateCompraPayload {
     precio_unitario: number;
     subtotal: number;
   }[];
+  costos_adicionales?: {
+    concepto: string;
+    monto: number;
+  }[];
 }
 
 export interface AsociarPagoPayload {
@@ -78,7 +89,6 @@ class ApiComprasService {
     async getAllCompras(): Promise<Compra[]> {
         try {
             const response = await axiosService.get(rutasBack.compras.getCompras);
-            console.log('data', response.data)
             return response.data
         } catch (error: any) {
             const backendMessage = error.response?.data?.message;
@@ -112,7 +122,6 @@ class ApiComprasService {
     async getCompraById(id: number): Promise<Compra> {
         try {
             const response = await axiosService.get(`${rutasBack.compras.getCompraPorId}/${id}`);
-            console.log('detalle', response.data)
             return response.data;
         } catch (error: any) {
             const backendMessage = error.response?.data?.message;

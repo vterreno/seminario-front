@@ -104,14 +104,10 @@ function ComprasContent() {
             let filteredData = data
             
             if (filters && Object.keys(filters).length > 0) {
-                console.log('Filtros aplicados:', filters)
-                console.log('Total compras antes de filtrar:', data.length)
-                
                 filteredData = data.filter((compra) => {
                     // Filtro por sucursal
                     if (filters.sucursal_id) {
                         const compraSucursalId = compra.sucursal?.id
-                        console.log('Compra:', compra.numero_compra, 'sucursal_id:', compraSucursalId, 'buscando:', filters.sucursal_id)
                         if (compraSucursalId !== filters.sucursal_id) {
                             return false
                         }
@@ -140,8 +136,6 @@ function ComprasContent() {
                     
                     return true
                 })
-                
-                console.log('Total compras después de filtrar:', filteredData.length)
             }
             
             setCompras(filteredData)
