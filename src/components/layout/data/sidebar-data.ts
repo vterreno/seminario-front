@@ -303,6 +303,7 @@ export const getSidebarData = (): SidebarData => {
       })
     }
     
+    // Icon changed from ShoppingCart to Truck for "Compras" section to better represent purchases/deliveries.
     generalItems.push({
       title: 'Compras',
       icon: Truck,
