@@ -52,6 +52,7 @@ export interface CreateCompraPayload {
   estado: string;
   numero_factura?: string;
   observaciones?: string;
+  // detalles: array of items, each with producto_proveedor_id (not producto_id)
   detalles: {
     producto_proveedor_id: number;
     cantidad: number;
