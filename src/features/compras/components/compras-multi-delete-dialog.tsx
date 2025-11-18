@@ -36,8 +36,9 @@ export function ComprasMultiDeleteDialog<TData>({
       if (compraIds.length > 0) {
         try {
           await apiComprasService.bulkDeleteCompras(compraIds)
-        } catch {
-          // Si falla el bulk delete, intentar eliminar una por una
+        } catch (bulkError) {
+          console.error('Bulk delete failed, falling back to individual deletions:', bulkError);
+          toast.warning('La eliminación masiva falló. Intentando eliminar las compras una por una.');
           await Promise.all(compraIds.map(id => apiComprasService.deleteCompra(id)))
         }
       }
