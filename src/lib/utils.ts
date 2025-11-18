@@ -10,6 +10,18 @@ export function sleep(ms: number = 1000) {
 }
 
 /**
+ * Formats a number as currency in Argentine Pesos
+ * @param value - The number to format
+ * @returns Formatted currency string
+ */
+export function formatCurrency(value: number): string {
+  return new Intl.NumberFormat('es-AR', {
+    style: 'currency',
+    currency: 'ARS',
+  }).format(value)
+}
+
+/**
  * Generates page numbers for pagination with ellipsis
  * @param currentPage - Current page number (1-based)
  * @param totalPages - Total number of pages

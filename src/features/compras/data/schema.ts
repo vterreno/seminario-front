@@ -170,16 +170,19 @@ export type UpdateCompraForm = z.infer<typeof UpdateCompraFormSchema>
 // VALIDACIONES ADICIONALES
 // ============================================
 
+// Constante para tolerancia en comparaciones de decimales
+const DECIMAL_TOLERANCE = 0.01
+
 // Validación personalizada para verificar que el subtotal sea correcto
 export const validateSubtotal = (detalle: DetalleCompraForm): boolean => {
   const calculatedSubtotal = detalle.cantidad * detalle.precio_unitario
-  return Math.abs(calculatedSubtotal - detalle.subtotal) < 0.01 // Tolerancia para decimales
+  return Math.abs(calculatedSubtotal - detalle.subtotal) < DECIMAL_TOLERANCE
 }
 
 // Validación personalizada para verificar que el monto total sea correcto
 export const validateMontoTotal = (compra: CompraForm): boolean => {
   const calculatedTotal = compra.detalles.reduce((sum, detalle) => sum + detalle.subtotal, 0)
-  return Math.abs(calculatedTotal - compra.monto_total) < 0.01 // Tolerancia para decimales
+  return Math.abs(calculatedTotal - compra.monto_total) < DECIMAL_TOLERANCE
 }
 
 // Schema con validaciones adicionales completas

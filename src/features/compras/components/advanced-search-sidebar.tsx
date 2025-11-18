@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { Search, Filter, RotateCcw } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -9,6 +9,7 @@ import { Separator } from '@/components/ui/separator'
 import { Badge } from '@/components/ui/badge'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet'
+import { FilterSection } from './filter-section'
 
 export interface AdvancedSearchFilters {
     fecha_desde?: string
@@ -62,42 +63,6 @@ interface AdvancedSearchSidebarProps {
     currentFilters?: AdvancedSearchFilters // Filtros actualmente aplicados
 }
 
-// Componente FilterSection separado para evitar re-renders
-interface FilterSectionProps {
-    title: string
-    children: React.ReactNode
-    isActive: boolean
-    onToggle: () => void
-}
-
-function FilterSection({ title, children, isActive, onToggle }: FilterSectionProps) {
-    return (
-        <div className="space-y-4">
-            <div className="flex items-center justify-between">
-                <h4 className="font-medium text-sm text-muted-foreground uppercase tracking-wide">
-                    {title}
-                </h4>
-                <div className="flex items-center space-x-2">
-                    <span className={`text-xs ${isActive ? 'text-primary' : 'text-muted-foreground'}`}>
-                        {isActive ? 'Activo' : 'Inactivo'}
-                    </span>
-                    <Switch
-                        checked={isActive}
-                        onCheckedChange={onToggle}
-                    />
-                </div>
-            </div>
-            <div className={`space-y-3 transition-opacity duration-200 ${
-                isActive ? 'opacity-100' : 'opacity-40'
-            }`}>
-                <div className={!isActive ? 'pointer-events-none' : ''}>
-                    {children}
-                </div>
-            </div>
-        </div>
-    )
-}
-
 export function AdvancedSearchSidebar({ 
     open, 
     onOpenChange, 
@@ -118,21 +83,22 @@ export function AdvancedSearchSidebar({
     })
 
     // Filtrar sucursales por empresa seleccionada solo si hay filtro de empresa
-    let filteredSucursales: Sucursal[] = [];
-    if (showEmpresaFilter) {
-        if (filters.empresa_id) {
-            filteredSucursales = sucursales.filter(s => s.empresa_id === filters.empresa_id);
+    const filteredSucursales = useMemo<Sucursal[]>(() => {
+        if (showEmpresaFilter) {
+            if (filters.empresa_id) {
+                return sucursales.filter(s => s.empresa_id === filters.empresa_id)
+            } else if (showSucursalFilter) {
+                // Si también hay showSucursalFilter, mostrar todas las sucursales
+                return sucursales
+            } else {
+                return []
+            }
         } else if (showSucursalFilter) {
-            // Si también hay showSucursalFilter, mostrar todas las sucursales
-            filteredSucursales = sucursales;
+            return sucursales
         } else {
-            filteredSucursales = [];
+            return []
         }
-    } else if (showSucursalFilter) {
-        filteredSucursales = sucursales;
-    } else {
-        filteredSucursales = [];
-    }
+    }, [showEmpresaFilter, filters.empresa_id, showSucursalFilter, sucursales])
 
     // Sincronizar filtros cuando se abra el sidebar
     useEffect(() => {

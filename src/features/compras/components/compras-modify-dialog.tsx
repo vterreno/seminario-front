@@ -25,6 +25,12 @@ import {
   CostoAdicional 
 } from '@/features/nueva-compra/types'
 import type { Compra } from '../data/schema'
+import { formatCurrency } from '@/lib/utils'
+
+// Helper para detectar si el producto está anidado
+function isNestedProducto(producto: any): producto is { producto: Producto } {
+  return producto && typeof producto === 'object' && 'producto' in producto
+}
 
 type ComprasModifyDialogProps = {
   currentRow: Compra | null
@@ -306,13 +312,6 @@ export function ComprasModifyDialog({
     } finally {
       setSubmitting(false)
     }
-  }
-
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('es-AR', {
-      style: 'currency',
-      currency: 'ARS',
-    }).format(value)
   }
 
   if (!currentRow) return null
