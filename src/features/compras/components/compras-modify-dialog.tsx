@@ -92,20 +92,28 @@ export function ComprasModifyDialog({
         
         // Cargar detalles
         if (compra.detalles && compra.detalles.length > 0) {
-          const detallesCargados: DetalleCompra[] = compra.detalles.map((d, index) => ({
-            id: `${Date.now()}-${index}`,
-            producto: {
-              id: (d.producto as any)?.producto?.id || d.producto?.id,
-              nombre: (d.producto as any)?.producto?.nombre || d.producto?.nombre || '',
-              codigo: (d.producto as any)?.producto?.codigo || d.producto?.codigo || '',
-            } as Producto,
-            cantidad: d.cantidad,
-            costo_unitario: typeof d.precio_unitario === 'string' ? parseFloat(d.precio_unitario) : d.precio_unitario,
-            iva_porcentaje: 0,
-            iva_monto: 0,
-            subtotal: typeof d.subtotal === 'string' ? parseFloat(d.subtotal) : d.subtotal,
-            total: typeof d.subtotal === 'string' ? parseFloat(d.subtotal) : d.subtotal,
-          }))
+          const detallesCargados: DetalleCompra[] = compra.detalles.map((d, index) => {
+            let productoData: Producto | undefined;
+            if (isNestedProducto(d.producto)) {
+              productoData = d.producto.producto;
+            } else if (d.producto) {
+              productoData = d.producto as Producto;
+            }
+            return {
+              id: `${Date.now()}-${index}`,
+              producto: {
+                id: productoData?.id,
+                nombre: productoData?.nombre || '',
+                codigo: productoData?.codigo || '',
+              } as Producto,
+              cantidad: d.cantidad,
+              costo_unitario: typeof d.precio_unitario === 'string' ? parseFloat(d.precio_unitario) : d.precio_unitario,
+              iva_porcentaje: 0,
+              iva_monto: 0,
+              subtotal: typeof d.subtotal === 'string' ? parseFloat(d.subtotal) : d.subtotal,
+              total: typeof d.subtotal === 'string' ? parseFloat(d.subtotal) : d.subtotal,
+            }
+          })
           setDetalles(detallesCargados)
         }
 
