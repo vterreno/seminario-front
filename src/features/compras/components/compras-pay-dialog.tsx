@@ -41,7 +41,7 @@ export function ComprasPayDialog({
     }
 
     // Validar que la compra esté en estado PENDIENTE_PAGO
-    if (currentRow.estado !== 'PENDIENTE_PAGO') {
+    if (currentRow.estado?.toUpperCase() !== 'PENDIENTE_PAGO') {
       toast.error('Solo se pueden pagar compras en estado PENDIENTE_PAGO')
       return
     }
