@@ -97,7 +97,10 @@ function ComprasContent() {
             if(isSuperAdmin) {
                 data = await apiComprasService.getAllCompras() as Compra[]
             } else {
-                data = await apiComprasService.getComprasByEmpresa(userEmpresaId!) as Compra[]
+                if (userEmpresaId === undefined) {
+                    throw new Error('No se encontró empresa_id para el usuario. No se pueden cargar las compras.')
+                }
+                data = await apiComprasService.getComprasByEmpresa(userEmpresaId) as Compra[]
                 setSucursales(userData?.sucursales as Sucursal[])
             }
 
