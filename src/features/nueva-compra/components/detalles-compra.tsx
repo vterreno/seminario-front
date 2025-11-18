@@ -194,7 +194,7 @@ export function DetallesCompra({
                   type="number"
                   min="1"
                   value={cantidad}
-                  onChange={(e) => setCantidad(e.target.value)}
+                  onChange={(e) => setCantidad(e.target.valueAsNumber)}
                   className="mt-1"
                   placeholder="1"
                 />
