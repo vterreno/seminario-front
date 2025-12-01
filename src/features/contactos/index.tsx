@@ -22,7 +22,7 @@ export function Contactos() {
   const [proveedores, setProveedores] = useState<Contacto[]>([])
   const [openDialog, setOpenDialog] = useState(false)
   const [dialogValue, setDialogValue] = useState<Partial<Contacto>>({})
-  
+
   // Estados para el modal de confirmación de eliminación
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false)
   const [contactoToDelete, setContactoToDelete] = useState<Contacto | null>(null)
@@ -39,8 +39,8 @@ export function Contactos() {
 
   // Función para navegar a la vista de productos del proveedor
   const handleViewProducts = (contacto: Contacto) => {
-    navigate({ 
-      to: '/productos-proveedor/$proveedorId', 
+    navigate({
+      to: '/productos-proveedor/$proveedorId',
       params: { proveedorId: contacto.id!.toString() }
     })
   }
@@ -49,19 +49,19 @@ export function Contactos() {
   const refreshTables = async () => {
     try {
       const promises = [];
-      
+
       if (canVerClientes) {
         promises.push(
           apiContactosService.getClientesAll().then(data => setClientes(data))
         );
       }
-      
+
       if (canVerProveedores) {
         promises.push(
           apiContactosService.getProveedoresAll().then(data => setProveedores(data))
         );
       }
-      
+
       await Promise.all(promises);
     } catch (error) {
       console.error('Error al refrescar tablas:', error);
@@ -78,7 +78,7 @@ export function Contactos() {
   // Función para confirmar la eliminación
   const confirmDelete = async () => {
     if (!contactoToDelete) return
-    
+
     setIsDeleting(true)
     try {
       // Determinar si es cliente o proveedor basado en la pestaña activa
@@ -89,10 +89,10 @@ export function Contactos() {
         await apiContactosService.deleteProveedor(contactoToDelete.id!)
         toast.success('Proveedor eliminado')
       }
-      
+
       // Refrescar ambas tablas
       await refreshTables()
-      
+
       setConfirmDeleteOpen(false)
       setContactoToDelete(null)
     } catch (e: any) {
@@ -128,7 +128,7 @@ export function Contactos() {
     <>
       <Header fixed>
         <Search />
-        <div className='ms-auto flex items-center space-x-4'>
+        <div className='flex items-center space-x-4'>
           <ThemeSwitch />
           <ProfileDropdown />
         </div>
@@ -152,9 +152,9 @@ export function Contactos() {
           </TabsList>
           {canVerClientes && (
             <TabsContent value="clientes">
-              <ContactosTable 
+              <ContactosTable
                 data={clientes}
-                onEdit={(c) => { setDialogValue({...c}); setOpenDialog(true) }}
+                onEdit={(c) => { setDialogValue({ ...c }); setOpenDialog(true) }}
                 onDelete={handleDelete}
                 canBulkAction={canModificarClientes || canEliminarClientes}
                 tipo='cliente'
@@ -167,9 +167,9 @@ export function Contactos() {
           )}
           {canVerProveedores && (
             <TabsContent value="proveedores">
-              <ContactosTable 
+              <ContactosTable
                 data={proveedores}
-                onEdit={(c) => { setDialogValue({...c}); setOpenDialog(true) }}
+                onEdit={(c) => { setDialogValue({ ...c }); setOpenDialog(true) }}
                 onDelete={handleDelete}
                 onViewProducts={handleViewProducts}
                 canBulkAction={canModificarProveedores || canEliminarProveedores}
@@ -182,7 +182,7 @@ export function Contactos() {
             </TabsContent>
           )}
         </Tabs>
-        <ContactoDialog 
+        <ContactoDialog
           open={openDialog}
           onOpenChange={setOpenDialog}
           value={dialogValue}
@@ -192,7 +192,7 @@ export function Contactos() {
             try {
               const rol = val.rol || 'cliente'
               const isUpdate = !!val.id
-              
+
               if (rol === 'cliente') {
                 if (isUpdate) await apiContactosService.updateCliente(val.id!, val as any)
                 else await apiContactosService.createCliente({ ...val, rol: 'cliente' } as any)
@@ -200,10 +200,10 @@ export function Contactos() {
                 if (isUpdate) await apiContactosService.updateProveedor(val.id!, val as any)
                 else await apiContactosService.createProveedor({ ...val, rol: 'proveedor' } as any)
               }
-              
+
               // Refrescar ambas tablas después de cualquier operación
               await refreshTables()
-              
+
               setOpenDialog(false)
               setDialogValue({}) // Limpiar el formulario
               toast.success(isUpdate ? 'Contacto actualizado correctamente' : 'Contacto creado correctamente')
@@ -213,7 +213,7 @@ export function Contactos() {
             }
           }}
         />
-        
+
         <ConfirmDialog
           open={confirmDeleteOpen}
           onOpenChange={setConfirmDeleteOpen}

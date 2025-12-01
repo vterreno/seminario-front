@@ -29,7 +29,7 @@ export function Empresa() {
     return (
       <>
         <Header>
-          <div className='ms-auto flex items-center space-x-4'>
+          <div className='flex items-center space-x-4'>
             <Search />
             <ThemeSwitch />
             <ProfileDropdown />
@@ -74,7 +74,7 @@ export function Empresa() {
     <EmpresaProvider>
       <Header fixed>
         <Search />
-        <div className='ms-auto flex items-center space-x-4'>
+        <div className='flex items-center space-x-4'>
           <ThemeSwitch />
           <ProfileDropdown />
         </div>

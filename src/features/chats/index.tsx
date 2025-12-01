@@ -68,7 +68,7 @@ export function Chats() {
       {/* ===== Top Heading ===== */}
       <Header>
         <Search />
-        <div className='ms-auto flex items-center space-x-4'>
+        <div className='flex items-center space-x-4'>
           <ThemeSwitch />
           <ConfigDrawer />
           <ProfileDropdown />
@@ -246,7 +246,7 @@ export function Chats() {
                                   className={cn(
                                     'text-foreground/75 mt-1 block text-xs font-light italic',
                                     msg.sender === 'You' &&
-                                      'text-primary-foreground/85 text-end'
+                                    'text-primary-foreground/85 text-end'
                                   )}
                                 >
                                   {format(msg.timestamp, 'h:mm a')}

@@ -68,7 +68,7 @@ export function ListasPreciosPage() {
         return (
             <>
                 <Header>
-                    <div className='ms-auto flex items-center space-x-4'>
+                    <div className='flex items-center space-x-4'>
                         <Search />
                         <ThemeSwitch />
                         <ProfileDropdown />
@@ -97,13 +97,13 @@ export function ListasPreciosPage() {
                 role.permissions?.some(permission => permission.codigo === codigo)
             )
         }
-        
+
         // Fallback a userData del localStorage
         // Nota: userData tiene 'role' singular, no 'roles'
         if (userData?.role?.permisos) {
             return !!userData.role.permisos[codigo]
         }
-        
+
         return false
     }
 
@@ -121,19 +121,19 @@ export function ListasPreciosPage() {
             } else {
                 data = await apiListaPreciosService.getListaPreciosByEmpresa(userEmpresaId!)
             }
-            
+
             // Filtrar listas según permisos específicos (solo si NO es superadmin)
             // SIEMPRE filtrar por permisos de cada lista individual
             if (!isSuperAdmin) {
                 data = data.filter(lista => {
                     // Generar el código de permiso esperado basado en el nombre de la lista
                     const codigoPermiso = generarCodigoPermisoLista(lista.nombre)
-                    
+
                     // Usar checkPermission que lee del store en tiempo real
                     return checkPermission(codigoPermiso)
                 })
             }
-            
+
             setListaPrecios(data)
         } catch (error: any) {
             // Solo mostrar error si no es un error de autenticación (401)
@@ -163,7 +163,7 @@ export function ListasPreciosPage() {
             userEmpresaId={userEmpresaId}
         >
             <Header>
-                <div className='ms-auto flex items-center space-x-4'>
+                <div className='flex items-center space-x-4'>
                     <Search />
                     <ThemeSwitch />
                     <ProfileDropdown />

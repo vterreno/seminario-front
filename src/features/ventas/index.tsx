@@ -32,7 +32,7 @@ interface UserData {
         id: number
         nombre: string
         permisos?: {
-        [key: string]: boolean
+            [key: string]: boolean
         }
     }
     empresa?: {
@@ -86,14 +86,14 @@ function VentasContent() {
     const userEmpresaId = userData?.empresa?.id
     const isSuperAdmin = !userEmpresaId // If user doesn't have empresa_id, they are superadmin
     const userSucursales = userData?.sucursales || []
-    
+
 
     const fetchVentas = async (filters?: AdvancedSearchFilters) => {
         try {
             setLoading(true)
             let data: Venta[] = []
 
-            if(isSuperAdmin) {
+            if (isSuperAdmin) {
                 data = await apiVentasService.getAllVentas()
             } else {
                 data = await apiVentasService.getVentasByEmpresa(userEmpresaId!)
@@ -101,11 +101,11 @@ function VentasContent() {
             }
 
             let filteredData = data
-            
+
             if (filters && Object.keys(filters).length > 0) {
                 console.log('Filtros aplicados:', filters)
                 console.log('Total ventas antes de filtrar:', data.length)
-                
+
                 filteredData = data.filter((venta) => {
                     // Filtro por empresa
                     // La empresa puede estar en venta.empresa_id o en venta.sucursal.empresa_id
@@ -116,7 +116,7 @@ function VentasContent() {
                             return false
                         }
                     }
-                    
+
                     // Filtro por sucursal
                     if (filters.sucursal_id) {
                         const ventaSucursalId = venta.sucursal_id || venta.sucursal?.id
@@ -125,7 +125,7 @@ function VentasContent() {
                             return false
                         }
                     }
-                    
+
                     // Filtro por rango de fechas
                     if (filters.fecha_desde && venta.fecha_venta < filters.fecha_desde) {
                         return false
@@ -133,7 +133,7 @@ function VentasContent() {
                     if (filters.fecha_hasta && venta.fecha_venta > filters.fecha_hasta) {
                         return false
                     }
-                    
+
                     // Filtro por rango de monto
                     if (filters.monto_min !== undefined && venta.monto_total < filters.monto_min) {
                         return false
@@ -141,18 +141,18 @@ function VentasContent() {
                     if (filters.monto_max !== undefined && venta.monto_total > filters.monto_max) {
                         return false
                     }
-                    
+
                     // Filtro por método de pago
                     if (filters.metodo_pago && venta.pago?.metodo_pago !== filters.metodo_pago) {
                         return false
                     }
-                    
+
                     return true
                 })
-                
+
                 console.log('Total ventas después de filtrar:', filteredData.length)
             }
-            
+
             setVentas(filteredData)
         } catch (error: any) {
             console.error('Error fetching ventas:', error)
@@ -193,7 +193,7 @@ function VentasContent() {
                 }
             }
         }
-        
+
         fetchEmpresasYSucursales()
     }, [isSuperAdmin])
 
@@ -213,7 +213,7 @@ function VentasContent() {
         <>
             <Header fixed>
                 <Search />
-                <div className='ms-auto flex items-center space-x-4'>
+                <div className='flex items-center space-x-4'>
                     <ThemeSwitch />
                     <ProfileDropdown />
                 </div>
@@ -238,15 +238,15 @@ function VentasContent() {
                             <Filter className="mr-2 h-4 w-4" />
                             Búsqueda avanzada
                             {getActiveFiltersCount() > 0 && (
-                                <Badge 
-                                    variant="secondary" 
+                                <Badge
+                                    variant="secondary"
                                     className="ml-2 h-5 w-5 rounded-full p-0 flex items-center justify-center"
                                 >
                                     {getActiveFiltersCount()}
                                 </Badge>
                             )}
                         </Button>
-                        
+
                         {/* Botón para limpiar filtros */}
                         {getActiveFiltersCount() > 0 && (
                             <Button
@@ -273,7 +273,7 @@ function VentasContent() {
                 </div>
 
                 <VentasDialogs onSuccess={fetchVentas} />
-                
+
                 {/* Sidebar de búsqueda avanzada */}
                 <AdvancedSearchSidebar
                     open={advancedSearchOpen}

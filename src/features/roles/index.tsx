@@ -52,13 +52,13 @@ export function Roles() {
   const canEdit = hasPermission('roles_modificar')
   const canDelete = hasPermission('roles_eliminar')
   const canBulkAction = canEdit || canDelete
-  
+
   // Verificar si el usuario tiene permisos para ver roles
   if (!hasPermission('roles_ver')) {
     return (
       <>
         <Header>
-          <div className='ms-auto flex items-center space-x-4'>
+          <div className='flex items-center space-x-4'>
             <Search />
             <ThemeSwitch />
             <ProfileDropdown />
@@ -84,7 +84,7 @@ export function Roles() {
       const isSuperAdmin = !userEmpresaId // If user doesn't have empresa_id, they are superadmin
 
       let data: Role[]
-      
+
       if (isSuperAdmin) {
         // Superadmin: get all roles from all companies
         data = await apiRolesService.getAllRoles()
@@ -118,7 +118,7 @@ export function Roles() {
     <RoleProvider>
       <Header fixed>
         <Search />
-        <div className='ms-auto flex items-center space-x-4'>
+        <div className='flex items-center space-x-4'>
           <ThemeSwitch />
           <ProfileDropdown />
         </div>
@@ -135,11 +135,11 @@ export function Roles() {
           <RolesPrimaryButtons />
         </div>
         <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-y-0 lg:space-x-12'>
-          <RolesTable 
-            data={roles} 
-            search={search} 
-            navigate={navigate} 
-            onSuccess={fetchRoles} 
+          <RolesTable
+            data={roles}
+            search={search}
+            navigate={navigate}
+            onSuccess={fetchRoles}
             canBulkAction={canBulkAction}
           />
         </div>

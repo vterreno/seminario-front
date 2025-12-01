@@ -93,7 +93,7 @@ export function ProductosProveedor({ proveedorId }: { proveedorId: number }) {
     <>
       <Header fixed>
         <Search />
-        <div className='ms-auto flex items-center space-x-4'>
+        <div className='flex items-center space-x-4'>
           <ThemeSwitch />
           <ProfileDropdown />
         </div>
@@ -108,7 +108,7 @@ export function ProductosProveedor({ proveedorId }: { proveedorId: number }) {
             <ArrowLeft className='mr-2 h-4 w-4' />
             Volver a Contactos
           </Button>
-          
+
           <div className='flex flex-wrap items-center justify-between space-y-2'>
             <div>
               <h2 className='text-2xl font-bold tracking-tight'>

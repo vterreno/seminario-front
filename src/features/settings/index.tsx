@@ -12,7 +12,7 @@ export function Settings() {
       {/* ===== Top Heading ===== */}
       <Header>
         <Search />
-        <div className='ms-auto flex items-center space-x-4'>
+        <div className='flex items-center space-x-4'>
           <ThemeSwitch />
           <ProfileDropdown />
         </div>
@@ -20,7 +20,7 @@ export function Settings() {
 
       <Main fixed>
         <div className='flex flex-col gap-4'>
-        <Outlet />
+          <Outlet />
         </div>
       </Main>
     </>

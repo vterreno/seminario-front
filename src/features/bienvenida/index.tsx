@@ -33,7 +33,7 @@ export function Bienvenida() {
         <>
         {/* ===== Top Heading ===== */}
         <Header>
-            <div className='ms-auto flex items-center space-x-4'>
+            <div className='flex items-center space-x-4'>
             <Search />
             <ThemeSwitch />
             <ProfileDropdown />

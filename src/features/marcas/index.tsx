@@ -27,7 +27,7 @@ interface UserData {
         id: number
         nombre: string
         permisos?: {
-        [key: string]: boolean
+            [key: string]: boolean
         }
     }
     empresa?: {
@@ -54,21 +54,21 @@ export function Marcas() {
     const canBulkAction = canEdit || canDelete
     if (!hasPermission('marca_ver')) {
         return (
-        <>
-            <Header>
-            <div className='ms-auto flex items-center space-x-4'>
-                <Search />
-                <ThemeSwitch />
-                <ProfileDropdown />
-            </div>
-            </Header>
-            <Main>
-            <div className="text-center p-8">
-                <h2 className="text-2xl font-bold mb-4">Sin permisos</h2>
-                <p className="text-muted-foreground">No tienes permisos para ver esta sección.</p>
-            </div>
-            </Main>
-        </>
+            <>
+                <Header>
+                    <div className='flex items-center space-x-4'>
+                        <Search />
+                        <ThemeSwitch />
+                        <ProfileDropdown />
+                    </div>
+                </Header>
+                <Main>
+                    <div className="text-center p-8">
+                        <h2 className="text-2xl font-bold mb-4">Sin permisos</h2>
+                        <p className="text-muted-foreground">No tienes permisos para ver esta sección.</p>
+                    </div>
+                </Main>
+            </>
         )
     }
     // Detectar si el usuario es superadmin
@@ -118,44 +118,44 @@ export function Marcas() {
     }
 
     return (
-            <MarcasProvider>
-                {/* ===== Top Heading ===== */}
+        <MarcasProvider>
+            {/* ===== Top Heading ===== */}
             <Header fixed>
-            <Search />
-            <div className='ms-auto flex items-center space-x-4'>
-            <ThemeSwitch />
-            <ProfileDropdown />
-            </div>
-        </Header>
+                <Search />
+                <div className='flex items-center space-x-4'>
+                    <ThemeSwitch />
+                    <ProfileDropdown />
+                </div>
+            </Header>
 
-        <Main>
-            <div className='mb-2 flex flex-wrap items-center justify-between space-y-2'>
-            <div>
-                <h2 className='text-2xl font-bold tracking-tight'>
-                Marcas
-                {loading && <span className="ml-2 text-sm text-muted-foreground">Cargando...</span>}
-                {refreshing && <span className="ml-2 text-sm text-muted-foreground">Actualizando...</span>}
-                </h2>
-                <p className='text-muted-foreground'>
-                Gestiona las marcas de productos de tu empresa.
-                </p>
-            </div>
-            <MarcasPrimaryButtons />
-            </div>
+            <Main>
+                <div className='mb-2 flex flex-wrap items-center justify-between space-y-2'>
+                    <div>
+                        <h2 className='text-2xl font-bold tracking-tight'>
+                            Marcas
+                            {loading && <span className="ml-2 text-sm text-muted-foreground">Cargando...</span>}
+                            {refreshing && <span className="ml-2 text-sm text-muted-foreground">Actualizando...</span>}
+                        </h2>
+                        <p className='text-muted-foreground'>
+                            Gestiona las marcas de productos de tu empresa.
+                        </p>
+                    </div>
+                    <MarcasPrimaryButtons />
+                </div>
 
-            <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0'>
-                <MarcasTable 
-                data={marcas}
-                search={search}
-                navigate={navigate}
-                onSuccess={handleSuccess}
-                canBulkAction={canBulkAction}
-                showEmpresaColumn={isSuperAdmin}
-                />
-            </div>
+                <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0'>
+                    <MarcasTable
+                        data={marcas}
+                        search={search}
+                        navigate={navigate}
+                        onSuccess={handleSuccess}
+                        canBulkAction={canBulkAction}
+                        showEmpresaColumn={isSuperAdmin}
+                    />
+                </div>
 
-            <MarcasDialogs onSuccess={handleSuccess} />
-        </Main>
+                <MarcasDialogs onSuccess={handleSuccess} />
+            </Main>
         </MarcasProvider>
     )
 }

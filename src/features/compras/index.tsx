@@ -33,7 +33,7 @@ interface UserData {
         id: number
         nombre: string
         permisos?: {
-        [key: string]: boolean
+            [key: string]: boolean
         }
     }
     empresa?: {
@@ -87,14 +87,14 @@ function ComprasContent() {
     const userEmpresaId = userData?.empresa?.id
     const isSuperAdmin = !userEmpresaId // If user doesn't have empresa_id, they are superadmin
     const userSucursales = userData?.sucursales || []
-    
+
 
     const fetchCompras = async (filters?: AdvancedSearchFilters) => {
         try {
             setLoading(true)
             let data: Compra[]
 
-            if(isSuperAdmin) {
+            if (isSuperAdmin) {
                 data = await apiComprasService.getAllCompras() as Compra[]
             } else {
                 if (userEmpresaId === undefined) {
@@ -105,7 +105,7 @@ function ComprasContent() {
             }
 
             let filteredData = data
-            
+
             if (filters && Object.keys(filters).length > 0) {
                 filteredData = data.filter((compra) => {
                     // Filtro por sucursal
@@ -115,7 +115,7 @@ function ComprasContent() {
                             return false
                         }
                     }
-                    
+
                     // Filtro por rango de fechas
                     if (filters.fecha_desde && compra.fecha_compra < filters.fecha_desde) {
                         return false
@@ -123,7 +123,7 @@ function ComprasContent() {
                     if (filters.fecha_hasta && compra.fecha_compra > filters.fecha_hasta) {
                         return false
                     }
-                    
+
                     // Filtro por rango de monto
                     if (filters.monto_min !== undefined && compra.monto_total < filters.monto_min) {
                         return false
@@ -131,16 +131,16 @@ function ComprasContent() {
                     if (filters.monto_max !== undefined && compra.monto_total > filters.monto_max) {
                         return false
                     }
-                    
+
                     // Filtro por estado
                     if (filters.estado && compra.estado.toLowerCase() !== filters.estado.toLowerCase()) {
                         return false
                     }
-                    
+
                     return true
                 })
             }
-            
+
             setCompras(filteredData)
         } catch (error: any) {
             console.error('Error fetching compras:', error)
@@ -186,7 +186,7 @@ function ComprasContent() {
                 }
             }
         }
-        
+
         fetchEmpresasYSucursales()
     }, [isSuperAdmin])
 
@@ -206,7 +206,7 @@ function ComprasContent() {
         <>
             <Header fixed>
                 <Search />
-                <div className='ms-auto flex items-center space-x-4'>
+                <div className='flex items-center space-x-4'>
                     <ThemeSwitch />
                     <ProfileDropdown />
                 </div>
@@ -231,15 +231,15 @@ function ComprasContent() {
                             <Filter className="mr-2 h-4 w-4" />
                             Búsqueda avanzada
                             {getActiveFiltersCount() > 0 && (
-                                <Badge 
-                                    variant="secondary" 
+                                <Badge
+                                    variant="secondary"
                                     className="ml-2 h-5 w-5 rounded-full p-0 flex items-center justify-center"
                                 >
                                     {getActiveFiltersCount()}
                                 </Badge>
                             )}
                         </Button>
-                        
+
                         {/* Botón para limpiar filtros */}
                         {getActiveFiltersCount() > 0 && (
                             <Button
@@ -266,7 +266,7 @@ function ComprasContent() {
                 </div>
 
                 <ComprasDialogs onSuccess={handleRefresh} />
-                
+
                 {/* Sidebar de búsqueda avanzada */}
                 <AdvancedSearchSidebar
                     open={advancedSearchOpen}

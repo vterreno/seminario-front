@@ -31,7 +31,7 @@ interface UserData {
         id: number
         nombre: string
         permisos?: {
-        [key: string]: boolean
+            [key: string]: boolean
         }
     }
     empresa?: {
@@ -51,14 +51,14 @@ export function Productos() {
     const [productos, setProductos] = useState<Producto[]>([])
     const [loading, setLoading] = useState(true)
     const [refreshing, setRefreshing] = useState(false)
-    
+
     // Estado para búsqueda avanzada
     const [isAdvancedSearchOpen, setIsAdvancedSearchOpen] = useState(false)
     const [activeFilters, setActiveFilters] = useState<AdvancedSearchFilters>({})
     const [allProductos, setAllProductos] = useState<Producto[]>([]) // Guardamos todos los productos sin filtrar
-    const [empresas, setEmpresas] = useState<Array<{id: number, name: string}>>([])
-    const [marcas, setMarcas] = useState<Array<{id: number, nombre: string}>>([])
-    const [sucursales, setSucursales] = useState<Array<{id: number, nombre: string}>>([])
+    const [empresas, setEmpresas] = useState<Array<{ id: number, name: string }>>([])
+    const [marcas, setMarcas] = useState<Array<{ id: number, nombre: string }>>([])
+    const [sucursales, setSucursales] = useState<Array<{ id: number, nombre: string }>>([])
 
     // Verificar permisos para bulk actions
     const canEdit = hasPermission('producto_modificar')
@@ -66,21 +66,21 @@ export function Productos() {
     const canBulkAction = canEdit || canDelete
     if (!hasPermission('producto_ver')) {
         return (
-        <>
-            <Header>
-            <div className='ms-auto flex items-center space-x-4'>
-                <Search />
-                <ThemeSwitch />
-                <ProfileDropdown />
-            </div>
-            </Header>
-            <Main>
-            <div className="text-center p-8">
-                <h2 className="text-2xl font-bold mb-4">Sin permisos</h2>
-                <p className="text-muted-foreground">No tienes permisos para ver esta sección.</p>
-            </div>
-            </Main>
-        </>
+            <>
+                <Header>
+                    <div className='flex items-center space-x-4'>
+                        <Search />
+                        <ThemeSwitch />
+                        <ProfileDropdown />
+                    </div>
+                </Header>
+                <Main>
+                    <div className="text-center p-8">
+                        <h2 className="text-2xl font-bold mb-4">Sin permisos</h2>
+                        <p className="text-muted-foreground">No tienes permisos para ver esta sección.</p>
+                    </div>
+                </Main>
+            </>
         )
     }
     // Detectar si el usuario es superadmin y obtener sus sucursales
@@ -138,14 +138,14 @@ export function Productos() {
 
         // Filtro por código
         if (filters.codigo) {
-            filtered = filtered.filter(p => 
+            filtered = filtered.filter(p =>
                 p.codigo.toLowerCase().includes(filters.codigo!.toLowerCase())
             )
         }
 
         // Filtro por nombre
         if (filters.nombre) {
-            filtered = filtered.filter(p => 
+            filtered = filtered.filter(p =>
                 p.nombre.toLowerCase().includes(filters.nombre!.toLowerCase())
             )
         }
@@ -223,7 +223,7 @@ export function Productos() {
     // Remover un filtro específico
     const handleRemoveFilter = (filterKey: keyof AdvancedSearchFilters) => {
         const newFilters = { ...activeFilters }
-        
+
         // Limpiar filtros relacionados
         if (filterKey === 'precio_costo_min' || filterKey === 'precio_costo_max') {
             delete newFilters.precio_costo_min
@@ -237,7 +237,7 @@ export function Productos() {
         } else {
             delete newFilters[filterKey]
         }
-        
+
         handleFiltersChange(newFilters)
     }
 
@@ -265,79 +265,79 @@ export function Productos() {
     }
 
     return (
-            <ProductosProvider>
-                {/* ===== Top Heading ===== */}
+        <ProductosProvider>
+            {/* ===== Top Heading ===== */}
             <Header fixed>
-            <Search />
-            <div className='ms-auto flex items-center space-x-4'>
-            <ThemeSwitch />
-            <ProfileDropdown />
-            </div>
-        </Header>
+                <Search />
+                <div className='flex items-center space-x-4'>
+                    <ThemeSwitch />
+                    <ProfileDropdown />
+                </div>
+            </Header>
 
-        <Main>
-            <div className='mb-2 flex flex-wrap items-center justify-between space-y-2 xl:-mx-6 xl:px-6 2xl:-mx-32 2xl:px-8'>
-            <div>
-                <h2 className='text-2xl font-bold tracking-tight'>
-                Productos
-                {loading && <span className="ml-2 text-sm text-muted-foreground">Cargando...</span>}
-                {refreshing && <span className="ml-2 text-sm text-muted-foreground">Actualizando...</span>}
-                </h2>
-                <p className='text-muted-foreground'>
-                Gestiona los productos de tu empresa.
-                {Object.keys(activeFilters).length > 0 && (
-                    <span className="ml-2 text-primary">
-                    • {Object.keys(activeFilters).length} filtro{Object.keys(activeFilters).length > 1 ? 's' : ''} aplicado{Object.keys(activeFilters).length > 1 ? 's' : ''}
-                    </span>
-                )}
-                </p>
-            </div>
-            <ProductosPrimaryButtons 
-                onAdvancedSearchOpen={() => setIsAdvancedSearchOpen(true)}
-                activeFiltersCount={Object.keys(activeFilters).length}
-            />
-            </div>
-            
-            {/* Mostrar filtros activos */}
-            {Object.keys(activeFilters).length > 0 && (
-                <div className="mb-4 xl:-mx-6 xl:px-6 2xl:-mx-32 2xl:px-8">
-                    <ActiveFiltersDisplay
-                        filters={activeFilters}
-                        onRemoveFilter={handleRemoveFilter}
-                        onClearAll={handleClearAllFilters}
-                        marcas={marcas}
-                        empresas={empresas}
-                        sucursales={sucursales}
+            <Main>
+                <div className='mb-2 flex flex-wrap items-center justify-between space-y-2 xl:-mx-6 xl:px-6 2xl:-mx-32 2xl:px-8'>
+                    <div>
+                        <h2 className='text-2xl font-bold tracking-tight'>
+                            Productos
+                            {loading && <span className="ml-2 text-sm text-muted-foreground">Cargando...</span>}
+                            {refreshing && <span className="ml-2 text-sm text-muted-foreground">Actualizando...</span>}
+                        </h2>
+                        <p className='text-muted-foreground'>
+                            Gestiona los productos de tu empresa.
+                            {Object.keys(activeFilters).length > 0 && (
+                                <span className="ml-2 text-primary">
+                                    • {Object.keys(activeFilters).length} filtro{Object.keys(activeFilters).length > 1 ? 's' : ''} aplicado{Object.keys(activeFilters).length > 1 ? 's' : ''}
+                                </span>
+                            )}
+                        </p>
+                    </div>
+                    <ProductosPrimaryButtons
+                        onAdvancedSearchOpen={() => setIsAdvancedSearchOpen(true)}
+                        activeFiltersCount={Object.keys(activeFilters).length}
                     />
                 </div>
-            )}
 
-            {/* Con esta de linea de css en el div, me anda en mi monitor, pero nose en los demas
+                {/* Mostrar filtros activos */}
+                {Object.keys(activeFilters).length > 0 && (
+                    <div className="mb-4 xl:-mx-6 xl:px-6 2xl:-mx-32 2xl:px-8">
+                        <ActiveFiltersDisplay
+                            filters={activeFilters}
+                            onRemoveFilter={handleRemoveFilter}
+                            onClearAll={handleClearAllFilters}
+                            marcas={marcas}
+                            empresas={empresas}
+                            sucursales={sucursales}
+                        />
+                    </div>
+                )}
+
+                {/* Con esta de linea de css en el div, me anda en mi monitor, pero nose en los demas
             quiero tratar de que no se vea un scroll horizontal */}
-            <div className='flex-1 py-1 xl:-mx-6 xl:px-6 2xl:-mx-32 2xl:px-8'>
-                <ProductosTable
-                data={productos}
-                search={search}
-                navigate={navigate}
-                onSuccess={handleSuccess}
-                canBulkAction={canBulkAction}
-                showEmpresaColumn={isSuperAdmin}
+                <div className='flex-1 py-1 xl:-mx-6 xl:px-6 2xl:-mx-32 2xl:px-8'>
+                    <ProductosTable
+                        data={productos}
+                        search={search}
+                        navigate={navigate}
+                        onSuccess={handleSuccess}
+                        canBulkAction={canBulkAction}
+                        showEmpresaColumn={isSuperAdmin}
+                    />
+                </div>
+
+                <ProductosDialogs onSuccess={handleSuccess} />
+
+                {/* Sidebar de búsqueda avanzada */}
+                <AdvancedSearchSidebar
+                    open={isAdvancedSearchOpen}
+                    onOpenChange={setIsAdvancedSearchOpen}
+                    onFiltersChange={handleFiltersChange}
+                    isSuperAdmin={isSuperAdmin}
+                    empresas={empresas}
+                    sucursales={sucursales}
+                    currentFilters={activeFilters}
                 />
-            </div>
-
-            <ProductosDialogs onSuccess={handleSuccess} />
-
-            {/* Sidebar de búsqueda avanzada */}
-            <AdvancedSearchSidebar
-                open={isAdvancedSearchOpen}
-                onOpenChange={setIsAdvancedSearchOpen}
-                onFiltersChange={handleFiltersChange}
-                isSuperAdmin={isSuperAdmin}
-                empresas={empresas}
-                sucursales={sucursales}
-                currentFilters={activeFilters}
-            />
-        </Main>
+            </Main>
         </ProductosProvider>
     )
 }

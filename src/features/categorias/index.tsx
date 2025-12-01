@@ -25,7 +25,7 @@ interface UserData {
         id: number
         nombre: string
         permisos?: {
-        [key: string]: boolean
+            [key: string]: boolean
         }
     }
     empresa?: {
@@ -49,75 +49,75 @@ export function Categorias() {
 }
 
 function CategoriasContent() {
-        const { hasPermission } = usePermissions()
-        const search = route.useSearch()
-        const navigate = route.useNavigate()
-        const [categorias, setCategorias] = useState<Categoria[]>([])
-        const [loading, setLoading] = useState(true)
+    const { hasPermission } = usePermissions()
+    const search = route.useSearch()
+    const navigate = route.useNavigate()
+    const [categorias, setCategorias] = useState<Categoria[]>([])
+    const [loading, setLoading] = useState(true)
 
-        const canEdit = hasPermission('categoria_modificar')
-        const canDelete = hasPermission('categoria_eliminar')
-        const canBulkAction = canEdit || canDelete
-        // Verificar si el usuario tiene permiso para ver categorías
-        if (!hasPermission('categoria_ver')) {
-            return (
+    const canEdit = hasPermission('categoria_modificar')
+    const canDelete = hasPermission('categoria_eliminar')
+    const canBulkAction = canEdit || canDelete
+    // Verificar si el usuario tiene permiso para ver categorías
+    if (!hasPermission('categoria_ver')) {
+        return (
             <div className="flex items-center justify-center h-64">
                 <div className="text-center">
-                <h3 className="text-lg font-semibold text-muted-foreground">
-                    Sin permisos
-                </h3>
-                <p className="text-sm text-muted-foreground">
-                    No tienes permisos para ver las categorías.
-                </p>
+                    <h3 className="text-lg font-semibold text-muted-foreground">
+                        Sin permisos
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                        No tienes permisos para ver las categorías.
+                    </p>
                 </div>
             </div>
-            )
-        }
+        )
+    }
 
-        const fetchCategorias = async () => {
-            try {
-                setLoading(true)
-                
-                // Obtener datos del usuario desde localStorage
-                const userData = getStorageItem(STORAGE_KEYS.USER_DATA, null) as UserData | null
-                const userEmpresaId = userData?.empresa?.id
-                
-                let data: Categoria[]
-                
-                // Si el usuario tiene empresa asignada, filtrar por esa empresa
-                if (userEmpresaId) {
-                    data = await apiCategoriasService.getCategoriasByEmpresa(userEmpresaId)
-                } else {
-                    // Si no tiene empresa (superadmin), mostrar todas las categorías
-                    data = await apiCategoriasService.getAllCategorias()
-                }
-                
-                setCategorias(data)
-                } catch (error) {
-                console.error('Error fetching categorias:', error)
-                toast.error('Error al cargar las categorías')
-                } finally {
-                setLoading(false)
-                }
+    const fetchCategorias = async () => {
+        try {
+            setLoading(true)
+
+            // Obtener datos del usuario desde localStorage
+            const userData = getStorageItem(STORAGE_KEYS.USER_DATA, null) as UserData | null
+            const userEmpresaId = userData?.empresa?.id
+
+            let data: Categoria[]
+
+            // Si el usuario tiene empresa asignada, filtrar por esa empresa
+            if (userEmpresaId) {
+                data = await apiCategoriasService.getCategoriasByEmpresa(userEmpresaId)
+            } else {
+                // Si no tiene empresa (superadmin), mostrar todas las categorías
+                data = await apiCategoriasService.getAllCategorias()
             }
-            
-            useEffect(() => {
-                fetchCategorias()
-            }, [])
-            
-            if (loading) {
-                return (
-                <div className="flex items-center justify-center h-64">
-                    <div className="text-muted-foreground">Cargando categorías...</div>
-                </div>
-                )
-            }
+
+            setCategorias(data)
+        } catch (error) {
+            console.error('Error fetching categorias:', error)
+            toast.error('Error al cargar las categorías')
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    useEffect(() => {
+        fetchCategorias()
+    }, [])
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center h-64">
+                <div className="text-muted-foreground">Cargando categorías...</div>
+            </div>
+        )
+    }
 
     return (
         <>
             <Header fixed>
                 <Search />
-                <div className='ms-auto flex items-center space-x-4'>
+                <div className='flex items-center space-x-4'>
                     <ThemeSwitch />
                     <ProfileDropdown />
                 </div>
@@ -134,15 +134,15 @@ function CategoriasContent() {
                     <CategoriasPrimaryButtons />
                 </div>
                 <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-y-0 lg:space-x-12'>
-                    <CategoriasTable 
-                        data={categorias} 
-                        search={search} 
-                        navigate={navigate as any} 
-                        onSuccess={fetchCategorias} 
+                    <CategoriasTable
+                        data={categorias}
+                        search={search}
+                        navigate={navigate as any}
+                        onSuccess={fetchCategorias}
                         canBulkAction={canBulkAction} // Pasar la propiedad canBulkAction
                     />
                 </div>
-                
+
                 {/* Añadir los diálogos de categorías */}
                 <CategoriasDialogs onSuccess={fetchCategorias} />
             </Main>
