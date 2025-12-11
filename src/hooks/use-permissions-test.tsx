@@ -5,6 +5,7 @@ interface PermissionOverride {
   enabled: boolean
   permissions: Record<string, boolean>
   isSuperAdmin?: boolean
+  isCompanyAdmin?: boolean
 }
 
 interface PermissionTestContextType {
@@ -19,14 +20,16 @@ export function PermissionTestProvider({ children }: { children: ReactNode }) {
   const [override, setOverride] = useState<PermissionOverride>({
     enabled: false,
     permissions: {},
-    isSuperAdmin: undefined
+    isSuperAdmin: undefined,
+    isCompanyAdmin: undefined,
   })
 
   const clearOverride = () => {
     setOverride({
       enabled: false,
       permissions: {},
-      isSuperAdmin: undefined
+      isSuperAdmin: undefined,
+      isCompanyAdmin: undefined,
     })
   }
 
@@ -89,6 +92,12 @@ export function usePermissions() {
     hasPermission,
     hasAnyPermission,
     hasAllPermissions,
-    isSuperAdmin: override.isSuperAdmin !== undefined ? override.isSuperAdmin : originalPermissions.isSuperAdmin,
+    isSuperAdmin:
+      override.isSuperAdmin !== undefined ? override.isSuperAdmin : originalPermissions.isSuperAdmin,
+    isCompanyAdmin:
+      override.isCompanyAdmin !== undefined ? override.isCompanyAdmin : originalPermissions.isCompanyAdmin,
+    canViewDashboard:
+      (override.isSuperAdmin ?? originalPermissions.isSuperAdmin) ||
+      (override.isCompanyAdmin ?? originalPermissions.isCompanyAdmin),
   }
 }

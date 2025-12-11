@@ -153,5 +153,8 @@ export const rutasBack = {
         deleteCompra: `${baseUrl}/compras`,
         bulkDeleteCompras: `${baseUrl}/compras/bulk/delete`,
         asociarPago: `${baseUrl}/compras`,
-    }
+    },
+    dashboard: {
+        overview: `${baseUrl}/dashboard`,
+    },
 };

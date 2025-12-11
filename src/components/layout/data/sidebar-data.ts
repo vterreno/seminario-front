@@ -84,12 +84,21 @@ const hasPermission = (userData: UserData | null, permission: string): boolean =
   return false
 }
 
+const canAccessDashboard = (userData: UserData | null): boolean => {
+  if (!userData) {
+    return false
+  }
+  const isSuperAdmin = !userData?.empresa?.id
+  const hasAdminRole = userData.roles?.some((role) => role.nombre?.toLowerCase().includes('admin')) ?? false
+  return isSuperAdmin || hasAdminRole
+}
+
 /**
  * Obtiene la primera ruta disponible para el usuario
  */
 export const getFirstAvailableRoute = (userData: UserData | null): string => {
   // Si tiene permisos de dashboard, ir al dashboard
-  if (hasPermission(userData, 'dashboard_ver')) {
+  if (canAccessDashboard(userData)) {
     return '/dashboard'
   }
   
@@ -125,7 +134,7 @@ export const getSidebarData = (): SidebarData => {
   const baseNavGroups = []
 
   // Sección de Inicio - siempre visible
-  if (hasPermission(userData, 'dashboard_ver')) {
+  if (canAccessDashboard(userData)) {
     // Si tiene permisos para dashboard, mostrar Dashboard
     baseNavGroups.push({
       title: 'Inicio',

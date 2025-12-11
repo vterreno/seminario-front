@@ -1,60 +1,20 @@
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from 'recharts'
+import { DashboardMonthlySalesPoint } from '../types'
 
-const data = [
-  {
-    name: 'Jan',
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: 'Feb',
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: 'Mar',
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: 'Apr',
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: 'May',
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: 'Jun',
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: 'Jul',
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: 'Aug',
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: 'Sep',
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: 'Oct',
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: 'Nov',
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: 'Dec',
-    total: Math.floor(Math.random() * 5000) + 1000,
-  },
-]
+interface OverviewProps {
+  data: DashboardMonthlySalesPoint[]
+}
 
-export function Overview() {
+export function Overview({ data }: OverviewProps) {
+  const fallback = [{ label: 'Sin datos', total: 0, isoMonth: 'N/A' }]
+  const chartData = (data.length ? data : fallback).map((item) => ({
+    name: item.label,
+    total: item.total,
+  }))
+
   return (
     <ResponsiveContainer width='100%' height={350}>
-      <BarChart data={data}>
+      <BarChart data={chartData}>
         <XAxis
           dataKey='name'
           stroke='#888888'

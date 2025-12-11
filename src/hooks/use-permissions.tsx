@@ -51,6 +51,15 @@ export function usePermissions() {
     return !userData?.empresa?.id
   }, [userData])
 
+  const isCompanyAdmin = useMemo(() => {
+    if (!userData?.roles || userData.roles.length === 0) {
+      return false
+    }
+    return userData.roles.some((role) => role.nombre?.toLowerCase().includes('admin'))
+  }, [userData])
+
+  const canViewDashboard = isSuperAdmin || isCompanyAdmin
+
   const userPermissions = useMemo(() => {
     if (!userData?.roles || userData.roles.length === 0) {
       return {}
@@ -118,6 +127,8 @@ export function usePermissions() {
     hasAnyPermission,
     hasAllPermissions,
     isSuperAdmin,
+    isCompanyAdmin,
+    canViewDashboard,
     userEmpresaId: userData?.empresa?.id || null,
   }
 }

@@ -1,4 +1,6 @@
 import { Dashboard } from '@/features/dashboard'
+import { Bienvenida } from '@/features/bienvenida'
+import { usePermissions } from '@/hooks/use-permissions'
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/_authenticated/dashboard')({
@@ -6,6 +8,7 @@ export const Route = createFileRoute('/_authenticated/dashboard')({
 })
 
 function RouteComponent() {
-  return <Dashboard />
+  const { canViewDashboard } = usePermissions()
+  return canViewDashboard ? <Dashboard /> : <Bienvenida />
 }
   
