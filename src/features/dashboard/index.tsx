@@ -159,14 +159,14 @@ export function Dashboard() {
         key: 'sales',
         title: 'Ingresos del mes',
         value: formatCurrency(kpis.salesCurrentMonth),
-        helper: `${salesVariation.label} vs mes anterior`,
+        // helper: `${salesVariation.label} vs mes anterior`,
         trend: salesVariation.trend,
       },
       {
         key: 'purchases',
         title: 'Compras del mes',
         value: formatCurrency(kpis.purchasesCurrentMonth),
-        helper: `${purchasesVariation.label} vs mes anterior`,
+        // helper: `${purchasesVariation.label} vs mes anterior`,
         trend: purchasesVariation.trend,
       },
       {
