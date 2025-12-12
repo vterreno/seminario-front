@@ -74,8 +74,14 @@ export function ProductWithPriceSelectorDialog({
         }
     }, [searchTerm, productos])
 
-    // 🔥 Aplicar porcentaje automáticamente mientras se escribe (siempre activo)
+    // 🔥 Aplicar porcentaje solo cuando el usuario cambia el valor del porcentaje o tipo de ajuste
+    // NO se ejecuta cuando cambia la selección de productos
+    const [lastAppliedPorcentaje, setLastAppliedPorcentaje] = useState<string>('')
+    const [lastAppliedTipo, setLastAppliedTipo] = useState<'aumento' | 'descuento'>('aumento')
+    
     useEffect(() => {
+        // Solo aplicar si el porcentaje o tipo realmente cambió (no por selección)
+        if (porcentajeAjuste === lastAppliedPorcentaje && tipoAjuste === lastAppliedTipo) return
         if (!porcentajeAjuste) return
         
         const porcentaje = parseFloat(porcentajeAjuste)
@@ -87,6 +93,11 @@ export function ProductWithPriceSelectorDialog({
         setProductos(prev =>
             prev.map(p => {
                 if (!p.selected) return p
+                
+                // Solo aplicar ajuste a productos que NO tienen precio de lista (son nuevos)
+                // Los productos que ya tienen precio de lista mantienen su precio
+                const esProductoExistente = initialProductos.some(ip => ip.producto_id === p.id)
+                if (esProductoExistente) return p
                 
                 const precioBase = p.precio_venta ?? 0
                 let nuevoPrecio: number
@@ -103,7 +114,10 @@ export function ProductWithPriceSelectorDialog({
                 return { ...p, precioEspecifico: nuevoPrecio }
             })
         )
-    }, [porcentajeAjuste, tipoAjuste, productos.filter(p => p.selected).length])
+        
+        setLastAppliedPorcentaje(porcentajeAjuste)
+        setLastAppliedTipo(tipoAjuste)
+    }, [porcentajeAjuste, tipoAjuste])
 
     const loadProductos = async () => {
         try {
@@ -145,9 +159,18 @@ export function ProductWithPriceSelectorDialog({
 
     const toggleProducto = (id: number) => {
         setProductos(prev =>
-            prev.map(p =>
-                p.id === id ? { ...p, selected: !p.selected } : p
-            )
+            prev.map(p => {
+                if (p.id !== id) return p
+                
+                const newSelected = !p.selected
+                
+                // Si se está seleccionando y no tiene precio específico, usar precio base
+                if (newSelected && p.precioEspecifico === 0) {
+                    return { ...p, selected: newSelected, precioEspecifico: p.precio_venta ?? 0 }
+                }
+                
+                return { ...p, selected: newSelected }
+            })
         )
     }
 
