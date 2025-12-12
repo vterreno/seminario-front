@@ -60,7 +60,7 @@ export function UserAuthForm({
       toast.success(`Bienvenido de nuevo, ${data.email}!`);
     } catch (error: any) {
       setIsLoading(false);
-      toast.error("Usuario o contraseña incorrectos");
+      toast.error(error.message || "Usuario o contraseña incorrectos");
     }
   }
 

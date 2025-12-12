@@ -34,7 +34,11 @@ export const comprasColumns = (options: ComprasColumnsOptions = {}): ColumnDef<C
     baseColumns.push({
       id: 'select',
       header: ({ table }) => {
-        const selectableRows = table.getRowModel().rows
+        // Solo contar filas que pueden ser eliminadas (pendiente_pago)
+        const selectableRows = table.getRowModel().rows.filter(row => {
+          const compraEstado = (row.original.estado || '').toLowerCase()
+          return compraEstado === 'pendiente_pago'
+        })
         const selectedSelectableRows = selectableRows.filter(row => row.getIsSelected())
         const isAllSelectableSelected = selectableRows.length > 0 && selectedSelectableRows.length === selectableRows.length
         const isSomeSelectableSelected = selectedSelectableRows.length > 0 && selectedSelectableRows.length < selectableRows.length
@@ -56,6 +60,14 @@ export const comprasColumns = (options: ComprasColumnsOptions = {}): ColumnDef<C
         className: cn('sticky md:table-cell start-0 z-10 rounded-tl-[inherit]'),
       },
       cell: ({ row }) => {
+        // Solo permitir seleccionar si la compra está pendiente de pago
+        const compraEstado = (row.original.estado || '').toLowerCase()
+        const puedeSeleccionar = compraEstado === 'pendiente_pago'
+        
+        if (!puedeSeleccionar) {
+          return null // No mostrar checkbox si no se puede seleccionar
+        }
+        
         return (
           <Checkbox
             checked={row.getIsSelected()}
@@ -96,6 +108,7 @@ export const comprasColumns = (options: ComprasColumnsOptions = {}): ColumnDef<C
       },
     },
     {
+      id: 'sucursal',
       accessorKey: 'sucursal',
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title='Sucursal' />
@@ -108,7 +121,14 @@ export const comprasColumns = (options: ComprasColumnsOptions = {}): ColumnDef<C
           </div>
         )
       },
+      filterFn: (row, _id, value) => {
+        if (!value) return true
+        const sucursal = row.original.sucursal
+        const nombreSucursal = sucursal?.nombre || ''
+        return nombreSucursal.toLowerCase().includes(String(value).toLowerCase())
+      },
       enableSorting: false,
+      enableColumnFilter: true,
       meta: {
         displayName: 'Sucursal',
         className: 'w-36'
@@ -135,6 +155,7 @@ export const comprasColumns = (options: ComprasColumnsOptions = {}): ColumnDef<C
       },
     },
     {
+      id: 'contacto',
       accessorKey: 'contacto',
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title='Proveedor' />
@@ -148,7 +169,14 @@ export const comprasColumns = (options: ComprasColumnsOptions = {}): ColumnDef<C
           </div>
         )
       },
+      filterFn: (row, _id, value) => {
+        if (!value) return true
+        const contacto = row.original.contacto
+        const nombreContacto = contacto?.nombre_razon_social || ''
+        return nombreContacto.toLowerCase().includes(String(value).toLowerCase())
+      },
       enableSorting: false,
+      enableColumnFilter: true,
       meta: {
         displayName: 'Proveedor',
         className: 'w-40'
@@ -213,28 +241,39 @@ export const comprasColumns = (options: ComprasColumnsOptions = {}): ColumnDef<C
         <DataTableColumnHeader column={column} title='N° Factura' />
       ),
       cell: ({ row }) => {
+        const numeroFactura = row.original.numero_factura
         return (
           <div className='flex items-center gap-x-2'>
-            <LongText className='max-w-28'>{row.original.numero_factura || '-'}</LongText>
+            {numeroFactura ? (
+              <LongText className='max-w-40 font-mono text-sm'>{numeroFactura}</LongText>
+            ) : (
+              <span className='text-muted-foreground'>-</span>
+            )}
           </div>
         )
       },
       enableSorting: false,
       meta: {
         displayName: 'N° Factura',
-        className: 'w-28'
+        className: 'w-40'
       },
     },
     {
       id: 'actions',
-      cell: ({ row }) => (
-        <DataTableRowActions 
-          row={row} 
-          canView={canView}
-          canEdit={canEdit}
-          canDelete={canDelete}
-        />
-      ),
+      cell: ({ row }) => {
+        // Solo permitir eliminar si la compra está pendiente de pago
+        const compraEstado = (row.original.estado || '').toLowerCase()
+        const puedeEliminar = compraEstado === 'pendiente_pago' && canDelete
+        
+        return (
+          <DataTableRowActions 
+            row={row} 
+            canView={canView}
+            canEdit={canEdit}
+            canDelete={puedeEliminar}
+          />
+        )
+      },
     }
   )
 

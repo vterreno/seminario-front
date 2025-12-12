@@ -122,9 +122,10 @@ class ApiCategoriasService {
                 ids,
                 estado
             })
-        } catch (error) {
-            console.error('Error bulk updating categoria status:', error)
-            throw new Error('Failed to bulk update categoria status')
+        } catch (error: any) {
+            const backendMessage = error.response?.data?.message;
+            const errorMessage = backendMessage || "Error al actualizar estado de categorías";
+            throw new Error(errorMessage);
         }
     }
 }

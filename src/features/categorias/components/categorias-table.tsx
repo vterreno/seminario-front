@@ -111,7 +111,7 @@ export function CategoriasTable({ data, search, navigate, onSuccess, canBulkActi
     >
       <DataTableToolbar 
         table={table}
-        searchPlaceholder='Buscar categorías...'
+        searchPlaceholder='Buscar categorías por nombre...'
         searchKey='nombre'
         filters={[
           {

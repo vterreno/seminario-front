@@ -73,9 +73,10 @@ class ApiRolesService {
   async deleteRole(id: number): Promise<void> {
     try {
       await axiosService.delete(`${rutasBack.roles.deleteRole}/${id}`)
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error deleting role:', error)
-      throw new Error('Failed to delete role')
+      const message = error.response?.data?.message || 'Error al eliminar el rol'
+      throw new Error(message)
     }
   }
 
@@ -84,9 +85,10 @@ class ApiRolesService {
       await axiosService.delete(rutasBack.roles.bulkDeleteRoles, {
         data: { ids }
       })
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error bulk deleting roles:', error)
-      throw new Error('Failed to bulk delete roles')
+      const message = error.response?.data?.message || 'Error al eliminar los roles'
+      throw new Error(message)
     }
   }
 
@@ -96,9 +98,10 @@ class ApiRolesService {
         ids,
         estado
       })
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error bulk updating role status:', error)
-      throw new Error('Failed to bulk update role status')
+      const message = error.response?.data?.message || 'Error al actualizar el estado de los roles'
+      throw new Error(message)
     }
   }
 

@@ -81,19 +81,28 @@ export function ManagePreciosDialog({
         if (!lista) return
         
         try {
-            // Agregar cada producto con su precio específico
-            const promesas = productosConPrecio.map(producto => 
-                apiListaPreciosService.addProductoToListaPrecios(
-                    lista.id,
-                    producto.producto_id,
-                    producto.precio_venta_especifico
-                )
+            // Filtrar solo productos NUEVOS (que no estén ya en la lista)
+            const productosExistentesIds = productos.map(p => p.id)
+            const productosNuevos = productosConPrecio.filter(
+                p => !productosExistentesIds.includes(p.producto_id)
             )
             
-            await Promise.all(promesas)
-            toast.success(`${productosConPrecio.length} producto(s) agregado(s) a la lista`)
-            await loadProductos()
-            onSuccess?.()
+            // Solo agregar productos nuevos - los existentes se editan desde la tabla principal
+            if (productosNuevos.length > 0) {
+                const promesasAgregar = productosNuevos.map(producto => 
+                    apiListaPreciosService.addProductoToListaPrecios(
+                        lista.id,
+                        producto.producto_id,
+                        producto.precio_venta_especifico
+                    )
+                )
+                await Promise.all(promesasAgregar)
+                toast.success(`${productosNuevos.length} producto(s) agregado(s) a la lista`)
+                await loadProductos()
+                onSuccess?.()
+            } else {
+                toast.info('No hay productos nuevos para agregar')
+            }
         } catch (error: any) {
             toast.error(error.message || 'Error al agregar productos')
         }

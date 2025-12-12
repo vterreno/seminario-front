@@ -120,6 +120,7 @@ export const ventasColumns = (options: VentasColumnsOptions = {}): ColumnDef<Ven
       },
     },
     {
+      id: 'sucursal',
       accessorKey: 'sucursal',
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title='Sucursal' />
@@ -132,7 +133,14 @@ export const ventasColumns = (options: VentasColumnsOptions = {}): ColumnDef<Ven
           </div>
         )
       },
+      filterFn: (row, _id, value) => {
+        if (!value) return true
+        const sucursal = row.original.sucursal
+        const nombreSucursal = sucursal?.nombre || ''
+        return nombreSucursal.toLowerCase().includes(String(value).toLowerCase())
+      },
       enableSorting: false,
+      enableColumnFilter: true,
       meta: {
         displayName: 'Sucursal',
         className: 'w-36'
@@ -159,6 +167,7 @@ export const ventasColumns = (options: VentasColumnsOptions = {}): ColumnDef<Ven
       },
     },
     {
+      id: 'contacto',
       accessorKey: 'contacto',
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title='Cliente' />
@@ -171,7 +180,14 @@ export const ventasColumns = (options: VentasColumnsOptions = {}): ColumnDef<Ven
           </div>
         )
       },
+      filterFn: (row, _id, value) => {
+        if (!value) return true
+        const contacto = row.original.contacto
+        const nombreContacto = contacto?.nombre_razon_social || ''
+        return nombreContacto.toLowerCase().includes(String(value).toLowerCase())
+      },
       enableSorting: false,
+      enableColumnFilter: true,
       meta: {
         displayName: 'Cliente',
         className: 'w-40'

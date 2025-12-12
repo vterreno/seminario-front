@@ -188,15 +188,28 @@ export function NuevaVenta() {
     return detalles.reduce((total, detalle) => total + detalle.subtotal, 0)
   }, [detalles])
 
+  // Recargar productos (para actualizar stock después de una venta)
+  const recargarProductos = async () => {
+    if (typeof sucursalSeleccionada === 'number') {
+      try {
+        const productosData = await apiProductosService.getProductosBySucursal(sucursalSeleccionada)
+        setProductos(productosData.filter(p => p.estado))
+      } catch (error) {
+        console.error('Error al recargar productos:', error)
+      }
+    }
+  }
+
   // Agregar detalle de venta
-  const agregarDetalle = (producto: Producto, cantidad: number) => {
-    const precioUnitario = Number(producto.precio_venta || 0)
+  const agregarDetalle = (producto: Producto, cantidad: number, precioUnitario?: number, listaPrecioNombre?: string) => {
+    const precio = precioUnitario ?? Number(producto.precio_venta || 0)
     const nuevoDetalle: DetalleVenta = {
       id: `${Date.now()}-${Math.random()}`,
       producto,
       cantidad,
-      precio_unitario: precioUnitario,
-      subtotal: precioUnitario * cantidad
+      precio_unitario: precio,
+      subtotal: precio * cantidad,
+      lista_precio_nombre: listaPrecioNombre
     }
     
     setDetalles(prev => [...prev, nuevoDetalle])
@@ -273,11 +286,11 @@ export function NuevaVenta() {
         fecha_venta: fechaVenta,
         detalles: detalles.map(d => ({
           producto_id: d.producto.id,
-          cantidad: d.cantidad,
-          precio_unitario: d.precio_unitario,
-          subtotal: d.subtotal
+          cantidad: Number(d.cantidad),
+          precio_unitario: Number(d.precio_unitario),
+          subtotal: Number(d.subtotal)
         })),
-        monto_total: montoTotal,
+        monto_total: Number(montoTotal),
         contacto_id: clienteSeleccionado!,
         sucursal_id: sucursalSeleccionada!,
         pago: {
@@ -296,6 +309,9 @@ export function NuevaVenta() {
       setClienteSeleccionado(null)
       setDetalles([])
       setMetodoPago(null)
+      
+      // Recargar productos para actualizar el stock
+      await recargarProductos()
       
     } catch (error: any) {
       console.error('Error al crear venta:', error)

@@ -118,7 +118,7 @@ export function CategoriasActionDialog({
       onOpenChange(false)
       onSuccess?.()
     } catch (error: any) {
-      form.reset()
+      // No hacer form.reset() aquí para que el usuario pueda corregir y reintentar
       toast.error(error.message || 'Error al guardar la categoría')
     }
   }

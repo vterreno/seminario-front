@@ -67,6 +67,11 @@ export function ListaPreciosTable({
     const [loadingProducts, setLoadingProducts] = useState<Record<number, boolean>>({})
     const [productsData, setProductsData] = useState<Record<number, ProductoListaPrecio[]>>({})
 
+    // Limpiar caché de productos cuando cambian los datos (después de una actualización)
+    useEffect(() => {
+        setProductsData({})
+    }, [data])
+
     const {
         columnFilters,
         onColumnFiltersChange,

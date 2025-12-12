@@ -41,9 +41,13 @@ export function DataTableBulkActions<TData>({
         table.resetRowSelection()
         toast.success(`${status === 'active' ? 'Activadas' : 'Desactivadas'} ${selectedMarcas.length} marca${selectedMarcas.length > 1 ? 's' : ''}`)
         onSuccess?.()
-        } catch (error) {
-        console.error('Error updating marcas:', error)
-        toast.error(`Error al ${status === 'active' ? 'activar' : 'desactivar'} marcas`)
+        } catch (error: unknown) {
+        // El servicio ya extrae el mensaje del backend y lo pone en error.message
+        if (error instanceof Error) {
+            toast.error(error.message)
+        } else {
+            toast.error(`Error al ${status === 'active' ? 'activar' : 'desactivar'} marcas`)
+        }
         }
     }
 

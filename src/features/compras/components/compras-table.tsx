@@ -81,8 +81,28 @@ export function ComprasTable({ data, search, navigate, onSuccess, canBulkAction,
       { columnId: 'numero_compra', searchKey: 'numero_compra', type: 'string' },
       { columnId: 'fecha_compra', searchKey: 'fecha_compra', type: 'string' },
       { columnId: 'estado', searchKey: 'estado', type: 'array' },
+      // sucursal filter
+      { columnId: 'sucursal', searchKey: 'sucursal', type: 'string' },
+      // contacto filter
+      { columnId: 'contacto', searchKey: 'contacto', type: 'string' },
     ],
   })
+
+  // Función de filtro global personalizada para buscar en múltiples campos
+  const globalFilterFn = (row: any, _columnId: string, filterValue: string) => {
+    if (!filterValue) return true
+    
+    const searchValue = filterValue.toLowerCase()
+    const numeroCompra = String(row.original.numero_compra || '')
+    const sucursalNombre = row.original.sucursal?.nombre || ''
+    const contactoNombre = row.original.contacto?.nombre_razon_social || ''
+    
+    return (
+      numeroCompra.toLowerCase().includes(searchValue) ||
+      sucursalNombre.toLowerCase().includes(searchValue) ||
+      contactoNombre.toLowerCase().includes(searchValue)
+    )
+  }
 
   const table = useReactTable({
     data,
@@ -100,6 +120,7 @@ export function ComprasTable({ data, search, navigate, onSuccess, canBulkAction,
     onRowSelectionChange: setRowSelection,
     onSortingChange,
     onColumnVisibilityChange: setColumnVisibility,
+    globalFilterFn,
     getPaginationRowModel: getPaginationRowModel(),
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -120,8 +141,7 @@ export function ComprasTable({ data, search, navigate, onSuccess, canBulkAction,
     >
       <DataTableToolbar 
         table={table}
-        searchPlaceholder='Buscar por número de compra...'
-        searchKey='numero_compra'
+        searchPlaceholder='Buscar por número, sucursal o proveedor...'
       />
       <div className='rounded-md border'>
         <Table>

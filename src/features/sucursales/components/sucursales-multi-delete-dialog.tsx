@@ -31,19 +31,14 @@ export function SucursalesMultiDeleteDialog<TData>({
   const handleDelete = async () => {
     try {
       const ids = selectedSucursales.map(s => s.id!).filter(Boolean)
-      const response = await apiSucursalesService.deleteSucursales(ids)
-      if (response.message === "Algunas sucursales están activas, no se pueden eliminar") {
-        toast.error('Algunas sucursales están activas, no se pueden eliminar')
-        return
-      }
+      await apiSucursalesService.deleteSucursales(ids)
       
       table.resetRowSelection()
       onOpenChange(false)
       toast.success(`${selectedSucursales.length} sucursal${selectedSucursales.length > 1 ? 'es' : ''} eliminada${selectedSucursales.length > 1 ? 's' : ''} exitosamente`)
       onSuccess?.()
-    } catch (error) {
-      console.error('Error deleting sucursales:', error)
-      toast.error('Error al eliminar las sucursales')
+    } catch (error: any) {
+      toast.error(error.message || 'Error al eliminar las sucursales')
     }
   }
 

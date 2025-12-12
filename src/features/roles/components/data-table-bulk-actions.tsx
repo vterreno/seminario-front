@@ -41,9 +41,9 @@ export function DataTableBulkActions<TData>({
       table.resetRowSelection()
       toast.success(`${status === 'active' ? 'Activados' : 'Desactivados'} ${selectedRoles.length} rol${selectedRoles.length > 1 ? 'es' : ''}`)
       onSuccess?.()
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error updating roles:', error)
-      toast.error(`Error al ${status === 'active' ? 'activar' : 'desactivar'} roles`)
+      toast.error(error.message || `Error al ${status === 'active' ? 'activar' : 'desactivar'} roles`)
     }
   }
 

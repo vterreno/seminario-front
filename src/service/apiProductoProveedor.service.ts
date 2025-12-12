@@ -84,6 +84,12 @@ class ApiProductoProveedorService {
   async delete(id: number): Promise<void> {
     await apiClient.delete(`/producto-proveedor/${id}`)
   }
+
+  // Eliminar múltiples relaciones producto-proveedor
+  async bulkDelete(ids: number[]): Promise<{ message: string; deleted: number; errors: Array<{ id: number; message: string }> }> {
+    const response = await apiClient.post('/producto-proveedor/bulk-delete', { ids })
+    return response.data
+  }
 }
 
 const apiProductoProveedorService = new ApiProductoProveedorService()

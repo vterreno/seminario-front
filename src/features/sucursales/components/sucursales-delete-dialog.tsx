@@ -27,18 +27,13 @@ export function SucursalesDeleteDialog({
   const handleDelete = async () => {
     try {
       if (currentRow.id) {
-        const response = await apiSucursalesService.deleteSucursal(currentRow.id)
-        if (response.message === "La sucursal no se puede eliminar porque está activa") {
-          toast.error('La sucursal no se puede eliminar porque está activa')
-          return
-        }
+        await apiSucursalesService.deleteSucursal(currentRow.id)
         toast.success(`Sucursal "${currentRow.nombre}" eliminada exitosamente`)
         onOpenChange(false)
         onSuccess?.()
       }
-    } catch (error) {
-      console.error('Error deleting sucursal:', error)
-      toast.error('Error al eliminar la sucursal')
+    } catch (error: any) {
+      toast.error(error.message || 'Error al eliminar la sucursal')
     }
   }
 

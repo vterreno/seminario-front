@@ -141,6 +141,11 @@ export function ListaPreciosActionDialog({ mode, onSuccess }: ListaPreciosAction
         }
     }
 
+    const onError = (errors: any) => {
+        console.error('Form validation errors:', errors)
+        toast.error('Error de validación en el formulario')
+    }
+
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogContent 
@@ -159,7 +164,7 @@ export function ListaPreciosActionDialog({ mode, onSuccess }: ListaPreciosAction
                     </DialogTitle>
                 </DialogHeader>
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                    <form onSubmit={form.handleSubmit(onSubmit, onError)} className="space-y-4">
                         <FormField
                             control={form.control}
                             name="nombre"

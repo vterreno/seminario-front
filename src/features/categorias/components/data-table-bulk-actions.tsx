@@ -29,7 +29,7 @@ export function DataTableBulkActions<TData>({
 
   const selectedCategorias = selectedRows.map((row) => row.original as Categoria)
 
-  const canModify = hasPermission('categorias_modificar')
+  const canModify = hasPermission('categoria_modificar')
   const canDelete = hasPermission('categoria_eliminar')
 
   const handleBulkStatusChange = async (status: 'active' | 'inactive') => {
@@ -39,11 +39,15 @@ export function DataTableBulkActions<TData>({
       await apiCategoriasService.bulkUpdateCategoriaStatus(categoriaIds, status === 'active')
 
       table.resetRowSelection()
-      toast.success(`${status === 'active' ? 'Activados' : 'Desactivados'} ${selectedCategorias.length} categoría${selectedCategorias.length > 1 ? 's' : ''}`)
+      toast.success(`${status === 'active' ? 'Activadas' : 'Desactivadas'} ${selectedCategorias.length} categoría${selectedCategorias.length > 1 ? 's' : ''}`)
       onSuccess?.()
-    } catch (error) {
-      console.error('Error updating categorias:', error)
-      toast.error(`Error al ${status === 'active' ? 'activar' : 'desactivar'} categorías`)
+    } catch (error: unknown) {
+      // El servicio ya extrae el mensaje del backend y lo pone en error.message
+      if (error instanceof Error) {
+        toast.error(error.message)
+      } else {
+        toast.error(`Error al ${status === 'active' ? 'activar' : 'desactivar'} categorías`)
+      }
     }
   }
   return (

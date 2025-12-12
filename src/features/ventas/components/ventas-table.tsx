@@ -81,8 +81,28 @@ export function VentasTable({ data, search, navigate, onSuccess, canBulkAction, 
       { columnId: 'fecha_venta', searchKey: 'fecha_venta', type: 'string' },
       // metodo_pago filter
       { columnId: 'metodo_pago', searchKey: 'metodo_pago', type: 'array' },
+      // sucursal filter
+      { columnId: 'sucursal', searchKey: 'sucursal', type: 'string' },
+      // contacto filter
+      { columnId: 'contacto', searchKey: 'contacto', type: 'string' },
     ],
   })
+
+  // Función de filtro global personalizada para buscar en múltiples campos
+  const globalFilterFn = (row: any, _columnId: string, filterValue: string) => {
+    if (!filterValue) return true
+    
+    const searchValue = filterValue.toLowerCase()
+    const numeroVenta = String(row.original.numero_venta || '')
+    const sucursalNombre = row.original.sucursal?.nombre || ''
+    const contactoNombre = row.original.contacto?.nombre_razon_social || ''
+    
+    return (
+      numeroVenta.toLowerCase().includes(searchValue) ||
+      sucursalNombre.toLowerCase().includes(searchValue) ||
+      contactoNombre.toLowerCase().includes(searchValue)
+    )
+  }
 
   const table = useReactTable({
     data,
@@ -100,6 +120,7 @@ export function VentasTable({ data, search, navigate, onSuccess, canBulkAction, 
     onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
     onColumnVisibilityChange: setColumnVisibility,
+    globalFilterFn,
     getPaginationRowModel: getPaginationRowModel(),
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -120,8 +141,7 @@ export function VentasTable({ data, search, navigate, onSuccess, canBulkAction, 
     >
       <DataTableToolbar 
         table={table}
-        searchPlaceholder='Buscar por número de venta...'
-        searchKey='numero_venta'
+        searchPlaceholder='Buscar por número, sucursal o cliente...'
       />
       <div className='rounded-md border'>
         <Table>

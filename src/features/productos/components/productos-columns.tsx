@@ -78,15 +78,11 @@ export const productosColumns = (options: ProductosColumnsOptions = {}): ColumnD
         {
         accessorKey: 'nombre',
         header: ({ column }) => (
-            <DataTableColumnHeader column={column} title='Nombre del producto' />
+            <DataTableColumnHeader column={column} title='Nombre' />
         ),
-        cell: ({ row }) => (
-            <div className="flex items-center gap-2">
-            <LongText className='max-w-36'>{row.getValue('nombre')}</LongText>
-            </div>
-        ),
+        cell: ({ row }) => <LongText>{row.getValue('nombre')}</LongText>,
         meta: { 
-            className: 'w-48',
+            className: 'min-w-48',
             displayName: 'Nombre'
         },
         },

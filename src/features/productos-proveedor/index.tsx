@@ -24,12 +24,17 @@ export function ProductosProveedor({ proveedorId }: { proveedorId: number }) {
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false)
   const [productoToDelete, setProductoToDelete] = useState<ProductoProveedor | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
+  
+  // Estados para bulk delete
+  const [confirmBulkDeleteOpen, setConfirmBulkDeleteOpen] = useState(false)
+  const [idsToDelete, setIdsToDelete] = useState<number[]>([])
+  const [isBulkDeleting, setIsBulkDeleting] = useState(false)
 
   const loadData = useCallback(async () => {
     try {
       setLoading(true)
       const [proveedorData, productosData] = await Promise.all([
-        apiContactosService.getContactoById(proveedorId),
+        apiContactosService.getProveedorById(proveedorId),
         apiProductoProveedorService.getProductosByProveedor(proveedorId),
       ])
       setProveedor(proveedorData)
@@ -77,6 +82,36 @@ export function ProductosProveedor({ proveedorId }: { proveedorId: number }) {
   const handleAddNew = () => {
     setSelectedProducto(null)
     setOpenDialog(true)
+  }
+
+  // Handler para bulk delete
+  const handleBulkDelete = (ids: number[]) => {
+    setIdsToDelete(ids)
+    setConfirmBulkDeleteOpen(true)
+  }
+
+  const confirmBulkDelete = async () => {
+    if (idsToDelete.length === 0) return
+
+    setIsBulkDeleting(true)
+    try {
+      const result = await apiProductoProveedorService.bulkDelete(idsToDelete)
+      
+      if (result.errors && result.errors.length > 0) {
+        toast.warning(`Se eliminaron ${result.deleted} producto(s). ${result.errors.length} error(es) ocurrieron.`)
+      } else {
+        toast.success(`Se eliminaron ${result.deleted} producto(s) del proveedor`)
+      }
+      
+      await loadData()
+      setConfirmBulkDeleteOpen(false)
+      setIdsToDelete([])
+    } catch (error: any) {
+      console.error('Error al eliminar productos:', error)
+      toast.error(error?.response?.data?.message || 'Error al eliminar los productos')
+    } finally {
+      setIsBulkDeleting(false)
+    }
   }
 
   if (loading) {
@@ -129,6 +164,8 @@ export function ProductosProveedor({ proveedorId }: { proveedorId: number }) {
           data={productos}
           onEdit={handleEdit}
           onDelete={handleDelete}
+          onBulkDelete={handleBulkDelete}
+          isBulkDeleting={isBulkDeleting}
         />
 
         <ProductoProveedorDialog
@@ -148,6 +185,17 @@ export function ProductosProveedor({ proveedorId }: { proveedorId: number }) {
           destructive
           isLoading={isDeleting}
           handleConfirm={confirmDelete}
+        />
+
+        <ConfirmDialog
+          open={confirmBulkDeleteOpen}
+          onOpenChange={setConfirmBulkDeleteOpen}
+          title="Confirmar eliminación múltiple"
+          desc={`¿Está seguro que desea eliminar ${idsToDelete.length} producto(s) de este proveedor? Esta acción no se puede deshacer.`}
+          confirmText={`Eliminar ${idsToDelete.length} producto(s)`}
+          destructive
+          isLoading={isBulkDeleting}
+          handleConfirm={confirmBulkDelete}
         />
       </Main>
     </>

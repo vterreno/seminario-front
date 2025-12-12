@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import {
     type SortingState,
     type VisibilityState,
@@ -11,6 +11,7 @@ import {
     getSortedRowModel,
     useReactTable,
 } from '@tanstack/react-table'
+import { Cross2Icon } from '@radix-ui/react-icons'
 import { cn } from '@/lib/utils'
 import { useTableUrlState } from '@/hooks/use-table-url-state'
 import {
@@ -21,7 +22,9 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table'
-import { DataTablePagination, DataTableToolbar } from '@/components/data-table'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
+import { DataTablePagination, DataTableFacetedFilter, DataTableViewOptions } from '@/components/data-table'
 import { type Producto } from '../data/schema'
 import { DataTableBulkActions } from './data-table-bulk-actions'
 import { productosColumns } from './productos-columns'
@@ -42,17 +45,30 @@ type DataTableProps = {
 }
 
 export function ProductosTable({ data, search, navigate, onSuccess, canBulkAction, showEmpresaColumn = false }: DataTableProps) {
+    // Filtrar datos en el cliente por nombre o código
+    const [searchTerm, setSearchTerm] = useState('')
+    
+    const filteredData = useMemo(() => {
+        if (!searchTerm.trim()) return data
+        
+        const term = searchTerm.toLowerCase()
+        return data.filter(item => 
+            item.nombre?.toLowerCase().includes(term) ||
+            item.codigo?.toLowerCase().includes(term)
+        )
+    }, [data, searchTerm])
+
     // Get columns based on user type and permissions
-    const columns = productosColumns({
-        showEmpresaColumn: showEmpresaColumn, // Solo mostrar columna empresa para superadmin
-        canBulkAction: canBulkAction // Pasar el control de bulk actions
-    })
+    const columns = useMemo(() => productosColumns({
+        showEmpresaColumn: showEmpresaColumn,
+        canBulkAction: canBulkAction
+    }), [showEmpresaColumn, canBulkAction])
     
     const [rowSelection, setRowSelection] = useState({})
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
     const [sorting, setSorting] = useState<SortingState>([])
 
-    // Synced with URL states (keys/defaults mirror roles route search schema)
+    // Synced with URL states
     const {
         columnFilters,
         onColumnFiltersChange,
@@ -65,14 +81,12 @@ export function ProductosTable({ data, search, navigate, onSuccess, canBulkActio
         pagination: { defaultPage: 1, defaultPageSize: 10 },
         globalFilter: { enabled: false },
         columnFilters: [
-        // name per-column text filter
-        { columnId: 'nombre', searchKey: 'nombre', type: 'string' },
         { columnId: 'estado', searchKey: 'estado', type: 'array' },
         ],
     })
 
     const table = useReactTable({
-        data,
+        data: filteredData,
         columns,
         state: {
             sorting,
@@ -81,7 +95,7 @@ export function ProductosTable({ data, search, navigate, onSuccess, canBulkActio
             columnFilters,
             columnVisibility,
         },
-        enableRowSelection: canBulkAction, // Usar canBulkAction para habilitar/deshabilitar la selección de filas
+        enableRowSelection: canBulkAction,
         onPaginationChange,
         onColumnFiltersChange,
         onRowSelectionChange: setRowSelection,
@@ -101,21 +115,42 @@ export function ProductosTable({ data, search, navigate, onSuccess, canBulkActio
 
     return (
         <div className='space-y-4 max-sm:has-[div[role="toolbar"]]:mb-16 w-full'>
-        <DataTableToolbar
-            table={table}
-            searchPlaceholder='Buscar productos...'
-            searchKey='nombre'
-            filters={[
-            {
-                columnId: 'estado',
-                title: 'Estado',
-                options: [
-                { label: 'Activo', value: 'true' },
-                { label: 'Inactivo', value: 'false' },
-                ],
-            },
-            ]}
-        />
+        <div className='flex items-center justify-between gap-2'>
+            <div className='flex flex-1 flex-col-reverse items-start gap-y-2 sm:flex-row sm:items-center sm:space-x-2'>
+                <Input
+                    placeholder='Buscar por nombre o código...'
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className='h-8 w-[150px] lg:w-[250px]'
+                />
+                <div className='flex gap-x-2'>
+                    {table.getColumn('estado') && (
+                        <DataTableFacetedFilter
+                            column={table.getColumn('estado')!}
+                            title='Estado'
+                            options={[
+                                { label: 'Activo', value: 'true' },
+                                { label: 'Inactivo', value: 'false' },
+                            ]}
+                        />
+                    )}
+                </div>
+                {(table.getState().columnFilters.length > 0 || searchTerm) && (
+                    <Button
+                        variant='ghost'
+                        onClick={() => {
+                            table.resetColumnFilters()
+                            setSearchTerm('')
+                        }}
+                        className='h-8 px-2 lg:px-3'
+                    >
+                        Borrar
+                        <Cross2Icon className='ms-2 h-4 w-4' />
+                    </Button>
+                )}
+            </div>
+            <DataTableViewOptions table={table} />
+        </div>
         
         <div className='overflow-auto rounded-md border'>
             <Table className="min-w-[1200px]">

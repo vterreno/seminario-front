@@ -651,6 +651,7 @@ export function NuevaCompra() {
           <div className="space-y-6">
             <DetallesCompra
               productos={productos}
+              productosProveedor={productosProveedor}
               detalles={detalles}
               onAgregarDetalle={agregarDetalle}
               onEliminarDetalle={eliminarDetalle}

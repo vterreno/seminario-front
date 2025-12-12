@@ -144,7 +144,9 @@ export function UsersActionDialog({
       if (empresaId) {
         try {
           const sucursales = await apiSucursalesService.getSucursalesByEmpresa(empresaId)
-          setSucursalesList(sucursales)
+          // Filtrar solo sucursales activas
+          const sucursalesActivas = sucursales.filter((s: any) => s.estado === true)
+          setSucursalesList(sucursalesActivas)
         } catch (error) {
           console.error('Error fetching sucursales:', error)
           setSucursalesList([])

@@ -76,11 +76,8 @@ export const DatosUsuariosProvider = ({ children }: DatosUsuariosProviderProps) 
             setAuthenticated(true);
             return response;
         } catch (error: any) {
-            if (error.response.status === 401) {
-                throw new Error("Usuario o contraseña incorrectos");
-            }
-
-            throw new Error("Error en el servidor. Intente más tarde.");
+            // El error que llega desde apiUserService ya tiene el mensaje correcto
+            throw new Error(error.message || "Error al iniciar sesión");
         }
     };
     const logout = () => {

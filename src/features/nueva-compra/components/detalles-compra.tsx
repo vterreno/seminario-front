@@ -45,6 +45,7 @@ const IVA_OPTIONS = [
 
 export function DetallesCompra({
   productos,
+  productosProveedor,
   detalles,
   onAgregarDetalle,
   onEliminarDetalle,
@@ -62,6 +63,12 @@ export function DetallesCompra({
   const productoActual = useMemo(() => {
     return productos.find(p => p.id?.toString() === productoSeleccionado)
   }, [productos, productoSeleccionado])
+
+  // Función para obtener el precio del proveedor para un producto
+  const getPrecioProveedor = (productoId: number): number | null => {
+    const productoProveedor = productosProveedor.find(pp => pp.producto_id === productoId)
+    return productoProveedor ? Number(productoProveedor.precio_proveedor) : null
+  }
 
   const handleAgregar = () => {
     if (!productoSeleccionado) {
@@ -156,8 +163,12 @@ export function DetallesCompra({
                               onSelect={() => {
                                 setProductoSeleccionado(producto.id?.toString() || '')
                                 setOpenProducto(false)
-                                // Autocompletar con el precio de costo del producto
-                                if (producto?.precio_costo) {
+                                // Autocompletar con el precio del proveedor (no el precio_costo general)
+                                const precioProveedor = getPrecioProveedor(producto.id!)
+                                if (precioProveedor !== null) {
+                                  setCostoUnitario(precioProveedor)
+                                } else if (producto?.precio_costo) {
+                                  // Fallback al precio_costo si no hay precio de proveedor
                                   setCostoUnitario(Number(producto.precio_costo))
                                 }
                               }}

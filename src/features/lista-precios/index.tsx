@@ -1,5 +1,5 @@
 import { getRouteApi } from '@tanstack/react-router'
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useMemo } from 'react'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
@@ -87,29 +87,14 @@ export function ListasPreciosPage() {
     const userData = getStorageItem(STORAGE_KEYS.USER_DATA, null) as UserData | null
     const userEmpresaId = userData?.empresa?.id
     const isSuperAdmin = !userEmpresaId
-
-    // Función helper para verificar permisos en tiempo de ejecución
-    // Esto asegura que siempre use los permisos más actualizados del store
-    const checkPermission = (codigo: string): boolean => {
-        // Primero intentar usar auth.user (más actualizado)
-        if (auth.user?.roles) {
-            return auth.user.roles.some(role =>
-                role.permissions?.some(permission => permission.codigo === codigo)
-            )
-        }
-
-        // Fallback a userData del localStorage
-        // Nota: userData tiene 'role' singular, no 'roles'
-        if (userData?.role?.permisos) {
-            return !!userData.role.permisos[codigo]
-        }
-
-        return false
-    }
+    
+    // Memorizar permisos del localStorage para evitar recreaciones
+    const localStoragePermisos = useMemo(() => userData?.role?.permisos, [userData?.role?.permisos])
 
     const fetchListaPrecios = useCallback(async () => {
         // No intentar cargar si no hay token (usuario no autenticado)
         if (!hasToken()) {
+            setLoading(false)
             return
         }
 
@@ -123,21 +108,31 @@ export function ListasPreciosPage() {
             }
 
             // Filtrar listas según permisos específicos (solo si NO es superadmin)
-            // SIEMPRE filtrar por permisos de cada lista individual
             if (!isSuperAdmin) {
+                // Obtener permisos frescos del store en el momento de ejecutar
+                const currentAuth = useAuthStore.getState().auth
+                
                 data = data.filter(lista => {
-                    // Generar el código de permiso esperado basado en el nombre de la lista
                     const codigoPermiso = generarCodigoPermisoLista(lista.nombre)
 
-                    // Usar checkPermission que lee del store en tiempo real
-                    return checkPermission(codigoPermiso)
+                    // Verificar permiso usando los datos más actuales del store
+                    if (currentAuth.user?.roles) {
+                        return currentAuth.user.roles.some(role =>
+                            role.permissions?.some(permission => permission.codigo === codigoPermiso)
+                        )
+                    }
+
+                    // Fallback a localStorage
+                    if (localStoragePermisos) {
+                        return !!localStoragePermisos[codigoPermiso]
+                    }
+
+                    return false
                 })
             }
 
             setListaPrecios(data)
         } catch (error: any) {
-            // Solo mostrar error si no es un error de autenticación (401)
-            // El interceptor de axios ya maneja la redirección al login
             if (error.response?.status !== 401) {
                 console.error('Error fetching listas de precios:', error)
                 toast.error('Error al cargar las listas de precios')
@@ -145,11 +140,11 @@ export function ListasPreciosPage() {
         } finally {
             setLoading(false)
         }
-    }, [auth.user, isSuperAdmin, userEmpresaId]) // Dependencias: cuando cambian, se recrea la función
+    }, [isSuperAdmin, userEmpresaId, localStoragePermisos])
 
     useEffect(() => {
         fetchListaPrecios()
-    }, [fetchListaPrecios]) // Ahora depende de fetchListaPrecios que se recrea cuando cambian los permisos
+    }, [fetchListaPrecios])
 
     const handleSuccess = () => {
         fetchListaPrecios()

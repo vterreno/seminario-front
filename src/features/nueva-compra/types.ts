@@ -111,6 +111,15 @@ export interface TotalesCompra {
  */
 export interface DetallesCompraProps {
   productos: Producto[]
+  /** Productos asociados al proveedor con sus precios específicos */
+  productosProveedor: Array<{
+    id: number
+    producto_id: number
+    proveedor_id: number
+    precio_proveedor: number
+    codigo_proveedor?: string
+    producto?: Producto
+  }>
   detalles: DetalleCompra[]
   onAgregarDetalle: (producto: Producto, cantidad: number, costoUnitario: number, ivaPorcentaje: number) => void
   onEliminarDetalle: (id: string) => void
