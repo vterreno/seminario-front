@@ -60,8 +60,8 @@ export type ListaPrecios = z.infer<typeof listaPreciosSchema>
 
 // 🔹 Schema para producto seleccionado con precio
 export const productoConPrecioSchema = z.object({
-  producto_id: z.number(),
-  precio_venta_especifico: z.number().min(0, 'El precio debe ser mayor o igual a 0'),
+  producto_id: z.coerce.number(),
+  precio_venta_especifico: z.coerce.number().min(0, 'El precio debe ser mayor o igual a 0'),
 })
 export type ProductoConPrecio = z.infer<typeof productoConPrecioSchema>
 
@@ -89,7 +89,7 @@ export const listaPreciosFormUnifiedSchema = z.object({
   nombre: z.string().min(2, 'El nombre debe tener al menos 2 caracteres').max(100),
   descripcion: z.string().optional(),
   estado: z.boolean(),
-  empresa_id: z.coerce.number().min(1, 'Debe seleccionar una empresa').optional(),
+  empresa_id: z.coerce.number().optional(),
   productos: z.array(productoConPrecioSchema).optional(),
 })
 export type ListaPreciosFormUnified = z.infer<typeof listaPreciosFormUnifiedSchema>
