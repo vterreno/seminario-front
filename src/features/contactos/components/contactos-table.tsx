@@ -66,7 +66,7 @@ export function ContactosTable({
     <div className='space-y-4 max-sm:has-[div[role="toolbar"]]:mb-16'>
       <DataTableToolbar
         table={table}
-        searchPlaceholder='Buscar contactos...'
+        searchPlaceholder='Buscar contactos por nombre...'
         searchKey='nombre_razon_social'
         filters={[
           {

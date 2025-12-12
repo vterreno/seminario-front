@@ -29,7 +29,7 @@ export function ProductosProveedor({ proveedorId }: { proveedorId: number }) {
     try {
       setLoading(true)
       const [proveedorData, productosData] = await Promise.all([
-        apiContactosService.getContactoById(proveedorId),
+        apiContactosService.getProveedorById(proveedorId),
         apiProductoProveedorService.getProductosByProveedor(proveedorId),
       ])
       setProveedor(proveedorData)

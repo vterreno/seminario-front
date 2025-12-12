@@ -147,6 +147,7 @@ export const usersColumns = (options: UsersColumnsOptions = {}): ColumnDef<User>
         )
       },
       enableSorting: true,
+      meta: { displayName: 'Estado' },
     },
     {
       id: 'role',
@@ -201,6 +202,7 @@ export const usersColumns = (options: UsersColumnsOptions = {}): ColumnDef<User>
       )
     },
     enableSorting: true,
+    meta: { displayName: 'Fecha de creación' },
   })
 
   // Add actions column
