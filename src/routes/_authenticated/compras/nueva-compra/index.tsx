@@ -11,10 +11,8 @@ function NuevaCompraPage() {
     <>
       <Header fixed>
         <Search />
-        <div className='ml-auto flex items-center gap-2'>
-          <ThemeSwitch />
-          <ProfileDropdown />
-        </div>
+        <ThemeSwitch />
+        <ProfileDropdown />
       </Header>
       <Main>
         <NuevaCompra />
