@@ -141,7 +141,11 @@ export function SucursalesActionDialog({
       onOpenChange(false)
       onSuccess?.()
     } catch (error: any) {
-      toast.error(error.message || (isEdit ? 'Error al actualizar la sucursal' : 'Error al crear la sucursal'))
+      toast.error(
+        error.message
+          ? `${isEdit ? 'Error al actualizar la sucursal:' : 'Error al crear la sucursal:'} ${error.message}`
+          : (isEdit ? 'Error al actualizar la sucursal' : 'Error al crear la sucursal')
+      )
     }
   }
 
