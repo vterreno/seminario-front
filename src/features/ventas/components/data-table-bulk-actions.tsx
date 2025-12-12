@@ -23,7 +23,7 @@ export function DataTableBulkActions<TData>({
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const { hasPermission } = usePermissions()
 
-  const canDelete = useMemo(() => hasPermission('venta_eliminar'), [hasPermission])
+  const canDelete = useMemo(() => hasPermission('ventas_eliminar'), [hasPermission])
 
   return (
     <>
