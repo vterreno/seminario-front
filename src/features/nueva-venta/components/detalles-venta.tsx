@@ -146,14 +146,14 @@ export function DetallesVenta({
     if (!productoActual) return 0
     
     if (listaPrecioSeleccionada === 'default') {
-      return productoActual.precio_venta || 0
+      return Number(productoActual.precio_venta) || 0
     }
     
     const listaSeleccionada = listasDisponibles.find(
       l => l.lista.id.toString() === listaPrecioSeleccionada
     )
     
-    return listaSeleccionada?.precio ?? productoActual.precio_venta ?? 0
+    return Number(listaSeleccionada?.precio) || Number(productoActual.precio_venta) || 0
   }, [productoActual, listaPrecioSeleccionada, listasDisponibles])
 
   const handleAgregarProducto = () => {
