@@ -70,11 +70,13 @@ export function ProductosProveedorTable({
     },
     {
       accessorKey: 'producto.codigo',
-      header: 'Código',
+      header: 'Código Producto',
+      cell: ({ row }) => row.original.producto?.codigo || '-',
     },
     {
       accessorKey: 'producto.nombre',
-      header: 'Nombre',
+      header: 'Nombre Producto',
+      cell: ({ row }) => row.original.producto?.nombre || '-',
     },
     {
       accessorKey: 'codigo_proveedor',
@@ -85,20 +87,6 @@ export function ProductosProveedorTable({
       accessorKey: 'precio_proveedor',
       header: 'Precio Proveedor',
       cell: ({ row }) => `$${Number(row.original.precio_proveedor).toFixed(2)}`,
-    },
-    {
-      accessorKey: 'producto.precio_costo',
-      header: 'Precio Costo',
-      cell: ({ row }) => `$${Number(row.original.producto?.precio_costo || 0).toFixed(2)}`,
-    },
-    {
-      accessorKey: 'producto.precio_venta',
-      header: 'Precio Venta',
-      cell: ({ row }) => `$${Number(row.original.producto?.precio_venta || 0).toFixed(2)}`,
-    },
-    {
-      accessorKey: 'producto.stock',
-      header: 'Stock',
     },
     {
       id: 'actions',
