@@ -103,7 +103,7 @@ export function ProductosTable({ data, search, navigate, onSuccess, canBulkActio
         <div className='space-y-4 max-sm:has-[div[role="toolbar"]]:mb-16 w-full'>
         <DataTableToolbar
             table={table}
-            searchPlaceholder='Buscar productos...'
+            searchPlaceholder='Buscar productos por nombre...'
             searchKey='nombre'
             filters={[
             {

@@ -103,9 +103,14 @@ class ApiSucursales {
         try {
             const response = await axiosService.put(`${rutasBack.sucursales.putSucursal}/${id}`, sucursalData);
             return response.data;
-        } catch (error) {
-            console.error(`Error updating sucursal with id ${id}:`, error);
-            throw new Error(`Failed to update sucursal with id ${id}`);
+        } catch (error: any) {
+            let errorMessage = 'Error al actualizar la sucursal';
+            
+            if (error?.response?.data?.message) {
+                errorMessage = error.response.data.message;
+            }
+            
+            throw new Error(errorMessage);
         }
     }
 
@@ -123,35 +128,47 @@ class ApiSucursales {
         try {
             const response = await axiosService.delete(`${rutasBack.sucursales.deleteSucursal}/${id}`);
             return response.data; 
-        } catch (error) {
-            console.error(`Error deleting sucursal with id ${id}:`, error);
-            throw new Error(`Failed to delete sucursal with id ${id}`);
+        } catch (error: any) {
+            let errorMessage = 'Error al eliminar la sucursal';
+            
+            if (error?.response?.data?.message) {
+                errorMessage = error.response.data.message;
+            }
+            
+            throw new Error(errorMessage);
         }
     }
 
     async deleteSucursales(ids: number[]): Promise<{ message: string }> {
         try {
-            const response = await axiosService.post(rutasBack.sucursales.deleteSucursales, {
-                ids: ids
-            });
+            const response = await axiosService.post(rutasBack.sucursales.deleteSucursales, { ids });
             return response.data;
-        } catch (error) {
-            console.error("Error deleting sucursales:", error);
-            throw new Error("Failed to delete sucursales");
+        } catch (error: any) {
+            let errorMessage = 'Error al eliminar las sucursales';
+            
+            if (error?.response?.data?.message) {
+                errorMessage = error.response.data.message;
+            }
+            
+            throw new Error(errorMessage);
         }
     }
 
     async updateSucursalesStatus(ids: number[], estado: boolean): Promise<{ message: string }> {
         try {
-            console.log(ids, estado);
             const response = await axiosService.post(rutasBack.sucursales.patchSucursalesStatus, {
                 ids: ids,
                 estado: estado
             });
             return response.data;
-        } catch (error) {
-            console.error("Error updating sucursales status:", error);
-            throw new Error("Failed to update sucursales status");
+        } catch (error: any) {
+            let errorMessage = 'Error al actualizar el estado de las sucursales';
+            
+            if (error?.response?.data?.message) {
+                errorMessage = error.response.data.message;
+            }
+            
+            throw new Error(errorMessage);
         }
     }
 }

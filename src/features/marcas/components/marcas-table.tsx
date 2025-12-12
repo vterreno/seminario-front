@@ -103,7 +103,7 @@ export function MarcasTable({ data, search, navigate, onSuccess, canBulkAction, 
         <div className='space-y-4 max-sm:has-[div[role="toolbar"]]:mb-16'>
         <DataTableToolbar
             table={table}
-            searchPlaceholder='Buscar marcas...'
+            searchPlaceholder='Buscar marcas por nombre...'
             searchKey='nombre'
             filters={[
             {

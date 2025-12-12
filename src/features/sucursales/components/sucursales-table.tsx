@@ -109,7 +109,7 @@ export function SucursalesTable({ data, search, navigate, onSuccess, canBulkActi
     >
       <DataTableToolbar 
         table={table}
-        searchPlaceholder='Buscar sucursales...'
+        searchPlaceholder='Buscar sucursales por nombre...'
         searchKey='nombre'
         filters={[
           {

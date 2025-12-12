@@ -40,9 +40,8 @@ export function DataTableBulkActions<TData>({
       table.resetRowSelection()
       toast.success(`${status === 'active' ? 'Activadas' : 'Desactivadas'} ${selectedSucursales.length} sucursal${selectedSucursales.length > 1 ? 'es' : ''}`)
       onSuccess?.()
-    } catch (error) {
-      console.error('Error updating sucursales:', error)
-      toast.error(`Error al ${status === 'active' ? 'activar' : 'desactivar'} sucursales`)
+    } catch (error: any) {
+      toast.error(error.message || `Error al ${status === 'active' ? 'activar' : 'desactivar'} sucursales`)
     }
   }
 
