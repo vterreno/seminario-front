@@ -13,8 +13,9 @@ class ApiUsers {
 
         return response.data;
         } catch (error: any) {
-        if (error.response.status === 401) {
-            throw new Error("Usuario o contraseña incorrectos");
+        if (error.response?.status === 401) {
+            const message = error.response?.data?.message || "Usuario o contraseña incorrectos";
+            throw new Error(message);
         }
         throw new Error("Error en el servidor. Intente más tarde.");
         }
