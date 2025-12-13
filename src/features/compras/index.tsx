@@ -221,11 +221,13 @@ function ComprasContent() {
                         </p>
                     </div>
                     <div className='flex items-center gap-2'>
-                        <Button
-                          onClick={() => navigate({ to: '/compras/nueva-compra/' })}
-                        >
-                          Agregar compra
-                        </Button>
+                        {hasPermission('compras_agregar') && (
+                          <Button
+                            onClick={() => navigate({ to: '/compras/nueva-compra/' })}
+                          >
+                            Agregar compra
+                          </Button>
+                        )}
                         {/* Botón de búsqueda avanzada */}
                         <Button
                             variant="outline"
