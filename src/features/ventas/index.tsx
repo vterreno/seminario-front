@@ -228,6 +228,11 @@ function VentasContent() {
                         </p>
                     </div>
                     <div className='flex items-center gap-2'>
+                        <Button
+                          onClick={() => navigate({ to: '/ventas/nueva-venta/' })}
+                        >
+                          Agregar venta
+                        </Button>
                         {/* Botón de búsqueda avanzada */}
                         <Button
                             variant="outline"
