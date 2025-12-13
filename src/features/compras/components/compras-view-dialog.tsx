@@ -133,6 +133,12 @@ export function ComprasViewDialog({
                 {estadosMap[compra.estado] || compra.estado}
               </Badge>
             </div>
+            {compra.pago?.metodo_pago && (
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Método de pago</p>
+                <p className="text-lg capitalize">{compra.pago.metodo_pago === 'efectivo' ? 'Efectivo' : 'Transferencia'}</p>
+              </div>
+            )}
             {compra.numero_factura && (
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Número de factura</p>
