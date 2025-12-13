@@ -33,16 +33,27 @@ export const unidadMedidaFormSchema = z.object({
     .min(1, 'La abreviatura es obligatoria')
     .max(10, 'La abreviatura no puede exceder 10 caracteres'),
   aceptaDecimales: z.boolean(),
-  empresa_id: z.number().min(1, 'Debe seleccionar una empresa'),
+  empresa_id: z.number().optional(),
   estado: z.boolean(),
   isEdit: z.boolean(),
+  isSuperAdmin: z.boolean().optional(),
+}).refine((data) => {
+  // Si es superadmin, empresa_id es requerido y debe ser mayor a 0
+  if (data.isSuperAdmin) {
+    return data.empresa_id !== undefined && data.empresa_id > 0;
+  }
+  return true;
+}, {
+  message: 'Debe seleccionar una empresa',
+  path: ['empresa_id'],
 })
 
 export type UnidadMedidaForm = {
   nombre: string;
   abreviatura: string;
   aceptaDecimales: boolean;
-  empresa_id: number;
+  empresa_id?: number;
   estado: boolean;
   isEdit: boolean;
+  isSuperAdmin?: boolean;
 }

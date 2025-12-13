@@ -24,7 +24,7 @@ export interface CreateUnidadMedidaDto {
     abreviatura: string;
     aceptaDecimales?: boolean;
     estado?: boolean;
-    empresa_id: number;
+    empresaId?: number;
 }
 
 export interface UpdateUnidadMedidaDto {
@@ -32,7 +32,7 @@ export interface UpdateUnidadMedidaDto {
     abreviatura?: string;
     aceptaDecimales?: boolean;
     estado?: boolean;
-    empresa_id?: number;
+    empresaId?: number;
 }
 
 export interface BulkDeleteUnidadMedidaDto {

@@ -62,6 +62,7 @@ export function UnidadMedidaActionDialog({
           empresa_id: currentRow.empresa_id || userEmpresaId || 0,
           estado: currentRow.estado,
           isEdit: true,
+          isSuperAdmin: isSuperAdmin,
         }
       : {
           nombre: '',
@@ -70,6 +71,7 @@ export function UnidadMedidaActionDialog({
           empresa_id: isSuperAdmin ? 0 : (userEmpresaId || 0),
           estado: true,
           isEdit: false,
+          isSuperAdmin: isSuperAdmin,
         },
   })
 
@@ -105,7 +107,7 @@ export function UnidadMedidaActionDialog({
           abreviatura: values.abreviatura,
           aceptaDecimales: values.aceptaDecimales,
           estado: values.estado,
-          empresa_id: finalEmpresaId
+          empresaId: finalEmpresaId
         })
         toast.success('Unidad de medida actualizada exitosamente')
       } else {
@@ -114,7 +116,7 @@ export function UnidadMedidaActionDialog({
           abreviatura: values.abreviatura,
           aceptaDecimales: values.aceptaDecimales,
           estado: values.estado,
-          empresa_id: finalEmpresaId
+          empresaId: finalEmpresaId
         })
         toast.success('Unidad de medida creada exitosamente')
       }
@@ -125,6 +127,7 @@ export function UnidadMedidaActionDialog({
         empresa_id: isSuperAdmin ? 0 : (userEmpresaId || 0),
         estado: true,
         isEdit: false,
+        isSuperAdmin: isSuperAdmin,
       })
       onOpenChange(false)
       onSuccess?.()
@@ -144,7 +147,9 @@ export function UnidadMedidaActionDialog({
             abreviatura: '',
             aceptaDecimales: false,
             empresa_id: isSuperAdmin ? 0 : (userEmpresaId || 0),
+            estado: true,
             isEdit: false,
+            isSuperAdmin: isSuperAdmin,
           })
         }
         onOpenChange(state)
