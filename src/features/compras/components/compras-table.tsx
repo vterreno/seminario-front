@@ -75,7 +75,7 @@ export function ComprasTable({ data, search, navigate, onSuccess, canBulkAction,
     globalFilter: { enabled: false },
     sorting: {
       enabled: true,
-      defaultSorting: [{ id: 'id', desc: true }] // Ordenamiento por defecto: número (id) descendente
+      defaultSorting: [{ id: 'fecha_compra', desc: true }] // Ordenamiento por defecto: fecha descendente
     },
     columnFilters: [
       { columnId: 'id', searchKey: 'numero', type: 'string' },
