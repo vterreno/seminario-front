@@ -221,18 +221,18 @@ export function ProductosAjusteStockDialog({
                                                 </div>
                                                 
                                                 {stockResultante === 0 && (
-                                                    <div className="flex items-center gap-2 p-2 rounded-md bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800">
-                                                        <AlertTriangle className="h-3 w-3 text-yellow-600 dark:text-yellow-400" />
-                                                        <span className="text-xs text-yellow-700 dark:text-yellow-300 font-medium">
+                                                    <div className="flex items-start w-[20em] gap-2 p-2 rounded-md bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 mt-1">
+                                                        <AlertTriangle className="h-4 w-4 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" />
+                                                        <span className="text-xs text-yellow-700 dark:text-yellow-300 font-medium leading-relaxed">
                                                             Atención: El stock quedará en cero después de este ajuste
                                                         </span>
                                                     </div>
                                                 )}
                                                 
                                                 {tipoAjuste === 'disminucion' && cantidad > currentRow.stock && (
-                                                    <div className="flex items-center gap-2 p-2 rounded-md bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
-                                                        <AlertTriangle className="h-3 w-3 text-red-600 dark:text-red-400" />
-                                                        <span className="text-xs text-red-700 dark:text-red-300 font-medium">
+                                                    <div className="flex items-start gap-2 p-2 rounded-md bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 mt-1">
+                                                        <AlertTriangle className="h-4 w-4 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
+                                                        <span className="text-xs text-red-700 dark:text-red-300 font-medium leading-relaxed">
                                                             La cantidad a disminuir es mayor al stock actual
                                                         </span>
                                                     </div>
