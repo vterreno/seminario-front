@@ -169,8 +169,8 @@ export function ProductosActionDialog({
 
     // Nuevo useEffect para cargar marcas, categorías y unidades de medida dinámicamente
     useEffect(() => {
-        // Si es superadmin, cargar cuando cambie empresa_id
-        if (isSuperAdmin && open) {
+        // Si es superadmin creando, cargar cuando cambie empresa_id
+        if (isSuperAdmin && open && !isEdit) {
             const subscription = form.watch((value, { name }) => {
                 if (name === 'empresa_id' || !name) {
                     const empresaId = value.empresa_id
@@ -202,6 +202,30 @@ export function ProductosActionDialog({
             })
             return () => subscription.unsubscribe()
         }
+        // Si es superadmin editando, obtener empresa_id del producto actual
+        if (isSuperAdmin && open && isEdit && currentRow) {
+            const empresaId = currentRow.sucursal?.empresa_id
+            if (empresaId) {
+                const fetchData = async () => {
+                    try {
+                        const [marcasResponse, categoriasResponse, unidadesMedidaResponse] = await Promise.all([
+                            apiMarcasService.getMarcasByEmpresa(empresaId),
+                            apiCategoriasService.getCategoriasByEmpresa(empresaId),
+                            apiUnidadesMedidaService.getUnidadesMedidaByEmpresa(empresaId),
+                        ])
+                        setMarcas(marcasResponse)
+                        setCategorias(categoriasResponse)
+                        setUnidadesMedida(unidadesMedidaResponse)
+                    } catch (error) {
+                        toast.error("Error al cargar marcas/categorías/unidades")
+                        setMarcas([])
+                        setCategorias([])
+                        setUnidadesMedida([])
+                    }
+                }
+                fetchData()
+            }
+        }
         // Si es usuario normal, cargar con la empresa del usuario al abrir el diálogo
         if (!isSuperAdmin && userEmpresaId && open) {
             const fetchData = async () => {
@@ -223,7 +247,7 @@ export function ProductosActionDialog({
             }
             fetchData()
         }
-    }, [open, isSuperAdmin, userEmpresaId, form])
+    }, [open, isSuperAdmin, userEmpresaId, form, isEdit, currentRow])
 
     // Observar cambios en empresa_id para cargar sucursales (solo superadmin)
     useEffect(() => {
@@ -452,7 +476,7 @@ export function ProductosActionDialog({
                         <Select 
                             onValueChange={(value) => field.onChange(value === "null" ? null : Number(value))} 
                             value={field.value?.toString() || "null"}
-                            disabled={loading || (isSuperAdmin && !form.watch("empresa_id"))}
+                            disabled={loading || (isSuperAdmin && !isEdit && !form.watch("empresa_id"))}
                         >
                             <FormControl>
                             <SelectTrigger className='w-full'>
@@ -484,7 +508,7 @@ export function ProductosActionDialog({
                         <Select 
                             onValueChange={(value) => field.onChange(value === "null" ? null : Number(value))} 
                             value={field.value?.toString() || "null"}
-                            disabled={loading || (isSuperAdmin && !form.watch("empresa_id"))}
+                            disabled={loading || (isSuperAdmin && !isEdit && !form.watch("empresa_id"))}
                         >
                             <FormControl>
                             <SelectTrigger className='w-full'>
@@ -518,7 +542,7 @@ export function ProductosActionDialog({
                         <Select 
                             onValueChange={(value) => field.onChange(value === "null" ? null : Number(value))} 
                             value={field.value?.toString() || "null"}
-                            disabled={loading || (isSuperAdmin && !form.watch("empresa_id"))}
+                            disabled={loading || (isSuperAdmin && !isEdit && !form.watch("empresa_id"))}
                         >
                             <FormControl>
                             <SelectTrigger className='w-full'>
