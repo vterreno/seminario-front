@@ -111,7 +111,7 @@ export function UsersTable({ data, search, navigate, onSuccess, canBulkAction }:
     <div className='space-y-4 max-sm:has-[div[role="toolbar"]]:mb-16'>
       <DataTableToolbar
         table={table}
-        searchPlaceholder='Buscar usuarios...'
+        searchPlaceholder='Buscar por correo electrónico...'
         searchKey='email'
         filters={[]}
       />
