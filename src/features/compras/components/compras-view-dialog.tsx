@@ -159,23 +159,35 @@ export function ComprasViewDialog({
                     <TableHead className="text-right">Cantidad</TableHead>
                     <TableHead className="text-right">Precio unitario</TableHead>
                     <TableHead className="text-right">Subtotal</TableHead>
+                    <TableHead className="text-right">IVA %</TableHead>
+                    <TableHead className="text-right">Total</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {compra.detalles && compra.detalles.length > 0 ? (
-                    compra.detalles.map((detalle, index) => (
-                      <TableRow key={detalle.id || index}>
-                        <TableCell>
-                          {detalle.producto?.producto?.nombre || `Producto ID: ${detalle.producto_id}`}
-                        </TableCell>
-                        <TableCell className="text-right">{detalle.cantidad}</TableCell>
-                        <TableCell className="text-right">${formatCurrency(detalle.precio_unitario)}</TableCell>
-                        <TableCell className="text-right font-medium">${formatCurrency(detalle.subtotal)}</TableCell>
-                      </TableRow>
-                    ))
+                    compra.detalles.map((detalle, index) => {
+                      const subtotal = typeof detalle.subtotal === 'string' ? parseFloat(detalle.subtotal) : detalle.subtotal
+                      const ivaPorcentaje = detalle.iva_porcentaje ?? 0
+                      const ivaMonto = detalle.iva_monto ?? (subtotal * ivaPorcentaje / 100)
+                      const total = Number(subtotal) + Number(ivaMonto)
+                     
+                      return (
+                        <TableRow key={detalle.id || index}>
+                          <TableCell>
+                            {detalle.producto?.producto?.nombre || `Producto ID: ${detalle.producto_id}`}
+                          </TableCell>
+                          <TableCell className="text-right">{detalle.cantidad}</TableCell>
+                          <TableCell className="text-right">${formatCurrency(detalle.precio_unitario)}</TableCell>
+                          <TableCell className="text-right">${formatCurrency(subtotal)}</TableCell>
+                          <TableCell className="text-right">{ivaPorcentaje}%</TableCell>
+                          <TableCell className="text-right">${formatCurrency(ivaMonto)}</TableCell>
+                          <TableCell className="text-right font-medium">${formatCurrency(total)}</TableCell>
+                        </TableRow>
+                      )
+                    })
                   ) : (
                     <TableRow>
-                      <TableCell colSpan={4} className="text-center text-muted-foreground">
+                      <TableCell colSpan={7} className="text-center text-muted-foreground">
                         No hay detalles disponibles
                       </TableCell>
                     </TableRow>
@@ -190,7 +202,12 @@ export function ComprasViewDialog({
             <div className="flex justify-between items-center">
               <span className="text-sm text-muted-foreground">Subtotal de items:</span>
               <span className="font-medium">
-                ${formatCurrency(compra.detalles?.reduce((sum, d) => sum + (typeof d.subtotal === 'string' ? parseFloat(d.subtotal) : d.subtotal), 0) || 0)}
+                ${formatCurrency(compra.detalles?.reduce((sum, d) => {
+                  const subtotal = typeof d.subtotal === 'string' ? parseFloat(d.subtotal) : d.subtotal
+                  const ivaPorcentaje = d.iva_porcentaje ?? 0
+                  const ivaMonto = d.iva_monto ?? (subtotal * ivaPorcentaje / 100)
+                  return sum + Number(subtotal) + Number(ivaMonto)
+                }, 0) || 0)}
               </span>
             </div>
             {Array.isArray(compra.costosAdicionales) && compra.costosAdicionales.length > 0 ? (

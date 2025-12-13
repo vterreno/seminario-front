@@ -85,20 +85,20 @@ export const comprasColumns = (options: ComprasColumnsOptions = {}): ColumnDef<C
   // Agregar las demás columnas
   baseColumns.push(
     {
-      accessorKey: 'numero_compra',
+      accessorKey: 'id',
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title='Número' />
       ),
       cell: ({ row }) => {        
         return (
           <div className="flex items-center gap-2">
-            <span className="font-medium">{row.getValue('numero_compra')}</span>
+            <span className="font-medium">{row.original.id}</span>
           </div>
         )
       },
       filterFn: (row, id, value) => {
-        const numeroCompra = String(row.getValue(id))
-        return numeroCompra.toLowerCase().includes(String(value).toLowerCase())
+        const compraId = String(row.original.id)
+        return compraId.toLowerCase().includes(String(value).toLowerCase())
       },
       enableSorting: true,
       enableColumnFilter: true,

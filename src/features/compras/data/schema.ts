@@ -94,6 +94,8 @@ export const DetalleCompraSchema = z.object({
   }).optional(),
   cantidad: z.number(),
   precio_unitario: z.number(),
+  iva_porcentaje: z.number().optional(),
+  iva_monto: z.number().optional(),
   subtotal: z.number(),
   compra_id: z.number().optional(),
   created_at: z.string().optional(),

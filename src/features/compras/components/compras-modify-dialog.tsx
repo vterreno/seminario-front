@@ -105,6 +105,13 @@ export function ComprasModifyDialog({
             } else if (d.producto) {
               productoData = d.producto as Producto;
             }
+            const ivaPorcentaje = typeof (d as any).iva_porcentaje === 'string' 
+              ? parseFloat((d as any).iva_porcentaje) 
+              : ((d as any).iva_porcentaje ?? 21)
+            const ivaMonto = typeof (d as any).iva_monto === 'string' 
+              ? parseFloat((d as any).iva_monto) 
+              : ((d as any).iva_monto ?? 0)
+            const subtotalValue = typeof d.subtotal === 'string' ? parseFloat(d.subtotal) : d.subtotal
             return {
               id: `${Date.now()}-${index}`,
               producto: {
@@ -114,10 +121,10 @@ export function ComprasModifyDialog({
               } as Producto,
               cantidad: d.cantidad,
               costo_unitario: typeof d.precio_unitario === 'string' ? parseFloat(d.precio_unitario) : d.precio_unitario,
-              iva_porcentaje: 0,
-              iva_monto: 0,
-              subtotal: typeof d.subtotal === 'string' ? parseFloat(d.subtotal) : d.subtotal,
-              total: typeof d.subtotal === 'string' ? parseFloat(d.subtotal) : d.subtotal,
+              iva_porcentaje: ivaPorcentaje,
+              iva_monto: ivaMonto,
+              subtotal: subtotalValue,
+              total: subtotalValue + ivaMonto,
             }
           })
           setDetalles(detallesCargados)
