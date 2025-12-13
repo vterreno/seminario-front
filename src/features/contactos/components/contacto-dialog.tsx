@@ -233,13 +233,13 @@ export function ContactoDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         resizable={true}
-        minWidth={300}
-        minHeight={200}
+        minWidth={400}
+        minHeight={400}
         maxWidth={window.innerWidth * 0.9}
         maxHeight={window.innerHeight * 0.9}
-        defaultWidth={512}
-        defaultHeight={450}
-        className='sm:max-w-lg'
+        defaultWidth={700}
+        defaultHeight={650}
+        className='sm:max-w-3xl'
       >
         <DialogHeader>
           <DialogTitle>{isEdit ? `Editar contacto` : `Nuevo contacto`}</DialogTitle>
