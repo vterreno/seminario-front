@@ -16,7 +16,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import { Producto } from '@/features/productos/data/schema'
 import apiComprasService from '@/service/apiCompras.service'
-import apiProductoProveedorService from '@/service/apiProductoProveedor.service'
+import apiProductoProveedorService, { ProductoProveedor } from '@/service/apiProductoProveedor.service'
 import { Loader2, CheckCircle2, XCircle, Plus, Trash2 } from 'lucide-react'
 import { DetallesCompra } from '@/features/nueva-compra/components/detalles-compra'
 import { 
@@ -47,6 +47,7 @@ export function ComprasModifyDialog({
 }: ComprasModifyDialogProps) {
   const [compraOriginal, setCompraOriginal] = useState<Compra | null>(null)
   const [productos, setProductos] = useState<Producto[]>([])
+  const [productosProveedor, setProductosProveedor] = useState<ProductoProveedor[]>([])
   
   const [detalles, setDetalles] = useState<DetalleCompra[]>([])
   const [costosAdicionales, setCostosAdicionales] = useState<CostoAdicional[]>([])
@@ -134,6 +135,7 @@ export function ComprasModifyDialog({
         if (compra.contacto?.id) {
           try {
             const productosProveedorData = await apiProductoProveedorService.getProductosByProveedor(compra.contacto.id)
+            setProductosProveedor(productosProveedorData)
             const productosDisponibles = productosProveedorData
               .filter(pp => pp.producto?.estado)
               .map(pp => pp.producto!)
@@ -297,14 +299,12 @@ export function ComprasModifyDialog({
         detalles: detallesBackend,
         ...(numeroFactura && { numero_factura: numeroFactura }),
         ...(observaciones && { observaciones: observaciones }),
-        ...(costosAdicionales.length > 0 && {
-          costos_adicionales: costosAdicionales
-            .filter(c => c.concepto.trim() && c.monto > 0)
-            .map(c => ({
-              concepto: c.concepto,
-              monto: c.monto,
-            }))
-        }),
+        costos_adicionales: costosAdicionales
+          .filter(c => c.concepto.trim() && c.monto > 0)
+          .map(c => ({
+            concepto: c.concepto,
+            monto: c.monto,
+          })),
       }
       
       await apiComprasService.updateCompra(compraOriginal.id!, updatePayload)
@@ -458,12 +458,14 @@ export function ComprasModifyDialog({
             {/* Detalles de Compra */}
             <DetallesCompra
               productos={productos}
+              productosProveedor={productosProveedor}
               detalles={detalles}
               onAgregarDetalle={agregarDetalle}
               onEliminarDetalle={eliminarDetalle}
               onActualizarCantidad={actualizarCantidad}
               onActualizarCosto={actualizarCosto}
               onActualizarIva={actualizarIva}
+              onOpenNuevoProducto={() => {}}
             />
 
             {/* Costos Adicionales */}
