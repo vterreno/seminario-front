@@ -94,11 +94,8 @@ export function ProductWithPriceSelectorDialog({
             prev.map(p => {
                 if (!p.selected) return p
                 
-                // Solo aplicar ajuste a productos que NO tienen precio de lista (son nuevos)
-                // Los productos que ya tienen precio de lista mantienen su precio
-                const esProductoExistente = initialProductos.some(ip => ip.producto_id === p.id)
-                if (esProductoExistente) return p
-                
+                // Aplicar ajuste a TODOS los productos seleccionados
+                // usando siempre el precio_venta base del producto
                 const precioBase = p.precio_venta ?? 0
                 let nuevoPrecio: number
                 
